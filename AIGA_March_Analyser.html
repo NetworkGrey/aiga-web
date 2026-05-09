@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIGA — March Analyser | Network Grey</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&display=swap');
+
+  :root {
+    --bg: #0e0e0e;
+    --bg-card: #1c1c1c;
+    --bg-header: #141414;
+    --border: #333333;
+    --border-light: #2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-muted: #999999;
+    --text-faint: #666666;
+    --accent: #ffffff;
+    --solid-bg: #303030; --solid-fg: #ffffff; --solid-border: #555;
+    --adjust-bg: #242424; --adjust-fg: #dddddd; --adjust-border: #444;
+    --rethink-bg: #1a1a1a; --rethink-fg: #aaaaaa; --rethink-border: #383838;
+    --lon-well-bg: #282828; --lon-well-fg: #f0f0f0; --lon-well-border: #4a4a4a;
+    --lon-partial-bg: #202020; --lon-partial-fg: #c0c0c0; --lon-partial-border: #3a3a3a;
+    --lon-limited-bg: #181818; --lon-limited-fg: #888888; --lon-limited-border: #303030;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo-area { display: flex; flex-direction: column; gap: 1px; }
+  .logo-ng { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 5px; color: var(--text-muted); text-transform: uppercase; }
+  .logo-aiga { font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: 2px; }
+  .header-meta { text-align: right; }
+  .header-title { font-family: 'Cinzel', serif; font-size: 12px; color: var(--text-secondary); letter-spacing: 1px; }
+  .header-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .panel-title {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .panel-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .march-stack { display: flex; flex-direction: column; gap: 8px; }
+  .march-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .march-card:focus-within { border-color: #555; }
+  .march-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 13px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border-light);
+  }
+  .march-badge {
+    font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700;
+    color: var(--bg); background: var(--text-primary);
+    padding: 2px 8px; border-radius: 2px; letter-spacing: 1px; flex-shrink: 0;
+  }
+  .march-role { font-size: 12px; color: var(--text-muted); }
+  .march-body { padding: 10px 13px; display: flex; flex-direction: column; gap: 6px; }
+
+  .hero-row { display: grid; grid-template-columns: 40px 1fr 56px; gap: 6px; align-items: center; }
+  .slot-label { font-size: 11px; color: var(--text-muted); font-family: 'Cinzel', serif; letter-spacing: 0.3px; }
+
+  select, input[type="number"] {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 10px;
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23999999' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 24px;
+  }
+  select:focus, input[type="number"]:focus { border-color: #666; }
+  input[type="number"] { text-align: center; }
+  option { background: #1c1c1c; color: #ffffff; }
+  option:disabled { color: #666; font-style: italic; }
+  optgroup { color: #888; font-style: normal; font-size: 11px; }
+
+  .analyse-btn {
+    width: 100%; padding: 13px; margin-top: 14px;
+    background: var(--text-primary);
+    border: none; border-radius: 5px;
+    font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
+    letter-spacing: 3px; color: var(--bg); cursor: pointer;
+    transition: all 0.15s; text-transform: uppercase;
+  }
+  .analyse-btn:hover:not(:disabled) { background: #e0e0e0; box-shadow: 0 2px 16px rgba(255,255,255,0.12); }
+  .analyse-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .reset-btn {
+    width: 100%; padding: 8px; margin-top: 6px;
+    background: none; border: 1px solid var(--border);
+    border-radius: 4px; font-family: 'Cinzel', serif; font-size: 9px;
+    letter-spacing: 2px; color: var(--text-muted); cursor: pointer;
+    transition: all 0.15s; text-transform: uppercase;
+  }
+  .reset-btn:hover { border-color: #555; color: var(--text-secondary); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-light); }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
+
+  .output-panel { position: sticky; top: 72px; }
+
+  .output-placeholder {
+    background: var(--bg-card); border: 1px dashed var(--border);
+    border-radius: 6px; padding: 48px 24px; text-align: center;
+  }
+  .placeholder-icon { font-size: 28px; margin-bottom: 10px; opacity: 0.2; }
+  .placeholder-text { font-size: 14px; color: var(--text-muted); }
+
+  .loading-state {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 32px 24px; text-align: center; display: none;
+  }
+  .loading-state.visible { display: block; }
+  .loading-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #555; animation: pulse 1.4s ease-in-out infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,100%{opacity:0.2;transform:scale(0.85)} 50%{opacity:1;transform:scale(1)} }
+  .loading-text { font-size: 14px; color: var(--text-muted); }
+
+  .results { display: none; }
+  .results.visible { display: block; }
+
+  .march-result {
+    background: var(--bg-card); border: 1px solid var(--border-light);
+    border-radius: 6px; padding: 15px 17px; margin-bottom: 10px;
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
+
+  .result-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .result-march-id { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: var(--text-primary); }
+
+  .tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.5px; font-weight: 700;
+    padding: 3px 8px; border-radius: 3px; text-transform: uppercase;
+  }
+  .tag-solid   { background: var(--solid-bg);       color: var(--solid-fg);       border: 1px solid var(--solid-border); }
+  .tag-adjust  { background: var(--adjust-bg);      color: var(--adjust-fg);      border: 1px solid var(--adjust-border); }
+  .tag-rethink { background: var(--rethink-bg);     color: var(--rethink-fg);     border: 1px solid var(--rethink-border); }
+  .tag-lon-well    { background: var(--lon-well-bg);    color: var(--lon-well-fg);    border: 1px solid var(--lon-well-border); }
+  .tag-lon-partial { background: var(--lon-partial-bg); color: var(--lon-partial-fg); border: 1px solid var(--lon-partial-border); }
+  .tag-lon-limited { background: var(--lon-limited-bg); color: var(--lon-limited-fg); border: 1px solid var(--lon-limited-border); }
+
+  .lon-note { font-size: 12px; color: var(--text-muted); font-style: italic; margin-bottom: 10px; padding-left: 2px; }
+
+  .reasons { list-style: none; padding: 0; }
+  .reasons li {
+    font-size: 14px; line-height: 1.6; color: var(--text-secondary);
+    padding: 5px 0 5px 16px; position: relative;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .reasons li:last-child { border-bottom: none; }
+  .reasons li::before { content: '—'; position: absolute; left: 0; color: var(--text-faint); }
+
+  .priority-box {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    border-radius: 6px; padding: 15px 17px; margin-top: 4px;
+  }
+  .priority-title { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; }
+  .priority-list { list-style: none; counter-reset: p; }
+  .priority-list li {
+    counter-increment: p; font-size: 14px; line-height: 1.6; color: var(--text-secondary);
+    padding: 5px 0 5px 28px; position: relative;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .priority-list li:last-child { border-bottom: none; }
+  .priority-list li::before {
+    content: counter(p); position: absolute; left: 0; top: 7px;
+    font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700;
+    color: var(--text-primary); background: var(--border);
+    width: 18px; height: 18px; border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; line-height: 18px;
+  }
+
+  .page-footer {
+    text-align: center; padding: 24px;
+    border-top: 1px solid var(--border-light);
+    font-size: 11px; color: var(--text-faint);
+    margin-top: 24px;
+  }
+
+  @media (max-width: 800px) {
+    .main { grid-template-columns: 1fr; padding: 14px; }
+    .output-panel { position: static; }
+    .page-header { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="logo-area">
+    <div class="logo-ng">Network Grey</div>
+    <div class="logo-aiga">AIGA</div>
+  </div>
+  <div class="header-meta">
+    <div class="header-title">March Formation Analyser</div>
+    <div class="header-sub">Season 2 · Server 371 · TC25+</div>
+  </div>
+</header>
+
+<div class="main">
+
+  <div class="input-panel">
+    <div class="panel-title">Your Formation</div>
+    <div class="march-stack" id="marchStack"></div>
+    <button class="analyse-btn" id="analyseBtn" onclick="analyse()">&#9876; Analyse My Formation</button>
+    <button class="reset-btn" onclick="resetAll()">&#8634; Reset All</button>
+    <div class="legend">
+      <div class="legend-item"><span class="tag tag-solid">&#10003; Solid</span> Good as is</div>
+      <div class="legend-item"><span class="tag tag-adjust">~ Adjust</span> Minor fix</div>
+      <div class="legend-item"><span class="tag tag-rethink">&#10007; Rethink</span> Major change</div>
+    </div>
+    <div class="legend" style="margin-top:6px;padding-top:0;border-top:none;">
+      <div class="legend-item"><span class="tag tag-lon-well">&#8593; S3+</span> Carries well</div>
+      <div class="legend-item"><span class="tag tag-lon-partial">~ S3+</span> Partial</div>
+      <div class="legend-item"><span class="tag tag-lon-limited">&#8595; S3+</span> Gets replaced</div>
+    </div>
+  </div>
+
+  <div class="output-panel">
+    <div class="panel-title">AIGA Assessment</div>
+    <div class="output-placeholder" id="placeholder">
+      <div class="placeholder-icon">&#9876;</div>
+      <div class="placeholder-text">Fill in your marches and hit Analyse.</div>
+    </div>
+    <div class="loading-state" id="loadingState">
+      <div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="loading-text">Consulting the AIGA war council&#8230;</div>
+    </div>
+    <div class="results" id="results"></div>
+  </div>
+
+</div>
+
+<div class="page-footer">AIGA &middot; Network Grey &middot; Powered by Anthropic Claude &middot; Not affiliated with TiMi Studio Group or Level Infinite</div>
+
+<script>
+// ── HERO DATA — verified May 2026 ──
+// Sources: Sigarme, Mr Sneaky, TitoBods, Dayton S3 guide, AoE Mobile Guides, Level Infinite official
+// type: SW=Swordsmen, CAV=Cavalry, PIK=Pikemen, ARC=Archer, GATH=Gathering
+
+const HEROES = [
+
+  // ── CURRENTLY AVAILABLE: S1 ADVENT WHEEL ──
+  { label:"Hua Mulan",              value:"Hua Mulan",              type:"ARC",      rarity:"Legendary", season:"S1 Wheel" },
+  { label:"Tribhuwana",             value:"Tribhuwana",             type:"SW/CAV",   rarity:"Legendary", season:"S1 Wheel" },
+  { label:"Yi Sun-Shin",            value:"Yi Sun-Shin",            type:"ARC",      rarity:"Legendary", season:"S1 Wheel" },
+  { label:"Josephine",              value:"Josephine",              type:"ARC/SW",   rarity:"Legendary", season:"S1 Wheel" },
+  { label:"Attila the Hun",         value:"Attila the Hun",         type:"CAV/ARC",  rarity:"Legendary", season:"S1 Wheel" },
+  { label:"Sun Tzu",                value:"Sun Tzu",                type:"SW",       rarity:"Legendary", season:"S1 Wheel" },
+
+  // ── CURRENTLY AVAILABLE: S2 ADVENT WHEEL ──
+  { label:"Lu Bu",                  value:"Lu Bu",                  type:"CAV",      rarity:"Legendary", season:"S2 Wheel" },
+  { label:"Yodit",                  value:"Yodit",                  type:"SW",       rarity:"Legendary", season:"S2 Wheel" },
+  { label:"Hannibal",               value:"Hannibal",               type:"CAV",      rarity:"Legendary", season:"S2 Wheel" },
+  { label:"Justinian",              value:"Justinian",              type:"CAV",      rarity:"Legendary", season:"S2 Wheel" },
+  { label:"Bellevue",               value:"Bellevue",               type:"ARC",      rarity:"Legendary", season:"S2 Wheel" },
+
+  // ── CURRENTLY AVAILABLE: TAVERN ──
+  { label:"Guan Yu",                value:"Guan Yu",                type:"CAV",      rarity:"Legendary", season:"Tavern" },
+  { label:"Joan of Arc",            value:"Joan of Arc",            type:"PIK",      rarity:"Legendary", season:"Tavern" },
+  { label:"Hammurabi",              value:"Hammurabi",              type:"SW",       rarity:"Legendary", season:"Tavern" },
+  { label:"Harald III",             value:"Harald III",             type:"SW/CAV",   rarity:"Legendary", season:"Tavern" },
+  { label:"Darius I",               value:"Darius I",               type:"PIK/CAV",  rarity:"Legendary", season:"Tavern" },
+  { label:"Cleopatra",              value:"Cleopatra",              type:"CAV/SW",   rarity:"Legendary", season:"Tavern" },
+  { label:"Diao Chan",              value:"Diao Chan",              type:"GATH",     rarity:"Legendary", season:"Tavern" },
+  { label:"Sejong the Great",       value:"Sejong the Great",       type:"CAV",      rarity:"Legendary", season:"Tavern" },
+  { label:"Quindito",               value:"Quindito",               type:"SW",       rarity:"Legendary", season:"Tavern" },
+
+  // ── CURRENTLY AVAILABLE: EVENTS ──
+  { label:"King Derek",             value:"King Derek",             type:"ARC/SW",   rarity:"Legendary", season:"Event" },
+  { label:"Henry IV",               value:"Henry IV",               type:"ARC",      rarity:"Legendary", season:"Event" },
+  { label:"Tomyris",                value:"Tomyris",                type:"SW/CAV",   rarity:"Legendary", season:"Event" },
+  { label:"Leonidas I",             value:"Leonidas I",             type:"PIK",      rarity:"Legendary", season:"Event" },
+  { label:"Richard I",              value:"Richard I",              type:"PIK",      rarity:"Legendary", season:"Event" },
+  { label:"Ashoka",                 value:"Ashoka",                 type:"PIK/CAV",  rarity:"Legendary", season:"Event" },
+  { label:"Frederick Barbarossa",   value:"Frederick Barbarossa",   type:"PIK",      rarity:"Legendary", season:"Event" },
+  { label:"Julius Caesar",          value:"Julius Caesar",          type:"PIK/SW",   rarity:"Legendary", season:"Event" },
+  { label:"Octavian",               value:"Octavian",               type:"PIK",      rarity:"Legendary", season:"Event" },
+  { label:"Ram Khamhaeng",          value:"Ram Khamhaeng",          type:"PIK",      rarity:"Legendary", season:"Event" },
+  { label:"Rani Durgavati",         value:"Rani Durgavati",         type:"ARC/CAV",  rarity:"Legendary", season:"Event" },
+  { label:"Constantine",            value:"Constantine",            type:"SW",       rarity:"Legendary", season:"Event" },
+  { label:"Theodora",               value:"Theodora",               type:"ARC/SW",   rarity:"Legendary", season:"Event" },
+  { label:"Philip IV",              value:"Philip IV",              type:"SW",       rarity:"Legendary", season:"Event" },
+  { label:"Bushra",                 value:"Bushra",                 type:"PIK/CAV",  rarity:"Legendary", season:"Event" },
+  { label:"Tariq / Khalid",         value:"Tariq / Khalid",         type:"CAV",      rarity:"Legendary", season:"Event" },
+  { label:"El Cid",                 value:"El Cid",                 type:"CAV",      rarity:"Legendary", season:"Event" },
+  { label:"Yi Seong-Gye",           value:"Yi Seong-Gye",           type:"CAV",      rarity:"Legendary", season:"Event" },
+  { label:"King David",             value:"King David",             type:"ARC/SW",   rarity:"Legendary", season:"Event" },
+  { label:"Queen Dido",             value:"Queen Dido",             type:"SW",       rarity:"Legendary", season:"Event" },
+  { label:"Oda Nobunaga",           value:"Oda Nobunaga",           type:"SW",       rarity:"Legendary", season:"Event" },
+  { label:"Toyotomi Hideyoshi",     value:"Toyotomi Hideyoshi",     type:"SW",       rarity:"Legendary", season:"Event" },
+  { label:"Tokugawa Ieyasu",        value:"Tokugawa Ieyasu",        type:"SW",       rarity:"Legendary", season:"Event" },
+
+  // ── CURRENTLY AVAILABLE: VIP STORE (PAID) ──
+  { label:"Miyamoto Musashi",       value:"Miyamoto Musashi",       type:"SW",       rarity:"Legendary", season:"VIP Store (Paid)" },
+  { label:"King Arthur",            value:"King Arthur",            type:"SW/CAV",   rarity:"Mythical",  season:"VIP Store (Paid)" },
+
+  // ── NOT YET AVAILABLE: S3 ARRIVING ~4-6 WEEKS ──
+  { label:"Mansa Musa",             value:"Mansa Musa",             type:"PIK",      rarity:"Legendary", season:"S3 Wheel (Arriving Soon)" },
+  { label:"Charlemagne",            value:"Charlemagne",            type:"ARC/SW",   rarity:"Legendary", season:"S3 Wheel (Arriving Soon)" },
+  { label:"Boudica",                value:"Boudica",                type:"PIK",      rarity:"Legendary", season:"S3 Wheel (Arriving Soon)" },
+  { label:"Ramesses II",            value:"Ramesses II",            type:"SW/ARC",   rarity:"Legendary", season:"S3 MGE Event (Arriving Soon)" },
+  { label:"Mehmed II",              value:"Mehmed II",              type:"ARC/SW",   rarity:"Legendary", season:"S3 Event (Arriving Soon)" },
+  { label:"Saladin",                value:"Saladin",                type:"CAV/ARC",  rarity:"Legendary", season:"S3 Event (Arriving Soon)" },
+  { label:"Zhuge Liang",            value:"Zhuge Liang",            type:"SW/ARC",   rarity:"Legendary", season:"S3 Event (Arriving Soon)" },
+
+  // ── NOT YET AVAILABLE: S4+ ──
+  { label:"Lagertha",               value:"Lagertha",               type:"SW",       rarity:"Legendary", season:"S4 Wheel" },
+  { label:"Cyrus the Great",        value:"Cyrus the Great",        type:"PIK",      rarity:"Legendary", season:"S4 Wheel" },
+  { label:"Timur",                  value:"Timur",                  type:"CAV/ARC",  rarity:"Legendary", season:"S4 Wheel" },
+  { label:"Belisarius",             value:"Belisarius",             type:"PIK/CAV",  rarity:"Legendary", season:"S4 Wheel" },
+  { label:"Elizabeth I",            value:"Elizabeth I",            type:"PIK",      rarity:"Legendary", season:"S4 MGE Event" },
+  { label:"Vlad III",               value:"Vlad III",               type:"PIK",      rarity:"Legendary", season:"S4+ Wheel" },
+  { label:"Robin Hood",             value:"Robin Hood",             type:"CAV",      rarity:"Legendary", season:"S4+ Wheel" },
+  { label:"Scipio Africanus",       value:"Scipio Africanus",       type:"SW",       rarity:"Legendary", season:"S4+ Wheel" },
+  { label:"Zhao Yun",               value:"Zhao Yun",               type:"CAV",      rarity:"Legendary", season:"S4+ Wheel" },
+  { label:"Alp Arslan",             value:"Alp Arslan",             type:"ARC",      rarity:"Legendary", season:"S4+ Event" },
+  { label:"Eleanor of Aquitaine",   value:"Eleanor of Aquitaine",   type:"ARC/CAV",  rarity:"Legendary", season:"S4+ Event" },
+  { label:"Dae Jang Geum",          value:"Dae Jang Geum",          type:"CAV",      rarity:"Legendary", season:"S4+ Event" },
+  { label:"De Yang Yum",            value:"De Yang Yum",            type:"CAV/PIK",  rarity:"Legendary", season:"S4+ Wheel" },
+  { label:"Otto I",                 value:"Otto I",                 type:"PIK",      rarity:"Legendary", season:"S4+ MGE" },
+  { label:"Qin Shi Huang (QSH)",    value:"Qin Shi Huang",          type:"PIK",      rarity:"Legendary", season:"S4+ MGE" },
+  { label:"Roland",                 value:"Roland",                 type:"PIK",      rarity:"Legendary", season:"S4+ Wheel" },
+  { label:"Napoleon",               value:"Napoleon",               type:"ARC",      rarity:"Legendary", season:"S4+ MGE" },
+  { label:"Pyrrhus",                value:"Pyrrhus",                type:"SW",       rarity:"Legendary", season:"S4+ Event" },
+  { label:"William the Conqueror",  value:"William the Conqueror",  type:"CAV",      rarity:"Legendary", season:"S4+ MGE" },
+  { label:"Saint Louis",            value:"Saint Louis",            type:"ARC/PIK",  rarity:"Legendary", season:"S4+ Wheel" },
+  { label:"Confucius",              value:"Confucius",              type:"SW",       rarity:"Legendary", season:"S4+ MGE" },
+  { label:"Suleiman I",             value:"Suleiman I",             type:"ARC",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Queen Seondeok",         value:"Queen Seondeok",         type:"ARC",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Pierce",                 value:"Pierce",                 type:"SW",       rarity:"Legendary", season:"S4+ Wheel" },
+
+  // ── EPIC HEROES (Always Available — C Tier) ──
+  { label:"Gao Meng",               value:"Gao Meng",               type:"SW",       rarity:"Epic",      season:"Available" },
+  { label:"Nino",                   value:"Nino",                   type:"SW",       rarity:"Epic",      season:"Available" },
+  { label:"Baldassi",               value:"Baldassi",               type:"SW",       rarity:"Epic",      season:"Available" },
+  { label:"Li Daoxuan",             value:"Li Daoxuan",             type:"SW",       rarity:"Epic",      season:"Available" },
+  { label:"Wu Wei",                 value:"Wu Wei",                 type:"PIK",      rarity:"Epic",      season:"Available" },
+  { label:"Gatos",                  value:"Gatos",                  type:"PIK",      rarity:"Epic",      season:"Available" },
+  { label:"Thanius",                value:"Thanius",                type:"PIK",      rarity:"Epic",      season:"Available" },
+  { label:"Leo",                    value:"Leo",                    type:"PIK",      rarity:"Epic",      season:"Available" },
+  { label:"Kaso",                   value:"Kaso",                   type:"CAV",      rarity:"Epic",      season:"Available" },
+  { label:"Axel",                   value:"Axel",                   type:"CAV",      rarity:"Epic",      season:"Available" },
+  { label:"Narses",                 value:"Narses",                 type:"CAV",      rarity:"Epic",      season:"Available" },
+  { label:"Clyde (avoid)",          value:"Clyde",                  type:"CAV",      rarity:"Epic",      season:"Available" },
+  { label:"Cui Ruyi",               value:"Cui Ruyi",               type:"ARC",      rarity:"Epic",      season:"Available" },
+  { label:"Yuan Xia",               value:"Yuan Xia",               type:"ARC",      rarity:"Epic",      season:"Available" },
+  { label:"Leon",                   value:"Leon",                   type:"ARC",      rarity:"Epic",      season:"Available" },
+  { label:"Luki",                   value:"Luki",                   type:"ARC",      rarity:"Epic",      season:"Available" },
+];
+
+const TYPE_LABEL = { SW:"Sword", CAV:"Cavalry", PIK:"Pike", ARC:"Archer", GATH:"Gather" };
+
+const MARCHES = [
+  { id:"M1", label:"Primary combat march" },
+  { id:"M2", label:"Secondary combat march" },
+  { id:"M3", label:"Tribe / flex march" },
+  { id:"M4", label:"Tribe / flex march" },
+  { id:"M5", label:"Gathering / support march" },
+];
+const SLOTS = ["Lead","2IC","3rd"];
+
+function heroOptLabel(h) {
+  const types = h.type.split('/').map(t => TYPE_LABEL[t] || t).join('/');
+  return `${h.label} [${types}]`;
+}
+
+function buildHeroSelect(id) {
+  const groups = {};
+  HEROES.forEach(h => {
+    const g = h.rarity === 'Epic' ? 'Epic Heroes' : h.season;
+    if (!groups[g]) groups[g] = [];
+    groups[g].push(h);
+  });
+
+  const order = [
+    'S1 Wheel',
+    'S2 Wheel',
+    'Tavern',
+    'Event',
+    'VIP Store (Paid)',
+    'S3 Wheel (Arriving Soon)',
+    'S3 MGE Event (Arriving Soon)',
+    'S3 Event (Arriving Soon)',
+    'S4 Wheel',
+    'S4 MGE Event',
+    'S4+ Wheel',
+    'S4+ Event',
+    'S4+ MGE',
+    'S3+ Event',
+    'Epic Heroes',
+  ];
+
+  const groupLabels = {
+    'S1 Wheel':                    '── S1 Advent Wheel ──',
+    'S2 Wheel':                    '── S2 Advent Wheel ──',
+    'Tavern':                      '── Tavern (Always Available) ──',
+    'Event':                       '── Events (S2 Available) ──',
+    'VIP Store (Paid)':            '── VIP Store (Paid) ──',
+    'S3 Wheel (Arriving Soon)':    '── S3 Wheel — Arriving ~4-6 Weeks ──',
+    'S3 MGE Event (Arriving Soon)':'── S3 MGE Event — Arriving Soon ──',
+    'S3 Event (Arriving Soon)':    '── S3 Events — Arriving Soon ──',
+    'S4 Wheel':                    '── S4 Wheel (Not Yet Available) ──',
+    'S4 MGE Event':                '── S4 MGE Event ──',
+    'S4+ Wheel':                   '── S4+ Wheel ──',
+    'S4+ Event':                   '── S4+ Events ──',
+    'S4+ MGE':                     '── S4+ MGE Events ──',
+    'S3+ Event':                   '── S3+ Events ──',
+    'Epic Heroes':                 '── Epic Heroes (C Tier — Always Available) ──',
+  };
+
+  let html = '<option value="">— None —</option>';
+  const seen = new Set();
+  order.forEach(g => {
+    if (!groups[g] || seen.has(g)) return;
+    seen.add(g);
+    html += `<option disabled>${groupLabels[g] || g}</option>`;
+    groups[g].forEach(h => {
+      html += `<option value="${h.value}">${heroOptLabel(h)}</option>`;
+    });
+  });
+  return `<select id="${id}">${html}</select>`;
+}
+
+function buildUI() {
+  const stack = document.getElementById('marchStack');
+  stack.innerHTML = '';
+  MARCHES.forEach(m => {
+    const rows = SLOTS.map((slot, i) => `
+      <div class="hero-row">
+        <span class="slot-label">${slot}</span>
+        ${buildHeroSelect(`${m.id}-${i}-hero`)}
+        <input type="number" id="${m.id}-${i}-level" placeholder="Lv" min="1" max="100">
+      </div>`).join('');
+    stack.innerHTML += `
+      <div class="march-card">
+        <div class="march-head">
+          <span class="march-badge">${m.id}</span>
+          <span class="march-role">${m.label}</span>
+        </div>
+        <div class="march-body">${rows}</div>
+      </div>`;
+  });
+}
+
+function resetAll() {
+  buildUI();
+  document.getElementById('placeholder').style.display = 'block';
+  document.getElementById('loadingState').classList.remove('visible');
+  const r = document.getElementById('results');
+  r.classList.remove('visible');
+  r.innerHTML = '';
+}
+
+function getPayload() {
+  return MARCHES.map(m => {
+    const heroes = SLOTS.map((slot, i) => {
+      const sel = document.getElementById(`${m.id}-${i}-hero`);
+      const lv  = document.getElementById(`${m.id}-${i}-level`);
+      if (!sel || !sel.value) return null;
+      const hero = HEROES.find(h => h.value === sel.value);
+      return {
+        slot,
+        name:   sel.value,
+        level:  lv?.value ? parseInt(lv.value) : null,
+        type:   hero?.type    || '',
+        rarity: hero?.rarity  || '',
+        season: hero?.season  || '',
+      };
+    }).filter(Boolean);
+    return { march: m.id, label: m.label, heroes };
+  }).filter(m => m.heroes.length > 0);
+}
+
+async function analyse() {
+  const marches = getPayload();
+  if (!marches.length) { alert('Add at least one hero before analysing.'); return; }
+
+  const btn = document.getElementById('analyseBtn');
+  btn.disabled = true;
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('loadingState').classList.add('visible');
+
+  const userMsg = `Analyse my AoEM formation (Season 2 server 371, TC25+, S3 arriving in ~4-6 weeks):\n\n` +
+    marches.map(m =>
+      `${m.march} (${m.label}):\n` +
+      m.heroes.map(h =>
+        `  ${h.slot}: ${h.name} [${h.type}] ${h.rarity}${h.level ? ` Lv${h.level}` : ''} (${h.season})`
+      ).join('\n')
+    ).join('\n\n');
+
+  // Railway endpoint — system prompt and API key live server-side
+  try {
+    const res = await fetch('https://aiga-web-production.up.railway.app/analyse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: userMsg }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    const raw   = data.result || '';
+    const match = raw.match(/\{[\s\S]*\}/);
+    const json  = JSON.parse(match ? match[0] : raw);
+    renderResults(json);
+  } catch(err) {
+    console.error(err);
+    document.getElementById('results').innerHTML =
+      `<div style="background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:16px;color:#999;font-size:14px;">
+        Could not connect to AIGA. Check your internet connection and try again.
+      </div>`;
+    document.getElementById('results').classList.add('visible');
+  }
+
+  document.getElementById('loadingState').classList.remove('visible');
+  btn.disabled = false;
+}
+
+function renderResults(json) {
+  const vMap = {
+    SOLID:   { cls:'tag-solid',   label:'&#10003; Solid' },
+    ADJUST:  { cls:'tag-adjust',  label:'~ Adjust' },
+    RETHINK: { cls:'tag-rethink', label:'&#10007; Rethink' },
+  };
+  const lMap = {
+    'CARRIES WELL':     { cls:'tag-lon-well',    label:'&#8593; S3+' },
+    'CARRIES PARTIALLY':{ cls:'tag-lon-partial', label:'~ S3+' },
+    'LIMITED':          { cls:'tag-lon-limited', label:'&#8595; S3+' },
+  };
+
+  let html = '';
+  (json.marches || []).forEach(m => {
+    const v = vMap[m.verdict]   || vMap.ADJUST;
+    const l = lMap[m.longevity] || lMap['CARRIES PARTIALLY'];
+    html += `
+      <div class="march-result">
+        <div class="result-header">
+          <span class="result-march-id">${m.id}</span>
+          <span class="tag ${v.cls}">${v.label}</span>
+          <span class="tag ${l.cls}">${l.label}</span>
+        </div>
+        ${m.longevity_note ? `<div class="lon-note">${m.longevity_note}</div>` : ''}
+        <ul class="reasons">${(m.reasons || []).map(r => `<li>${r}</li>`).join('')}</ul>
+      </div>`;
+  });
+
+  if ((json.priorities || []).length) {
+    html += `
+      <div class="priority-box">
+        <div class="priority-title">&#9876; Priority Actions</div>
+        <ol class="priority-list">${json.priorities.map(p => `<li>${p}</li>`).join('')}</ol>
+      </div>`;
+  }
+
+  const results = document.getElementById('results');
+  results.innerHTML = html;
+  results.classList.add('visible');
+}
+
+buildUI();
+</script>
+</body>
+</html>
