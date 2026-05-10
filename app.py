@@ -7,7 +7,7 @@ Built by Network Grey | Powered by Anthropic Claude
 import os
 import json
 import anthropic
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -111,6 +111,11 @@ RESPONSE FORMAT — return ONLY valid JSON, no markdown, no explanation before o
   ],
   "priorities": ["action max 20 words", "action max 20 words", "action max 20 words"]
 }"""
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return send_from_directory(app.root_path, "AIGA_March_Analyser.html")
 
 
 @app.route("/health", methods=["GET"])
