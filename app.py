@@ -358,6 +358,7 @@ def chat():
         }
 
         if file_data and file_type in allowed_types:
+            print(f"[AIGA] File received: {file_name} ({file_type}, {len(file_data)} chars base64)")
             if file_type == "application/pdf":
                 file_block = {
                     "type": "document",
@@ -376,23 +377,33 @@ def chat():
                         "data": file_data
                     }
                 }
-            user_content = [
+            # Build content with image for this request
+            user_content_api = [
                 file_block,
                 {"type": "text", "text": message}
             ]
+            # Store only text in history — never carry base64 through subsequent turns
+            user_content_history = message + f" [Player attached: {file_name}]"
         else:
-            user_content = message
+            user_content_api = message
+            user_content_history = message
 
-        session["history"].append({"role": "user", "content": user_content})
+        # Build messages for API call: history (text only) + current message (with image if present)
+        api_messages = session["history"] + [{"role": "user", "content": user_content_api}]
+
+        print(f"[AIGA] Sending to Claude: {len(api_messages)} messages in history")
 
         response = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=1000,
             system=AIGA_CHAT_SYSTEM,
-            messages=session["history"]
+            messages=api_messages
         )
 
         reply = response.content[0].text
+
+        # Store lightweight versions in session history
+        session["history"].append({"role": "user", "content": user_content_history})
         session["history"].append({"role": "assistant", "content": reply})
 
         return jsonify({"response": reply, "session_id": session_id})
