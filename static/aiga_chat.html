@@ -5,24 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AIGA Advisor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:       #ffffff;
-    --bg-card:  #f5f5f5;
-    --bg-input: #fafafa;
-    --border:   #e0e0e0;
-    --text:     #111111;
-    --muted:    #444444;
-    --dim:      #999999;
-    --accent:   #3a8a5a;
-    --accent-lo:#1a3a2a;
-    --user-bg:  #f0f7ff;
-    --user-text:#1a3a5a;
-    --error:    #fff0f0;
-    --error-txt:#aa2222;
+    --bg:         #ffffff;
+    --bg-card:    #f7f7f7;
+    --bg-input:   #fafafa;
+    --border:     #e4e4e4;
+    --border-hi:  #cccccc;
+    --text:       #111111;
+    --dim:        #aaaaaa;
+    --send-bg:    #111111;
+    --send-color: #ffffff;
+    --user-bg:    #111111;
+    --user-text:  #ffffff;
+    --error-bg:   #fff2f2;
+    --error-text: #aa2222;
+    --attach-active: #22aa55;
   }
 
   html, body {
@@ -30,10 +31,12 @@
     color: var(--text);
     font-family: 'Inter', system-ui, sans-serif;
     font-weight: 300;
+    font-size: 14px;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ── LAYOUT ──────────────────────────────────────── */
+  /* ── SHELL ───────────────────────────────────────── */
   .chat-shell {
     display: flex;
     flex-direction: column;
@@ -41,14 +44,15 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     overflow: hidden;
+    background: var(--bg);
   }
 
   /* ── TOPBAR ──────────────────────────────────────── */
   .topbar {
     flex-shrink: 0;
-    background: #f9f9f9;
+    background: var(--bg-card);
     border-bottom: 1px solid var(--border);
-    padding: 12px 20px;
+    padding: 12px 18px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -61,55 +65,53 @@
   }
 
   .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    background: var(--accent);
+    background: #22aa55;
     animation: pulse 2.5s ease-in-out infinite;
     flex-shrink: 0;
   }
 
   @keyframes pulse {
     0%, 100% { opacity: 1; }
-    50%       { opacity: 0.3; }
+    50%       { opacity: 0.4; }
   }
 
   .topbar-name {
-    font-family: 'Cinzel', serif;
+    font-family: 'Google Sans Flex', sans-serif;
     font-size: 13px;
-    letter-spacing: 2px;
+    font-weight: 500;
+    letter-spacing: 1px;
     color: var(--text);
   }
 
   .topbar-status {
     font-size: 10px;
-    color: var(--accent);
-    letter-spacing: 1px;
+    color: #22aa55;
+    letter-spacing: 0.5px;
   }
 
   .topbar-right {
-    font-size: 9px;
+    font-size: 10px;
     color: var(--dim);
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
-  /* ── MESSAGE HISTORY ─────────────────────────────── */
+  /* ── MESSAGES ────────────────────────────────────── */
   .messages {
     overflow-y: auto;
     max-height: 420px;
     min-height: 0;
-    padding: 20px;
+    padding: 20px 18px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     scroll-behavior: smooth;
     transition: max-height 0.3s ease;
   }
 
-  .messages.has-messages {
-    min-height: 80px;
-  }
+  .messages.has-messages { min-height: 80px; }
 
   .messages::-webkit-scrollbar { width: 4px; }
   .messages::-webkit-scrollbar-track { background: transparent; }
@@ -120,48 +122,36 @@
     display: flex;
     gap: 10px;
     align-items: flex-start;
-    animation: fadeIn 0.2s ease;
+    animation: fadeIn 0.18s ease;
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
   .msg-row.user { flex-direction: row-reverse; }
 
   .msg-avatar {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 500;
     flex-shrink: 0;
     margin-top: 2px;
+    border: 1px solid var(--border);
   }
 
-  .msg-avatar.ai {
-    background: var(--accent-lo);
-    border: 1px solid #2a4a3a;
-    color: var(--accent);
-    font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: 1px;
-  }
-
-  .msg-avatar.user {
-    background: #1a2a3a;
-    border: 1px solid #2a3a4a;
-    color: #5a8aaa;
-    font-size: 10px;
-  }
+  .msg-avatar.ai   { background: var(--bg-card); color: var(--dim); }
+  .msg-avatar.user { background: var(--user-bg); color: var(--user-text); border-color: var(--user-bg); }
 
   .msg-bubble {
-    max-width: 75%;
-    padding: 12px 16px;
+    max-width: 76%;
+    padding: 11px 15px;
     border-radius: 10px;
     font-size: 13px;
     line-height: 1.75;
@@ -177,15 +167,14 @@
 
   .msg-bubble.user {
     background: var(--user-bg);
-    border: 1px solid #2a3a4a;
     color: var(--user-text);
     border-top-right-radius: 2px;
   }
 
   .msg-bubble.error {
-    background: var(--error);
-    border: 1px solid #7a3a3a;
-    color: var(--error-txt);
+    background: var(--error-bg);
+    border: 1px solid #ffcccc;
+    color: var(--error-text);
   }
 
   /* ── TYPING INDICATOR ────────────────────────────── */
@@ -193,7 +182,7 @@
     display: flex;
     gap: 10px;
     align-items: flex-start;
-    animation: fadeIn 0.2s ease;
+    animation: fadeIn 0.18s ease;
   }
 
   .typing-bubble {
@@ -201,15 +190,15 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     border-top-left-radius: 2px;
-    padding: 14px 18px;
+    padding: 13px 16px;
     display: flex;
     gap: 5px;
     align-items: center;
   }
 
   .typing-dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: var(--dim);
     animation: bounce 1.2s ease-in-out infinite;
@@ -220,20 +209,129 @@
 
   @keyframes bounce {
     0%, 60%, 100% { transform: translateY(0); }
-    30%           { transform: translateY(-5px); background: var(--accent); }
+    30%           { transform: translateY(-5px); background: #888; }
   }
+
+  /* ── WELCOME ─────────────────────────────────────── */
+  .welcome {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    border-top-left-radius: 2px;
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--text);
+    max-width: 76%;
+  }
+
+  .welcome strong {
+    font-family: 'Google Sans Flex', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--text);
+    display: block;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── FILE PREVIEW STRIP ──────────────────────────── */
+  .file-preview {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 18px;
+    background: #f0faf4;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text);
+  }
+
+  .file-preview.visible { display: flex; }
+
+  .file-preview-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 400;
+  }
+
+  .file-preview-type {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #555;
+    padding: 2px 8px;
+    border: 1px solid var(--border-hi);
+    border-radius: 10px;
+  }
+
+  .file-clear {
+    background: none;
+    border: none;
+    color: var(--dim);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 2px;
+    transition: color 0.15s;
+  }
+
+  .file-clear:hover { color: var(--text); }
 
   /* ── INPUT BAR ───────────────────────────────────── */
   .input-bar {
     flex-shrink: 0;
-    background: #f9f9f9;
+    background: var(--bg);
     border-top: 1px solid var(--border);
-    padding: 14px 20px;
+    padding: 12px 18px;
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: flex-end;
   }
 
+  /* ── ATTACH BUTTON ───────────────────────────────── */
+  .attach-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .attach-btn:hover:not(:disabled) {
+    background: var(--bg-card);
+    border-color: var(--border-hi);
+    color: var(--text);
+  }
+
+  .attach-btn.has-file {
+    border-color: var(--attach-active);
+    color: var(--attach-active);
+    background: #f0faf4;
+  }
+
+  .attach-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .attach-btn svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ── INPUT WRAP ──────────────────────────────────── */
   .input-wrap {
     flex: 1;
     background: var(--bg-input);
@@ -241,10 +339,10 @@
     border-radius: 8px;
     display: flex;
     align-items: flex-end;
-    transition: border-color 0.2s;
+    transition: border-color 0.15s;
   }
 
-  .input-wrap:focus-within { border-color: #3a4a3a; }
+  .input-wrap:focus-within { border-color: var(--border-hi); }
 
   textarea {
     flex: 1;
@@ -256,9 +354,9 @@
     font-size: 13px;
     font-weight: 300;
     line-height: 1.5;
-    padding: 10px 14px;
+    padding: 10px 12px;
     resize: none;
-    min-height: 40px;
+    min-height: 38px;
     max-height: 120px;
     overflow-y: auto;
   }
@@ -273,36 +371,30 @@
     white-space: nowrap;
   }
 
-  .char-count.warn { color: #aa6644; }
+  .char-count.warn { color: #cc6633; }
 
+  /* ── SEND BUTTON ─────────────────────────────────── */
   .send-btn {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 8px;
-    background: var(--accent-lo);
-    border: 1px solid #2a4a3a;
-    color: var(--accent);
+    background: var(--send-bg);
+    border: none;
+    color: var(--send-color);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background 0.2s, border-color 0.2s;
+    transition: opacity 0.15s;
   }
 
-  .send-btn:hover:not(:disabled) {
-    background: #1e4a2e;
-    border-color: #3a6a4a;
-  }
-
-  .send-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
+  .send-btn:hover:not(:disabled) { opacity: 0.8; }
+  .send-btn:disabled { opacity: 0.25; cursor: not-allowed; }
 
   .send-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -310,38 +402,15 @@
     stroke-linejoin: round;
   }
 
-  /* ── WELCOME MESSAGE ─────────────────────────────── */
-  .welcome {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    border-top-left-radius: 2px;
-    padding: 16px 20px;
-    font-size: 13px;
-    line-height: 1.75;
-    color: var(--text);
-    max-width: 75%;
-  }
-
-  .welcome strong {
-    font-weight: 500;
-    color: var(--accent);
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 1px;
-    display: block;
-    margin-bottom: 6px;
-  }
-
-  /* ── FOOTER NOTE ─────────────────────────────────── */
+  /* ── FOOTER ──────────────────────────────────────── */
   .footer-note {
     flex-shrink: 0;
     text-align: center;
-    padding: 6px 20px;
+    padding: 6px 18px;
     font-size: 9px;
     color: var(--dim);
-    letter-spacing: 0.5px;
-    background: #f9f9f9;
+    letter-spacing: 0.3px;
+    background: var(--bg-card);
     border-top: 1px solid var(--border);
   }
 
@@ -374,17 +443,35 @@
       <div class="msg-avatar ai">AI</div>
       <div class="welcome">
         <strong>AIGA — Strategic Advisor</strong>
-        Welcome, Commander. I can help with hero builds, march formations, event strategy, research priorities, and resource planning. What would you like to optimise?
+        Welcome, Commander. I can help with hero builds, march formations, event strategy, research priorities, and resource planning. Attach a screenshot for direct analysis.
       </div>
     </div>
   </div>
 
+  <!-- FILE INPUT (hidden) -->
+  <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.webp" style="display:none" aria-label="Attach file">
+
+  <!-- FILE PREVIEW STRIP -->
+  <div class="file-preview" id="filePreview">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+    </svg>
+    <span class="file-preview-name" id="filePreviewName"></span>
+    <span class="file-preview-type" id="filePreviewType"></span>
+    <button class="file-clear" id="fileClear" aria-label="Remove file">&#x2715;</button>
+  </div>
+
   <!-- INPUT BAR -->
   <div class="input-bar">
+    <button class="attach-btn" id="attachBtn" aria-label="Attach image or PDF">
+      <svg viewBox="0 0 24 24">
+        <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+      </svg>
+    </button>
     <div class="input-wrap">
       <textarea
         id="input"
-        placeholder="Ask AIGA a question..."
+        placeholder="Ask AIGA a question or attach a screenshot..."
         rows="1"
         maxlength="2000"
         aria-label="Message input"></textarea>
@@ -397,32 +484,38 @@
 
   <!-- FOOTER NOTE -->
   <div class="footer-note">
-    AIGA is a fan advisory service by Network Grey — not affiliated with TiMi Studio Group, Level Infinite, or Microsoft
+    AIGA may make mistakes — verify information before acting on it. Not affiliated with TiMi Studio Group, Level Infinite, or Microsoft.
   </div>
 
 </div>
 
 <script>
-  // ── State ────────────────────────────────────────────
-  let sessionId = null;
-  let isWaiting = false;
+  // ── State ─────────────────────────────────────────────
+  let sessionId    = null;
+  let isWaiting    = false;
+  let attachedFile = null;
 
-  const messages  = document.getElementById('messages');
-  const input     = document.getElementById('input');
-  const sendBtn   = document.getElementById('sendBtn');
-  const charCount = document.getElementById('charCount');
+  const messages        = document.getElementById('messages');
+  const input           = document.getElementById('input');
+  const sendBtn         = document.getElementById('sendBtn');
+  const charCount       = document.getElementById('charCount');
+  const attachBtn       = document.getElementById('attachBtn');
+  const fileInput       = document.getElementById('fileInput');
+  const filePreview     = document.getElementById('filePreview');
+  const filePreviewName = document.getElementById('filePreviewName');
+  const filePreviewType = document.getElementById('filePreviewType');
+  const fileClear       = document.getElementById('fileClear');
 
-  // ── Auto-resize textarea ─────────────────────────────
+  // ── Auto-resize textarea ──────────────────────────────
   input.addEventListener('input', () => {
     input.style.height = 'auto';
     input.style.height = Math.min(input.scrollHeight, 120) + 'px';
-
     const remaining = 2000 - input.value.length;
     charCount.textContent = remaining;
     charCount.classList.toggle('warn', remaining < 200);
   });
 
-  // ── Enter to send (Shift+Enter for newline) ──────────
+  // ── Enter to send ─────────────────────────────────────
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -432,19 +525,62 @@
 
   sendBtn.addEventListener('click', send);
 
-  // ── Append a message bubble ──────────────────────────
-  function appendMessage(text, role) {
-    const row = document.createElement('div');
-    row.className = 'msg-row ' + role;
+  // ── Attach button ─────────────────────────────────────
+  attachBtn.addEventListener('click', () => fileInput.click());
 
+  // ── File selected ─────────────────────────────────────
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      appendError('File too large — maximum 5MB.');
+      fileInput.value = '';
+      return;
+    }
+
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+    if (!allowed.includes(file.type)) {
+      appendError('Unsupported file — please attach a JPG, PNG, WEBP, or PDF.');
+      fileInput.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      attachedFile = {
+        base64:     e.target.result.split(',')[1],
+        media_type: file.type,
+        name:       file.name
+      };
+      filePreviewName.textContent = file.name;
+      filePreviewType.textContent = file.type === 'application/pdf' ? 'PDF' : file.type.split('/')[1].toUpperCase();
+      filePreview.classList.add('visible');
+      attachBtn.classList.add('has-file');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ── Clear file ────────────────────────────────────────
+  fileClear.addEventListener('click', clearFile);
+
+  function clearFile() {
+    attachedFile = null;
+    fileInput.value = '';
+    filePreview.classList.remove('visible');
+    attachBtn.classList.remove('has-file');
+  }
+
+  // ── Append message ────────────────────────────────────
+  function appendMessage(text, role) {
+    const row    = document.createElement('div');
+    row.className = 'msg-row ' + role;
     const avatar = document.createElement('div');
     avatar.className = 'msg-avatar ' + role;
     avatar.textContent = role === 'ai' ? 'AI' : 'U';
-
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble ' + role;
     bubble.textContent = text;
-
     row.appendChild(avatar);
     row.appendChild(bubble);
     messages.appendChild(row);
@@ -453,39 +589,33 @@
     return bubble;
   }
 
-  // ── Append error bubble ──────────────────────────────
+  // ── Append error ──────────────────────────────────────
   function appendError(text) {
-    const row = document.createElement('div');
+    const row    = document.createElement('div');
     row.className = 'msg-row ai';
-
     const avatar = document.createElement('div');
     avatar.className = 'msg-avatar ai';
     avatar.textContent = 'AI';
-
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble error';
     bubble.textContent = text;
-
     row.appendChild(avatar);
     row.appendChild(bubble);
     messages.appendChild(row);
     scrollToBottom();
   }
 
-  // ── Show/hide typing indicator ───────────────────────
+  // ── Typing indicator ──────────────────────────────────
   function showTyping() {
     const row = document.createElement('div');
     row.className = 'typing-row';
     row.id = 'typing';
-
     const avatar = document.createElement('div');
     avatar.className = 'msg-avatar ai';
     avatar.textContent = 'AI';
-
     const bubble = document.createElement('div');
     bubble.className = 'typing-bubble';
     bubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-
     row.appendChild(avatar);
     row.appendChild(bubble);
     messages.appendChild(row);
@@ -497,41 +627,51 @@
     if (t) t.remove();
   }
 
-  // ── Scroll to bottom ─────────────────────────────────
-  function scrollToBottom() {
-    messages.scrollTop = messages.scrollHeight;
-  }
+  function scrollToBottom() { messages.scrollTop = messages.scrollHeight; }
 
-  // ── Set UI state ─────────────────────────────────────
   function setWaiting(state) {
-    isWaiting = state;
-    sendBtn.disabled = state;
-    input.disabled = state;
+    isWaiting          = state;
+    sendBtn.disabled   = state;
+    input.disabled     = state;
+    attachBtn.disabled = state;
   }
 
-  // ── Send message ─────────────────────────────────────
+  // ── Send ──────────────────────────────────────────────
   async function send() {
     const text = input.value.trim();
-    if (!text || isWaiting) return;
+    if ((!text && !attachedFile) || isWaiting) return;
 
-    // Clear input
     input.value = '';
     input.style.height = 'auto';
     charCount.textContent = '2000';
     charCount.classList.remove('warn');
 
-    // Show user message
-    appendMessage(text, 'user');
+    const displayText = text
+      ? (attachedFile ? text + ' [screenshot attached]' : text)
+      : attachedFile.name + ' [screenshot attached]';
+    appendMessage(displayText, 'user');
+
+    const payload = {
+      message:    text || 'Please analyse this screenshot.',
+      session_id: sessionId
+    };
+
+    if (attachedFile) {
+      payload.file_data = attachedFile.base64;
+      payload.file_type = attachedFile.media_type;
+      payload.file_name = attachedFile.name;
+    }
+
+    clearFile();
     setWaiting(true);
     showTyping();
 
     try {
-      const res = await fetch('/chat', {
-        method: 'POST',
+      const res  = await fetch('/chat', {
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, session_id: sessionId })
+        body:    JSON.stringify(payload)
       });
-
       const data = await res.json();
       hideTyping();
 
@@ -541,10 +681,10 @@
         sessionId = data.session_id;
         appendMessage(data.response, 'ai');
       }
-
     } catch (err) {
       hideTyping();
-      appendError('Could not reach AIGA — check your connection and try again.');
+      console.error('[AIGA] Fetch error:', err);
+      appendError('Could not reach AIGA — check your connection and try again. Error: ' + err.message);
     }
 
     setWaiting(false);
