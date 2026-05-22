@@ -347,7 +347,43 @@ def chat():
 
         session = sessions[session_id]
         session["last_active"] = time.time()
-        session["history"].append({"role": "user", "content": message})
+
+        # Build content block — text only or text + file
+        file_data  = data.get("file_data")
+        file_type  = data.get("file_type", "")
+        file_name  = data.get("file_name", "attachment")
+
+        allowed_types = {
+            "image/jpeg", "image/png", "image/webp", "application/pdf"
+        }
+
+        if file_data and file_type in allowed_types:
+            if file_type == "application/pdf":
+                file_block = {
+                    "type": "document",
+                    "source": {
+                        "type": "base64",
+                        "media_type": "application/pdf",
+                        "data": file_data
+                    }
+                }
+            else:
+                file_block = {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": file_type,
+                        "data": file_data
+                    }
+                }
+            user_content = [
+                file_block,
+                {"type": "text", "text": message}
+            ]
+        else:
+            user_content = message
+
+        session["history"].append({"role": "user", "content": user_content})
 
         response = client.messages.create(
             model="claude-sonnet-4-6",
