@@ -488,7 +488,6 @@
     .topbar-right { display: none; }
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 </head>
 <body>
 
@@ -559,6 +558,68 @@
 </div>
 
 <script>
+
+  // ── Inline markdown renderer ──────────────────────
+  function renderMarkdown(text) {
+    let html = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Tables
+    const tableRegex = /(\|.+\|\n\|[-| :]+\|\n(?:\|.+\|\n?)*)/gm;
+    html = html.replace(tableRegex, function(match) {
+      const lines = match.trim().split('\n');
+      const headers = lines[0].split('|').filter(c => c.trim()).map(c => '<th>' + c.trim() + '</th>').join('');
+      const rows = lines.slice(2).map(function(row) {
+        const cells = row.split('|').filter(c => c.trim()).map(c => '<td>' + c.trim() + '</td>').join('');
+        return '<tr>' + cells + '</tr>';
+      }).join('');
+      return '<table><thead><tr>' + headers + '</tr></thead><tbody>' + rows + '</tbody></table>';
+    });
+
+    // Headings
+    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^# (.+)$/gm, '<h3>$1</h3>');
+
+    // Horizontal rule
+    html = html.replace(/^---+$/gm, '<hr>');
+
+    // Bold and italic
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+    // Blockquote
+    html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+
+    // Unordered lists
+    html = html.replace(/((?:^[-*] .+\n?)+)/gm, function(match) {
+      const items = match.trim().split('\n').map(function(line) {
+        return '<li>' + line.replace(/^[-*] /, '').trim() + '</li>';
+      }).join('');
+      return '<ul>' + items + '</ul>';
+    });
+
+    // Ordered lists
+    html = html.replace(/((?:^\d+\. .+\n?)+)/gm, function(match) {
+      const items = match.trim().split('\n').map(function(line) {
+        return '<li>' + line.replace(/^\d+\. /, '').trim() + '</li>';
+      }).join('');
+      return '<ol>' + items + '</ol>';
+    });
+
+    // Paragraphs
+    html = html.split(/\n{2,}/).map(function(block) {
+      block = block.trim();
+      if (!block) return '';
+      if (/^<(h[1-6]|ul|ol|table|hr|blockquote)/.test(block)) return block;
+      return '<p>' + block.replace(/\n/g, '<br>') + '</p>';
+    }).join('');
+
+    return html;
+  }
+
   // ── State ─────────────────────────────────────────────
   let sessionId    = null;
   let isWaiting    = false;
@@ -649,8 +710,8 @@
     avatar.textContent = role === 'ai' ? 'AI' : 'U';
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble ' + role;
-    if (role === 'ai' && typeof marked !== 'undefined') {
-      bubble.innerHTML = marked.parse(text);
+    if (role === 'ai') {
+      bubble.innerHTML = renderMarkdown(text);
     } else {
       bubble.textContent = text;
     }
