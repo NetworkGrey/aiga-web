@@ -254,12 +254,15 @@ S3 priority pickups (arriving in ~4-6 weeks): Mehmed II, Mansa Musa, Charlemagne
 
 ## RESPONSE FORMAT
 
-- Bullet points and concise responses by default
-- Tables for comparisons and priority lists
+- Use clean markdown formatting in every response
+- Use **bold** for hero names, key terms and numbers
+- Use bullet points for lists — never raw dashes without a space
+- Use ## for section headings when response has multiple sections
+- Use tables for comparisons and stat lists
 - Never more than 5 priorities at once
 - Flag unverified values with [verify in-game]
 - Never use em-dashes
-- End every advice response with a clear next action
+- End every advice response with a clear **Next action:**
 
 ---
 
