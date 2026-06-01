@@ -414,12 +414,81 @@
     border-top: 1px solid var(--border);
   }
 
+
+  /* ── MARKDOWN RENDERING ──────────────────────────── */
+  .msg-bubble.ai h1,
+  .msg-bubble.ai h2,
+  .msg-bubble.ai h3 {
+    font-family: 'Google Sans Flex', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text);
+    margin: 12px 0 6px;
+  }
+
+  .msg-bubble.ai h1:first-child,
+  .msg-bubble.ai h2:first-child,
+  .msg-bubble.ai h3:first-child { margin-top: 0; }
+
+  .msg-bubble.ai p {
+    margin: 0 0 8px;
+  }
+
+  .msg-bubble.ai p:last-child { margin-bottom: 0; }
+
+  .msg-bubble.ai ul,
+  .msg-bubble.ai ol {
+    padding-left: 18px;
+    margin: 6px 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .msg-bubble.ai li { font-size: 13px; line-height: 1.7; }
+
+  .msg-bubble.ai strong { font-weight: 500; color: var(--text); }
+
+  .msg-bubble.ai hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 10px 0;
+  }
+
+  .msg-bubble.ai table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin: 8px 0;
+  }
+
+  .msg-bubble.ai th,
+  .msg-bubble.ai td {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .msg-bubble.ai th {
+    background: var(--border);
+    font-weight: 500;
+  }
+
+  .msg-bubble.ai code {
+    background: var(--border);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: monospace;
+  }
+
   /* ── RESPONSIVE ──────────────────────────────────── */
   @media (max-width: 480px) {
     .msg-bubble { max-width: 88%; font-size: 12px; }
     .topbar-right { display: none; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 </head>
 <body>
 
@@ -580,7 +649,11 @@
     avatar.textContent = role === 'ai' ? 'AI' : 'U';
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble ' + role;
-    bubble.textContent = text;
+    if (role === 'ai' && typeof marked !== 'undefined') {
+      bubble.innerHTML = marked.parse(text);
+    } else {
+      bubble.textContent = text;
+    }
     row.appendChild(avatar);
     row.appendChild(bubble);
     messages.appendChild(row);
@@ -683,7 +756,8 @@
       }
     } catch (err) {
       hideTyping();
-      appendError('Could not reach AIGA — check your connection and try again.');
+      console.error('[AIGA] Fetch error:', err);
+      appendError('Could not reach AIGA — check your connection and try again. Error: ' + err.message);
     }
 
     setWaiting(false);
