@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIGA — AI Gaming Advisor | Network Grey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
+<style>
+  :root {
+    --bg:           #1a1a1a;
+    --bg-card:      #242424;
+    --bg-header:    #1e1e1e;
+    --bg-input:     #2a2a2a;
+    --bg-user:      #2e2e2e;
+    --bg-aiga:      #1e1e1e;
+    --border:       #333333;
+    --border-light: #2a2a2a;
+    --text:         #ffffff;
+    --text-muted:   #999999;
+    --text-faint:   #555555;
+    --gold:         #c9a84c;
+    --gold-dim:     #8a7035;
+    --error:        #cc4444;
+    --radius:       8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow: hidden;
+  }
+
+  /* ── LAYOUT ────────────────────────────────── */
+  .layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ── HEADER ────────────────────────────────── */
+  .header {
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .logo {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .logo-ng {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 5px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+  .logo-aiga {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 3px;
+  }
+
+  .header-right {
+    text-align: right;
+  }
+  .header-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+  .header-sub {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 2px;
+  }
+
+  /* ── FEED ──────────────────────────────────── */
+  .feed {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 0;
+    scroll-behavior: smooth;
+  }
+  .feed::-webkit-scrollbar { width: 4px; }
+  .feed::-webkit-scrollbar-track { background: transparent; }
+  .feed::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .feed-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── MESSAGES ──────────────────────────────── */
+  .msg {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 88%;
+  }
+  .msg-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .msg-bubble {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  /* AIGA message — left */
+  .msg.aiga {
+    align-self: flex-start;
+    align-items: flex-start;
+  }
+  .msg.aiga .msg-label { color: var(--gold); }
+  .msg.aiga .msg-bubble {
+    background: var(--bg-aiga);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  /* User message — right */
+  .msg.user {
+    align-self: flex-end;
+    align-items: flex-end;
+  }
+  .msg.user .msg-label { color: var(--text-faint); }
+  .msg.user .msg-bubble {
+    background: var(--bg-user);
+    border: 1px solid var(--border-light);
+    color: var(--text);
+  }
+
+  /* Error message */
+  .msg.error .msg-bubble {
+    background: #2a1a1a;
+    border-color: var(--error);
+    color: #ff8888;
+  }
+
+  /* ── MARKDOWN STYLES (inside .msg-bubble) ──── */
+  .msg-bubble h2, .msg-bubble h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    margin: 14px 0 6px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+  .msg-bubble h2:first-child,
+  .msg-bubble h3:first-child { margin-top: 0; }
+  .msg-bubble p { margin: 0 0 8px; }
+  .msg-bubble p:last-child { margin-bottom: 0; }
+  .msg-bubble ul, .msg-bubble ol {
+    margin: 4px 0 8px 20px;
+  }
+  .msg-bubble li { margin-bottom: 3px; }
+  .msg-bubble strong { color: #ffffff; font-weight: 600; }
+  .msg-bubble em { color: var(--text-muted); }
+  .msg-bubble code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    background: #111;
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #aaddff;
+  }
+  .msg-bubble pre {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 8px 0;
+  }
+  .msg-bubble pre code {
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  /* Tables */
+  .msg-bubble table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  .msg-bubble th {
+    background: #111;
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-align: left;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .msg-bubble td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-muted);
+  }
+  .msg-bubble tr:last-child td { border-bottom: none; }
+  .msg-bubble tr:hover td { color: var(--text); }
+
+  /* ── TYPING INDICATOR ──────────────────────── */
+  .typing {
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .typing .msg-label { color: var(--gold); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+  .typing-dots {
+    display: flex;
+    gap: 5px;
+    padding: 12px 16px;
+    background: var(--bg-aiga);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: fit-content;
+  }
+  .typing-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--gold-dim);
+    border-radius: 50%;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.85); }
+    40%            { opacity: 1;   transform: scale(1); background: var(--gold); }
+  }
+
+  /* ── NOTICE BAR ────────────────────────────── */
+  .notice {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px 8px;
+    font-size: 12px;
+    color: var(--text-faint);
+    text-align: center;
+    display: none;
+  }
+  .notice.visible { display: block; }
+  .notice.warn { color: #cc8844; }
+
+  /* ── INPUT BAR ─────────────────────────────── */
+  .input-bar {
+    background: var(--bg-header);
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    flex-shrink: 0;
+  }
+  .input-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .input-wrap {
+    flex: 1;
+    position: relative;
+  }
+  textarea {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    resize: none;
+    min-height: 44px;
+    max-height: 140px;
+    overflow-y: auto;
+    transition: border-color 0.15s;
+    display: block;
+  }
+  textarea::placeholder { color: var(--text-faint); }
+  textarea:focus {
+    outline: none;
+    border-color: var(--gold-dim);
+  }
+  .char-count {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-size: 10px;
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+  .char-count.warn { color: #cc8844; }
+
+  .send-btn {
+    background: var(--gold);
+    border: none;
+    border-radius: var(--radius);
+    color: #111;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 11px 18px;
+    height: 44px;
+    flex-shrink: 0;
+    transition: background 0.15s, opacity 0.15s;
+    white-space: nowrap;
+  }
+  .send-btn:hover:not(:disabled) { background: #ddb95a; }
+  .send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .input-footer {
+    max-width: 760px;
+    margin: 6px auto 0;
+    font-size: 11px;
+    color: var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* ── RESPONSIVE ────────────────────────────── */
+  @media (max-width: 600px) {
+    .header { padding: 12px 16px; }
+    .header-right { display: none; }
+    .logo-aiga { font-size: 16px; }
+    .feed-inner { padding: 0 12px; }
+    .msg { max-width: 95%; }
+    .input-bar { padding: 10px 12px; }
+    .send-btn { padding: 11px 14px; font-size: 10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .typing-dot { animation: none; opacity: 0.5; }
+  }
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">
+      <span class="logo-ng">Network Grey</span>
+      <span class="logo-aiga">AIGA</span>
+    </div>
+    <div class="header-right">
+      <div class="header-title">AI Gaming Advisor</div>
+      <div class="header-sub">Age of Empires Mobile</div>
+    </div>
+  </header>
+
+  <!-- FEED -->
+  <div class="feed" id="feed">
+    <div class="feed-inner" id="feedInner">
+      <!-- Welcome message inserted by JS -->
+    </div>
+  </div>
+
+  <!-- NOTICE -->
+  <div class="notice" id="notice"></div>
+
+  <!-- INPUT -->
+  <div class="input-bar">
+    <div class="input-inner">
+      <div class="input-wrap">
+        <textarea
+          id="input"
+          placeholder="Ask me about AoEM — I'll do my best."
+          maxlength="2000"
+          rows="1"
+          autocomplete="off"
+          spellcheck="true"
+        ></textarea>
+        <span class="char-count" id="charCount"></span>
+      </div>
+      <button class="send-btn" id="sendBtn" disabled>Send</button>
+    </div>
+    <div class="input-footer">
+      <span id="footerLeft">Free tier — 20 questions per day</span>
+      <span id="footerRight">Age of Empires Mobile ⚔</span>
+    </div>
+  </div>
+
+</div><!-- /layout -->
+
+<script>
+// ── Config ─────────────────────────────────────────────────────────────────
+
+const API_URL     = '/chat';
+const MAX_CHARS   = 2000;
+const WARN_REMAIN = 5;
+
+// ── Session ─────────────────────────────────────────────────────────────────
+
+const sessionId = (
+  typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2)
+);
+
+// ── Marked config ───────────────────────────────────────────────────────────
+
+marked.setOptions({ breaks: true, gfm: true });
+
+function renderMarkdown(text) {
+  return DOMPurify.sanitize(marked.parse(text));
+}
+
+// ── DOM refs ────────────────────────────────────────────────────────────────
+
+const feed      = document.getElementById('feed');
+const feedInner = document.getElementById('feedInner');
+const input     = document.getElementById('input');
+const sendBtn   = document.getElementById('sendBtn');
+const charCount = document.getElementById('charCount');
+const notice    = document.getElementById('notice');
+const footerLeft= document.getElementById('footerLeft');
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+function scrollBottom() {
+  feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' });
+}
+
+function addMessage(role, text) {
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = role === 'aiga' ? 'AIGA' : 'You';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+
+  if (role === 'aiga' || role === 'error') {
+    bubble.innerHTML = renderMarkdown(text);
+  } else {
+    // User text — plain, no markdown
+    bubble.textContent = text;
+  }
+
+  div.appendChild(label);
+  div.appendChild(bubble);
+  feedInner.appendChild(div);
+  scrollBottom();
+  return div;
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typingIndicator';
+
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = 'AIGA';
+
+  const dots = document.createElement('div');
+  dots.className = 'typing-dots';
+  dots.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+
+  div.appendChild(label);
+  div.appendChild(dots);
+  feedInner.appendChild(div);
+  scrollBottom();
+}
+
+function hideTyping() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+function setNotice(msg, type = '') {
+  notice.textContent = msg;
+  notice.className = `notice visible${type ? ' ' + type : ''}`;
+}
+
+function clearNotice() {
+  notice.className = 'notice';
+}
+
+function setDisabled(state) {
+  input.disabled  = state;
+  sendBtn.disabled = state || !input.value.trim();
+}
+
+function updateRemaining(remaining) {
+  if (remaining <= WARN_REMAIN) {
+    footerLeft.textContent = `${remaining} question${remaining === 1 ? '' : 's'} remaining today`;
+    footerLeft.style.color = remaining <= 2 ? '#cc8844' : 'var(--text-faint)';
+  }
+  if (remaining === 0) {
+    setNotice('Daily limit reached. Upgrade to Commander tier for unlimited access.', 'warn');
+    setDisabled(true);
+  }
+}
+
+// ── Auto-resize textarea ────────────────────────────────────────────────────
+
+input.addEventListener('input', () => {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+
+  const len = input.value.length;
+  sendBtn.disabled = !input.value.trim();
+
+  if (len > MAX_CHARS * 0.85) {
+    charCount.textContent = `${len} / ${MAX_CHARS}`;
+    charCount.className = `char-count${len > MAX_CHARS * 0.95 ? ' warn' : ''}`;
+  } else {
+    charCount.textContent = '';
+  }
+});
+
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if (!sendBtn.disabled) send();
+  }
+});
+
+// ── Send ─────────────────────────────────────────────────────────────────────
+
+async function send() {
+  const text = input.value.trim();
+  if (!text) return;
+
+  clearNotice();
+  addMessage('user', text);
+  input.value = '';
+  input.style.height = 'auto';
+  charCount.textContent = '';
+  setDisabled(true);
+  showTyping();
+
+  try {
+    const res = await fetch(API_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ message: text, session_id: sessionId }),
+    });
+
+    hideTyping();
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      if (res.status === 429) {
+        addMessage('error', err.error || 'Daily limit reached.');
+        setDisabled(true);
+        setNotice('Upgrade to Commander tier for unlimited access.', 'warn');
+        return;
+      }
+      addMessage('error', err.error || 'Something went wrong. Please try again.');
+      setDisabled(false);
+      return;
+    }
+
+    const data = await res.json();
+    addMessage('aiga', data.response);
+
+    if (typeof data.remaining === 'number') {
+      updateRemaining(data.remaining);
+    }
+
+  } catch (err) {
+    hideTyping();
+    addMessage('error', 'Could not reach AIGA. Check your connection and try again.');
+  } finally {
+    if (!input.disabled) {
+      sendBtn.disabled = !input.value.trim();
+      input.focus();
+    }
+    scrollBottom();
+  }
+}
+
+sendBtn.addEventListener('click', () => send());
+
+// ── Welcome message ─────────────────────────────────────────────────────────
+
+(function welcome() {
+  const msg = `**Welcome to AIGA** — your Age of Empires Mobile strategic advisor.
+
+I can help you with:
+- **Heroes** — builds, skills, tier lists, season rosters
+- **Marches** — rally compositions, formation strategy
+- **Gear & Rings** — forging, upgrading, gem priorities
+- **Events** — MGE/MEE save rules, scoring
+- **Troops & Base** — training, healing, TC progression
+- **Economy** — daily routines, currency priorities
+
+Ask me about AoEM — I'll do my best.`;
+
+  addMessage('aiga', msg);
+  input.focus();
+})();
+</script>
+</body>
+</html>
