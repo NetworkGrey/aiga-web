@@ -260,6 +260,11 @@ def index():
     return send_from_directory(".", "AIGA_March_Analyser.html")
 
 
+@app.route("/aiga")
+def aiga_chat():
+    return send_from_directory(".", "AIGA_Chat.html")
+
+
 @app.route("/analyse", methods=["POST"])
 def analyse():
     """March Analyser endpoint — proxies to Claude if needed server-side."""
