@@ -8,9 +8,9 @@
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&display=swap');
 
   :root {
-    --bg: #0e0e0e;
-    --bg-card: #1c1c1c;
-    --bg-header: #141414;
+    --bg: #1a1a1a;
+    --bg-card: #242424;
+    --bg-header: #1e1e1e;
     --border: #333333;
     --border-light: #2a2a2a;
     --text-primary: #ffffff;
@@ -37,6 +37,7 @@
     min-height: 100vh;
   }
 
+  /* ── HEADER ── */
   .page-header {
     background: var(--bg-header);
     border-bottom: 1px solid var(--border);
@@ -55,6 +56,7 @@
   .header-title { font-family: 'Cinzel', serif; font-size: 12px; color: var(--text-secondary); letter-spacing: 1px; }
   .header-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
+  /* ── LAYOUT ── */
   .main {
     max-width: 1100px;
     margin: 0 auto;
@@ -78,6 +80,7 @@
   }
   .panel-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
+  /* ── MARCH CARDS ── */
   .march-stack { display: flex; flex-direction: column; gap: 8px; }
   .march-card {
     background: var(--bg-card);
@@ -131,6 +134,7 @@
   option:disabled { color: #666; font-style: italic; }
   optgroup { color: #888; font-style: normal; font-size: 11px; }
 
+  /* ── BUTTONS ── */
   .analyse-btn {
     width: 100%; padding: 13px; margin-top: 14px;
     background: var(--text-primary);
@@ -151,9 +155,11 @@
   }
   .reset-btn:hover { border-color: #555; color: var(--text-secondary); }
 
+  /* ── LEGEND ── */
   .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-light); }
   .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
 
+  /* ── OUTPUT ── */
   .output-panel { position: sticky; top: 72px; }
 
   .output-placeholder {
@@ -175,6 +181,7 @@
   @keyframes pulse { 0%,100%{opacity:0.2;transform:scale(0.85)} 50%{opacity:1;transform:scale(1)} }
   .loading-text { font-size: 14px; color: var(--text-muted); }
 
+  /* ── RESULTS ── */
   .results { display: none; }
   .results.visible { display: block; }
 
@@ -255,7 +262,7 @@
   </div>
   <div class="header-meta">
     <div class="header-title">March Formation Analyser</div>
-    <div class="header-sub">Season 2 · Server 371 · TC25+</div>
+    <div class="header-sub">Season 2 · All Heroes · TC25+</div>
   </div>
 </header>
 
@@ -264,153 +271,125 @@
   <div class="input-panel">
     <div class="panel-title">Your Formation</div>
     <div class="march-stack" id="marchStack"></div>
-    <button class="analyse-btn" id="analyseBtn" onclick="analyse()">&#9876; Analyse My Formation</button>
-    <button class="reset-btn" onclick="resetAll()">&#8634; Reset All</button>
+    <button class="analyse-btn" id="analyseBtn" onclick="analyse()">⚔ Analyse My Formation</button>
+    <button class="reset-btn" onclick="resetAll()">↺ Reset All</button>
     <div class="legend">
-      <div class="legend-item"><span class="tag tag-solid">&#10003; Solid</span> Good as is</div>
+      <div class="legend-item"><span class="tag tag-solid">✓ Solid</span> Good as is</div>
       <div class="legend-item"><span class="tag tag-adjust">~ Adjust</span> Minor fix</div>
-      <div class="legend-item"><span class="tag tag-rethink">&#10007; Rethink</span> Major change</div>
+      <div class="legend-item"><span class="tag tag-rethink">✗ Rethink</span> Major change</div>
     </div>
     <div class="legend" style="margin-top:6px;padding-top:0;border-top:none;">
-      <div class="legend-item"><span class="tag tag-lon-well">&#8593; S3+</span> Carries well</div>
+      <div class="legend-item"><span class="tag tag-lon-well">↑ S3+</span> Carries well</div>
       <div class="legend-item"><span class="tag tag-lon-partial">~ S3+</span> Partial</div>
-      <div class="legend-item"><span class="tag tag-lon-limited">&#8595; S3+</span> Gets replaced</div>
+      <div class="legend-item"><span class="tag tag-lon-limited">↓ S3+</span> Gets replaced</div>
     </div>
   </div>
 
   <div class="output-panel">
     <div class="panel-title">AIGA Assessment</div>
     <div class="output-placeholder" id="placeholder">
-      <div class="placeholder-icon">&#9876;</div>
+      <div class="placeholder-icon">⚔</div>
       <div class="placeholder-text">Fill in your marches and hit Analyse.</div>
     </div>
     <div class="loading-state" id="loadingState">
       <div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-      <div class="loading-text">Consulting the AIGA war council&#8230;</div>
+      <div class="loading-text">Consulting the AIGA war council…</div>
     </div>
     <div class="results" id="results"></div>
   </div>
 
 </div>
 
-<div class="page-footer">AIGA &middot; Network Grey &middot; Powered by Anthropic Claude &middot; Not affiliated with TiMi Studio Group or Level Infinite</div>
+<div class="page-footer">AIGA · Network Grey · Powered by Anthropic Claude · Not affiliated with TiMi Studio Group or Level Infinite</div>
 
 <script>
-// ── HERO DATA — verified May 2026 ──
-// Sources: Sigarme, Mr Sneaky, TitoBods, Dayton S3 guide, AoE Mobile Guides, Level Infinite official
+// ── HERO DATA ──
+// Format: { label, value, type, rarity, season }
 // type: SW=Swordsmen, CAV=Cavalry, PIK=Pikemen, ARC=Archer, GATH=Gathering
-
 const HEROES = [
-
-  // ── CURRENTLY AVAILABLE: S1 ADVENT WHEEL ──
-  { label:"Hua Mulan",              value:"Hua Mulan",              type:"ARC",      rarity:"Legendary", season:"S1 Wheel" },
-  { label:"Tribhuwana",             value:"Tribhuwana",             type:"SW/CAV",   rarity:"Legendary", season:"S1 Wheel" },
-  { label:"Yi Sun-Shin",            value:"Yi Sun-Shin",            type:"ARC",      rarity:"Legendary", season:"S1 Wheel" },
-  { label:"Josephine",              value:"Josephine",              type:"ARC/SW",   rarity:"Legendary", season:"S1 Wheel" },
-  { label:"Attila the Hun",         value:"Attila the Hun",         type:"CAV/ARC",  rarity:"Legendary", season:"S1 Wheel" },
-  { label:"Sun Tzu",                value:"Sun Tzu",                type:"SW",       rarity:"Legendary", season:"S1 Wheel" },
-
-  // ── CURRENTLY AVAILABLE: S2 ADVENT WHEEL ──
-  { label:"Lu Bu",                  value:"Lu Bu",                  type:"CAV",      rarity:"Legendary", season:"S2 Wheel" },
-  { label:"Yodit",                  value:"Yodit",                  type:"SW",       rarity:"Legendary", season:"S2 Wheel" },
-  { label:"Hannibal",               value:"Hannibal",               type:"CAV",      rarity:"Legendary", season:"S2 Wheel" },
-  { label:"Justinian",              value:"Justinian",              type:"CAV",      rarity:"Legendary", season:"S2 Wheel" },
-  { label:"Bellevue",               value:"Bellevue",               type:"ARC",      rarity:"Legendary", season:"S2 Wheel" },
-
-  // ── CURRENTLY AVAILABLE: TAVERN ──
-  { label:"Guan Yu",                value:"Guan Yu",                type:"CAV",      rarity:"Legendary", season:"Tavern" },
-  { label:"Joan of Arc",            value:"Joan of Arc",            type:"PIK",      rarity:"Legendary", season:"Tavern" },
-  { label:"Hammurabi",              value:"Hammurabi",              type:"SW",       rarity:"Legendary", season:"Tavern" },
-  { label:"Harald III",             value:"Harald III",             type:"SW/CAV",   rarity:"Legendary", season:"Tavern" },
-  { label:"Darius I",               value:"Darius I",               type:"PIK/CAV",  rarity:"Legendary", season:"Tavern" },
-  { label:"Cleopatra",              value:"Cleopatra",              type:"CAV/SW",   rarity:"Legendary", season:"Tavern" },
-  { label:"Diao Chan",              value:"Diao Chan",              type:"GATH",     rarity:"Legendary", season:"Tavern" },
-  { label:"Sejong the Great",       value:"Sejong the Great",       type:"CAV",      rarity:"Legendary", season:"Tavern" },
-  { label:"Quindito",               value:"Quindito",               type:"SW",       rarity:"Legendary", season:"Tavern" },
-
-  // ── CURRENTLY AVAILABLE: EVENTS ──
-  { label:"King Derek",             value:"King Derek",             type:"ARC/SW",   rarity:"Legendary", season:"Event" },
-  { label:"Henry IV",               value:"Henry IV",               type:"ARC",      rarity:"Legendary", season:"Event" },
-  { label:"Tomyris",                value:"Tomyris",                type:"SW/CAV",   rarity:"Legendary", season:"Event" },
-  { label:"Leonidas I",             value:"Leonidas I",             type:"PIK",      rarity:"Legendary", season:"Event" },
-  { label:"Richard I",              value:"Richard I",              type:"PIK",      rarity:"Legendary", season:"Event" },
-  { label:"Ashoka",                 value:"Ashoka",                 type:"PIK/CAV",  rarity:"Legendary", season:"Event" },
-  { label:"Frederick Barbarossa",   value:"Frederick Barbarossa",   type:"PIK",      rarity:"Legendary", season:"Event" },
-  { label:"Julius Caesar",          value:"Julius Caesar",          type:"PIK/SW",   rarity:"Legendary", season:"Event" },
-  { label:"Octavian",               value:"Octavian",               type:"PIK",      rarity:"Legendary", season:"Event" },
-  { label:"Ram Khamhaeng",          value:"Ram Khamhaeng",          type:"PIK",      rarity:"Legendary", season:"Event" },
-  { label:"Rani Durgavati",         value:"Rani Durgavati",         type:"ARC/CAV",  rarity:"Legendary", season:"Event" },
-  { label:"Constantine",            value:"Constantine",            type:"SW",       rarity:"Legendary", season:"Event" },
-  { label:"Theodora",               value:"Theodora",               type:"ARC/SW",   rarity:"Legendary", season:"Event" },
-  { label:"Philip IV",              value:"Philip IV",              type:"SW",       rarity:"Legendary", season:"Event" },
-  { label:"Bushra",                 value:"Bushra",                 type:"PIK/CAV",  rarity:"Legendary", season:"Event" },
-  { label:"Tariq / Khalid",         value:"Tariq / Khalid",         type:"CAV",      rarity:"Legendary", season:"Event" },
-  { label:"El Cid",                 value:"El Cid",                 type:"CAV",      rarity:"Legendary", season:"Event" },
-  { label:"Yi Seong-Gye",           value:"Yi Seong-Gye",           type:"CAV",      rarity:"Legendary", season:"Event" },
-  { label:"King David",             value:"King David",             type:"ARC/SW",   rarity:"Legendary", season:"Event" },
-  { label:"Queen Dido",             value:"Queen Dido",             type:"SW",       rarity:"Legendary", season:"Event" },
-  { label:"Oda Nobunaga",           value:"Oda Nobunaga",           type:"SW",       rarity:"Legendary", season:"Event" },
-  { label:"Toyotomi Hideyoshi",     value:"Toyotomi Hideyoshi",     type:"SW",       rarity:"Legendary", season:"Event" },
-  { label:"Tokugawa Ieyasu",        value:"Tokugawa Ieyasu",        type:"SW",       rarity:"Legendary", season:"Event" },
-
-  // ── CURRENTLY AVAILABLE: VIP STORE (PAID) ──
-  { label:"Miyamoto Musashi",       value:"Miyamoto Musashi",       type:"SW",       rarity:"Legendary", season:"VIP Store (Paid)" },
-  { label:"King Arthur",            value:"King Arthur",            type:"SW/CAV",   rarity:"Mythical",  season:"VIP Store (Paid)" },
-
-  // ── NOT YET AVAILABLE: S3 ARRIVING ~4-6 WEEKS ──
-  { label:"Mansa Musa",             value:"Mansa Musa",             type:"PIK",      rarity:"Legendary", season:"S3 Wheel (Arriving Soon)" },
-  { label:"Charlemagne",            value:"Charlemagne",            type:"ARC/SW",   rarity:"Legendary", season:"S3 Wheel (Arriving Soon)" },
-  { label:"Boudica",                value:"Boudica",                type:"PIK",      rarity:"Legendary", season:"S3 Wheel (Arriving Soon)" },
-  { label:"Ramesses II",            value:"Ramesses II",            type:"SW/ARC",   rarity:"Legendary", season:"S3 MGE Event (Arriving Soon)" },
-  { label:"Mehmed II",              value:"Mehmed II",              type:"ARC/SW",   rarity:"Legendary", season:"S3 Event (Arriving Soon)" },
-  { label:"Saladin",                value:"Saladin",                type:"CAV/ARC",  rarity:"Legendary", season:"S3 Event (Arriving Soon)" },
-  { label:"Zhuge Liang",            value:"Zhuge Liang",            type:"SW/ARC",   rarity:"Legendary", season:"S3 Event (Arriving Soon)" },
-
-  // ── NOT YET AVAILABLE: S4+ ──
-  { label:"Lagertha",               value:"Lagertha",               type:"SW",       rarity:"Legendary", season:"S4 Wheel" },
-  { label:"Cyrus the Great",        value:"Cyrus the Great",        type:"PIK",      rarity:"Legendary", season:"S4 Wheel" },
-  { label:"Timur",                  value:"Timur",                  type:"CAV/ARC",  rarity:"Legendary", season:"S4 Wheel" },
-  { label:"Belisarius",             value:"Belisarius",             type:"PIK/CAV",  rarity:"Legendary", season:"S4 Wheel" },
-  { label:"Elizabeth I",            value:"Elizabeth I",            type:"PIK",      rarity:"Legendary", season:"S4 MGE Event" },
-  { label:"Vlad III",               value:"Vlad III",               type:"PIK",      rarity:"Legendary", season:"S4+ Wheel" },
-  { label:"Robin Hood",             value:"Robin Hood",             type:"CAV",      rarity:"Legendary", season:"S4+ Wheel" },
-  { label:"Scipio Africanus",       value:"Scipio Africanus",       type:"SW",       rarity:"Legendary", season:"S4+ Wheel" },
-  { label:"Zhao Yun",               value:"Zhao Yun",               type:"CAV",      rarity:"Legendary", season:"S4+ Wheel" },
-  { label:"Alp Arslan",             value:"Alp Arslan",             type:"ARC",      rarity:"Legendary", season:"S4+ Event" },
-  { label:"Eleanor of Aquitaine",   value:"Eleanor of Aquitaine",   type:"ARC/CAV",  rarity:"Legendary", season:"S4+ Event" },
-  { label:"Dae Jang Geum",          value:"Dae Jang Geum",          type:"CAV",      rarity:"Legendary", season:"S4+ Event" },
-  { label:"De Yang Yum",            value:"De Yang Yum",            type:"CAV/PIK",  rarity:"Legendary", season:"S4+ Wheel" },
-  { label:"Otto I",                 value:"Otto I",                 type:"PIK",      rarity:"Legendary", season:"S4+ MGE" },
-  { label:"Qin Shi Huang (QSH)",    value:"Qin Shi Huang",          type:"PIK",      rarity:"Legendary", season:"S4+ MGE" },
-  { label:"Roland",                 value:"Roland",                 type:"PIK",      rarity:"Legendary", season:"S4+ Wheel" },
-  { label:"Napoleon",               value:"Napoleon",               type:"ARC",      rarity:"Legendary", season:"S4+ MGE" },
-  { label:"Pyrrhus",                value:"Pyrrhus",                type:"SW",       rarity:"Legendary", season:"S4+ Event" },
-  { label:"William the Conqueror",  value:"William the Conqueror",  type:"CAV",      rarity:"Legendary", season:"S4+ MGE" },
-  { label:"Saint Louis",            value:"Saint Louis",            type:"ARC/PIK",  rarity:"Legendary", season:"S4+ Wheel" },
-  { label:"Confucius",              value:"Confucius",              type:"SW",       rarity:"Legendary", season:"S4+ MGE" },
-  { label:"Suleiman I",             value:"Suleiman I",             type:"ARC",      rarity:"Legendary", season:"S3+ Event" },
-  { label:"Queen Seondeok",         value:"Queen Seondeok",         type:"ARC",      rarity:"Legendary", season:"S3+ Event" },
-  { label:"Pierce",                 value:"Pierce",                 type:"SW",       rarity:"Legendary", season:"S4+ Wheel" },
-
-  // ── EPIC HEROES (Always Available — C Tier) ──
-  { label:"Gao Meng",               value:"Gao Meng",               type:"SW",       rarity:"Epic",      season:"Available" },
-  { label:"Nino",                   value:"Nino",                   type:"SW",       rarity:"Epic",      season:"Available" },
-  { label:"Baldassi",               value:"Baldassi",               type:"SW",       rarity:"Epic",      season:"Available" },
-  { label:"Li Daoxuan",             value:"Li Daoxuan",             type:"SW",       rarity:"Epic",      season:"Available" },
-  { label:"Wu Wei",                 value:"Wu Wei",                 type:"PIK",      rarity:"Epic",      season:"Available" },
-  { label:"Gatos",                  value:"Gatos",                  type:"PIK",      rarity:"Epic",      season:"Available" },
-  { label:"Thanius",                value:"Thanius",                type:"PIK",      rarity:"Epic",      season:"Available" },
-  { label:"Leo",                    value:"Leo",                    type:"PIK",      rarity:"Epic",      season:"Available" },
-  { label:"Kaso",                   value:"Kaso",                   type:"CAV",      rarity:"Epic",      season:"Available" },
-  { label:"Axel",                   value:"Axel",                   type:"CAV",      rarity:"Epic",      season:"Available" },
-  { label:"Narses",                 value:"Narses",                 type:"CAV",      rarity:"Epic",      season:"Available" },
-  { label:"Clyde (avoid)",          value:"Clyde",                  type:"CAV",      rarity:"Epic",      season:"Available" },
-  { label:"Cui Ruyi",               value:"Cui Ruyi",               type:"ARC",      rarity:"Epic",      season:"Available" },
-  { label:"Yuan Xia",               value:"Yuan Xia",               type:"ARC",      rarity:"Epic",      season:"Available" },
-  { label:"Leon",                   value:"Leon",                   type:"ARC",      rarity:"Epic",      season:"Available" },
-  { label:"Luki",                   value:"Luki",                   type:"ARC",      rarity:"Epic",      season:"Available" },
+  // ── LEGENDARY: S1 ADVENT WHEEL ──
+  { label:"Hua Mulan",         value:"Hua Mulan",         type:"ARC",      rarity:"Legendary", season:"S1 Wheel" },
+  { label:"Tribhuwana",        value:"Tribhuwana",        type:"SW/CAV",   rarity:"Legendary", season:"S1 Wheel" },
+  { label:"Yi Sun-Shin",       value:"Yi Sun-Shin",       type:"ARC",      rarity:"Legendary", season:"S1 Wheel" },
+  { label:"Josephine",         value:"Josephine",         type:"ARC/SW",   rarity:"Legendary", season:"S1 Wheel" },
+  // ── LEGENDARY: S2 ADVENT WHEEL ──
+  { label:"Lu Bu",             value:"Lu Bu",             type:"CAV",      rarity:"Legendary", season:"S2 Wheel" },
+  { label:"Attila the Hun",    value:"Attila the Hun",    type:"CAV/ARC",  rarity:"Legendary", season:"S2 Wheel" },
+  { label:"Hannibal",          value:"Hannibal",          type:"CAV",      rarity:"Legendary", season:"S2 Wheel" },
+  { label:"Belisarius",        value:"Belisarius",        type:"PIK/CAV",  rarity:"Legendary", season:"S2 Wheel" },
+  { label:"Justinian",         value:"Justinian",         type:"CAV",      rarity:"Legendary", season:"S2 Wheel" },
+  // ── LEGENDARY: TAVERN / EARLY EVENTS ──
+  { label:"Guan Yu",           value:"Guan Yu",           type:"CAV",      rarity:"Legendary", season:"Tavern" },
+  { label:"Joan of Arc",       value:"Joan of Arc",       type:"PIK",      rarity:"Legendary", season:"Tavern" },
+  { label:"Hammurabi",         value:"Hammurabi",         type:"SW",       rarity:"Legendary", season:"Tavern" },
+  { label:"Harald III",        value:"Harald III",        type:"CAV/SW",   rarity:"Legendary", season:"Tavern" },
+  { label:"Darius I",          value:"Darius I",          type:"PIK/CAV",  rarity:"Legendary", season:"Tavern" },
+  { label:"King Derek",        value:"King Derek",        type:"ARC/SW",   rarity:"Legendary", season:"Event (Giants Roar)" },
+  { label:"Henry IV",          value:"Henry IV",          type:"ARC",      rarity:"Legendary", season:"Event" },
+  { label:"Cleopatra",         value:"Cleopatra",         type:"CAV/SW",   rarity:"Legendary", season:"Tavern/Event" },
+  { label:"Diao Chan",         value:"Diao Chan",         type:"GATH",     rarity:"Legendary", season:"Tavern/Event" },
+  // ── LEGENDARY: VIP STORE (PAID) ──
+  { label:"Miyamoto Musashi",  value:"Miyamoto Musashi",  type:"SW",       rarity:"Legendary", season:"VIP (Paid)" },
+  { label:"King Arthur",       value:"King Arthur",       type:"CAV/SW",   rarity:"Mythical",  season:"VIP17 (Paid)" },
+  // ── LEGENDARY: S3+ NOT YET AVAILABLE ──
+  { label:"Yodit",             value:"Yodit",             type:"SW",       rarity:"Legendary", season:"S3 Wheel" },
+  { label:"Lagertha",          value:"Lagertha",          type:"SW",       rarity:"Legendary", season:"S3 Wheel" },
+  { label:"Boudica",           value:"Boudica",           type:"PIK",      rarity:"Legendary", season:"S3 Wheel" },
+  { label:"Bellevue",          value:"Bellevue",          type:"ARC",      rarity:"Legendary", season:"S3 Wheel" },
+  { label:"Timur",             value:"Timur",             type:"CAV/ARC",  rarity:"Legendary", season:"S3+ Event" },
+  { label:"Ramesses II",       value:"Ramesses II",       type:"SW/ARC",   rarity:"Legendary", season:"S3 MGE Event" },
+  { label:"Cyrus the Great",   value:"Cyrus the Great",   type:"PIK",      rarity:"Legendary", season:"S4 MGE Event" },
+  { label:"Mansa Musa",        value:"Mansa Musa",        type:"PIK",      rarity:"Legendary", season:"S4 Wheel" },
+  { label:"Vlad III",          value:"Vlad III",          type:"PIK",      rarity:"Legendary", season:"S4 Wheel" },
+  { label:"Theodora",          value:"Theodora",          type:"ARC/SW",   rarity:"Legendary", season:"S3+ Event" },
+  { label:"Constantine",       value:"Constantine",       type:"SW",       rarity:"Legendary", season:"S3+ Event" },
+  { label:"Mehmed II",         value:"Mehmed II",         type:"ARC/SW",   rarity:"Legendary", season:"S3+ Event" },
+  { label:"Saladin",           value:"Saladin",           type:"CAV/ARC",  rarity:"Legendary", season:"S3+ Event" },
+  { label:"El Cid",            value:"El Cid",            type:"CAV",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Ashoka",            value:"Ashoka",            type:"PIK/CAV",  rarity:"Legendary", season:"S3+ Event" },
+  { label:"Queen Seondeok",    value:"Queen Seondeok",    type:"ARC",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Suleiman",          value:"Suleiman",          type:"ARC",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Rani Durgavati",    value:"Rani Durgavati",    type:"CAV/ARC",  rarity:"Legendary", season:"S3+ Event" },
+  { label:"Octavian",          value:"Octavian",          type:"PIK",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Richard I",         value:"Richard I",         type:"PIK",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Leonidas",          value:"Leonidas",          type:"PIK",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Frederick Barbarossa",value:"Frederick Barbarossa",type:"PIK",  rarity:"Legendary", season:"S3+ Event" },
+  { label:"Julius Caesar",     value:"Julius Caesar",     type:"PIK/SW",   rarity:"Legendary", season:"S3+ Event" },
+  { label:"Ram Khamhaeng",     value:"Ram Khamhaeng",     type:"PIK",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Philip IV",         value:"Philip IV",         type:"SW",       rarity:"Legendary", season:"S3+ Event" },
+  { label:"Charlemagne",       value:"Charlemagne",       type:"ARC/SW",   rarity:"Legendary", season:"S3+ Event" },
+  { label:"Tomyris",           value:"Tomyris",           type:"SW",       rarity:"Legendary", season:"S3+ Event" },
+  { label:"Sun Tzu",           value:"Sun Tzu",           type:"SW",       rarity:"Legendary", season:"S3+ Event" },
+  { label:"Tariq / Khalid",    value:"Tariq",             type:"CAV",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Queen of Sheba",    value:"Queen of Sheba",    type:"PIK/CAV",  rarity:"Legendary", season:"S3+ Event" },
+  { label:"King David",        value:"King David",        type:"ARC/SW",   rarity:"Legendary", season:"S3+ Event" },
+  { label:"Yi Seong-Gye",      value:"Yi Seong-Gye",      type:"CAV",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Sejong the Great",  value:"Sejong the Great",  type:"CAV",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Cid",               value:"Cid",               type:"CAV",      rarity:"Legendary", season:"S3+ Event" },
+  { label:"Bushra",            value:"Bushra",            type:"PIK/CAV",  rarity:"Legendary", season:"S3+ Event" },
+  { label:"Oda Nobunaga",      value:"Oda Nobunaga",      type:"SW",       rarity:"Legendary", season:"S3+ Event" },
+  { label:"Toyotomi Hideyoshi",value:"Toyotomi Hideyoshi",type:"SW",       rarity:"Legendary", season:"Event" },
+  { label:"Tokugawa Ieyasu",   value:"Tokugawa Ieyasu",   type:"SW",       rarity:"Legendary", season:"Event" },
+  // ── EPIC HEROES ──
+  { label:"Wu Wei",            value:"Wu Wei",            type:"PIK",      rarity:"Epic",      season:"Available" },
+  { label:"Kaso",              value:"Kaso",              type:"CAV",      rarity:"Epic",      season:"Available" },
+  { label:"Li Daoxuan",        value:"Li Daoxuan",        type:"SW",       rarity:"Epic",      season:"Available" },
+  { label:"Thanius",           value:"Thanius",           type:"PIK",      rarity:"Epic",      season:"Available" },
+  { label:"Nino",              value:"Nino",              type:"SW",       rarity:"Epic",      season:"Available" },
+  { label:"Cui Ruyi",          value:"Cui Ruyi",          type:"ARC",      rarity:"Epic",      season:"Available" },
+  { label:"Gatos",             value:"Gatos",             type:"PIK",      rarity:"Epic",      season:"Available" },
+  { label:"Gao Meng",          value:"Gao Meng",          type:"SW",       rarity:"Epic",      season:"Available" },
+  { label:"Axel",              value:"Axel",              type:"CAV",      rarity:"Epic",      season:"Available" },
+  { label:"Baldassi",          value:"Baldassi",          type:"SW",       rarity:"Epic",      season:"Available" },
+  { label:"Clyde",             value:"Clyde",             type:"CAV",      rarity:"Epic",      season:"Available" },
+  { label:"Yuan Xia",          value:"Yuan Xia",          type:"ARC",      rarity:"Epic",      season:"Available" },
+  { label:"Leon",              value:"Leon",              type:"ARC",      rarity:"Epic",      season:"Available" },
+  { label:"Leo",               value:"Leo",               type:"PIK",      rarity:"Epic",      season:"Available" },
+  { label:"Luki",              value:"Luki",              type:"ARC",      rarity:"Epic",      season:"Available" },
+  { label:"Narses",            value:"Narses",            type:"CAV",      rarity:"Epic",      season:"Available" },
 ];
 
+const TYPE_ICON = { SW:"⚔", CAV:"🐴", PIK:"🪖", ARC:"🏹", GATH:"🌾" };
 const TYPE_LABEL = { SW:"Sword", CAV:"Cavalry", PIK:"Pike", ARC:"Archer", GATH:"Gather" };
 
 const MARCHES = [
@@ -428,6 +407,7 @@ function heroOptLabel(h) {
 }
 
 function buildHeroSelect(id) {
+  // Group by season/availability
   const groups = {};
   HEROES.forEach(h => {
     const g = h.rarity === 'Epic' ? 'Epic Heroes' : h.season;
@@ -436,39 +416,28 @@ function buildHeroSelect(id) {
   });
 
   const order = [
-    'S1 Wheel',
-    'S2 Wheel',
-    'Tavern',
-    'Event',
-    'VIP Store (Paid)',
-    'S3 Wheel (Arriving Soon)',
-    'S3 MGE Event (Arriving Soon)',
-    'S3 Event (Arriving Soon)',
-    'S4 Wheel',
-    'S4 MGE Event',
-    'S4+ Wheel',
-    'S4+ Event',
-    'S4+ MGE',
-    'S3+ Event',
-    'Epic Heroes',
+    'S1 Wheel','S2 Wheel','Tavern','Event (Giants Roar)','Event','Tavern/Event',
+    'VIP (Paid)','VIP17 (Paid)',
+    'S3 Wheel','S3 MGE Event','S4 MGE Event','S4 Wheel','S3+ Event','S3+ Wheel',
+    'Epic Heroes'
   ];
 
   const groupLabels = {
-    'S1 Wheel':                    '── S1 Advent Wheel ──',
-    'S2 Wheel':                    '── S2 Advent Wheel ──',
-    'Tavern':                      '── Tavern (Always Available) ──',
-    'Event':                       '── Events (S2 Available) ──',
-    'VIP Store (Paid)':            '── VIP Store (Paid) ──',
-    'S3 Wheel (Arriving Soon)':    '── S3 Wheel — Arriving ~4-6 Weeks ──',
-    'S3 MGE Event (Arriving Soon)':'── S3 MGE Event — Arriving Soon ──',
-    'S3 Event (Arriving Soon)':    '── S3 Events — Arriving Soon ──',
-    'S4 Wheel':                    '── S4 Wheel (Not Yet Available) ──',
-    'S4 MGE Event':                '── S4 MGE Event ──',
-    'S4+ Wheel':                   '── S4+ Wheel ──',
-    'S4+ Event':                   '── S4+ Events ──',
-    'S4+ MGE':                     '── S4+ MGE Events ──',
-    'S3+ Event':                   '── S3+ Events ──',
-    'Epic Heroes':                 '── Epic Heroes (C Tier — Always Available) ──',
+    'S1 Wheel':'── Legendary: S1 Advent Wheel ──',
+    'S2 Wheel':'── Legendary: S2 Advent Wheel ──',
+    'Tavern':'── Legendary: Tavern ──',
+    'Event (Giants Roar)':'── Legendary: Early Events ──',
+    'Event':'── Legendary: Events ──',
+    'Tavern/Event':'── Legendary: Tavern / Events ──',
+    'VIP (Paid)':'── Legendary: VIP Store (Paid) ──',
+    'VIP17 (Paid)':'── Legendary: VIP17 (Paid) ──',
+    'S3 Wheel':'── Legendary: S3+ Not Yet Available ──',
+    'S3 MGE Event':'── Legendary: S3 MGE Event ──',
+    'S4 MGE Event':'── Legendary: S4 MGE Event ──',
+    'S4 Wheel':'── Legendary: S4 Wheel ──',
+    'S3+ Event':'── Legendary: S3+ Events ──',
+    'S3+ Wheel':'── Legendary: S3+ Wheel ──',
+    'Epic Heroes':'── Epic Heroes ──',
   };
 
   let html = '<option value="">— None —</option>';
@@ -507,28 +476,21 @@ function buildUI() {
 
 function resetAll() {
   buildUI();
-  document.getElementById('placeholder').style.display = 'block';
+  document.getElementById('placeholder').style.display='block';
   document.getElementById('loadingState').classList.remove('visible');
   const r = document.getElementById('results');
-  r.classList.remove('visible');
-  r.innerHTML = '';
+  r.classList.remove('visible'); r.innerHTML='';
 }
 
 function getPayload() {
   return MARCHES.map(m => {
-    const heroes = SLOTS.map((slot, i) => {
+    const heroes = SLOTS.map((slot,i) => {
       const sel = document.getElementById(`${m.id}-${i}-hero`);
-      const lv  = document.getElementById(`${m.id}-${i}-level`);
+      const lv = document.getElementById(`${m.id}-${i}-level`);
       if (!sel || !sel.value) return null;
       const hero = HEROES.find(h => h.value === sel.value);
-      return {
-        slot,
-        name:   sel.value,
-        level:  lv?.value ? parseInt(lv.value) : null,
-        type:   hero?.type    || '',
-        rarity: hero?.rarity  || '',
-        season: hero?.season  || '',
-      };
+      return { slot, name: sel.value, level: lv?.value ? parseInt(lv.value) : null,
+               type: hero?.type || '', rarity: hero?.rarity || '', season: hero?.season || '' };
     }).filter(Boolean);
     return { march: m.id, label: m.label, heroes };
   }).filter(m => m.heroes.length > 0);
@@ -540,11 +502,59 @@ async function analyse() {
 
   const btn = document.getElementById('analyseBtn');
   btn.disabled = true;
-  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('placeholder').style.display='none';
   document.getElementById('results').classList.remove('visible');
   document.getElementById('loadingState').classList.add('visible');
 
-  const userMsg = `Analyse my AoEM formation (Season 2 server 371, TC25+, S3 arriving in ~4-6 weeks):\n\n` +
+  const SYSTEM = `You are AIGA, a strategic advisor for Age of Empires Mobile. Server is Season 2. Players are TC25+.
+
+SEASON AVAILABILITY — CRITICAL:
+S1 Advent Wheel: Hua Mulan, Tribhuwana, Yi Sun-Shin, Josephine
+S2 Advent Wheel: Lu Bu, Attila the Hun, Hannibal, Belisarius, Justinian
+Tavern (always): Guan Yu, Joan of Arc, Hammurabi, Harald III, Darius I, Cleopatra, Diao Chan
+Early Events: King Derek (Giants Roar), Henry IV, Cleopatra, Diao Chan
+VIP Store (paid): Miyamoto Musashi (VIP1/2), King Arthur (VIP17)
+S3+ NOT YET AVAILABLE: Yodit, Lagertha, Boudica, Bellevue, Timur, Ramesses, Cyrus, Mansa Musa, Vlad, Theodora, Constantine, Mehmed, Saladin, El Cid, Ashoka, Queen Seondeok, Suleiman, Rani Durgavati, Octavian, Richard I, Leonidas, Frederick Barbarossa, Julius Caesar, Ram Khamhaeng, Philip IV, Charlemagne, Tomyris, Sun Tzu, Tariq/Khalid, Queen of Sheba, King David, Yi Seong-Gye, Sejong, Cid, Bushra, Oda Nobunaga
+Epic Heroes (always available): Wu Wei, Kaso, Li Daoxuan, Thanius, Nino, Cui Ruyi, Gatos, Gao Meng, Axel, Baldassi, Clyde, Yuan Xia, Leon, Leo, Luki, Narses
+
+HERO TYPE CODES: SW=Swordsmen, CAV=Cavalry, PIK=Pikemen, ARC=Archer, GATH=Gathering only
+
+TOP S2 FORMATIONS:
+- Warrior Cavalry (BEST S2): Lu Bu [CAV] lead + Attila the Hun [CAV/ARC] + Guan Yu [CAV]. Dominant — Attila double attack triggers Lu Bu crits.
+- Warrior Swordsmen (VIP): Miyamoto [SW] + Tribhuwana [SW/CAV] + Hammurabi/King Derek [SW]
+- Tactical Pikeman: Belisarius [PIK/CAV] + Justinian [CAV] + support
+- Archer: Hua Mulan [ARC] + Yi Sun-Shin [ARC] + Attila/Josephine — viable S2, weakens S3
+- Gathering (M5): Diao Chan + Cleopatra + Darius. NEVER use these in combat lead.
+
+KEY RULES:
+- Heroes MUST match their march troop type. A cavalry hero in a swordsmen march is wrong unless they have dual type that includes swordsmen.
+- Tribhuwana is a SUPPORT — never march lead. She buffs the lead's activation chance.
+- Diao Chan, Cleopatra, Darius in combat lead = wrong (gathering heroes only).
+- Attila should be support/2IC not lead, unless no better option.
+- Epic heroes are weaker than legendaries — flag if an epic is in a key lead role where a legendary is available.
+- Heroes below lv40 cannot use Epic mounts — flag low level leads.
+- S3+ heroes flagged as not yet available if selected.
+
+SEASON LONGEVITY (S3+):
+CARRIES WELL: Lu Bu (still strong, gets Cyrus counter), Attila (timeless support), Miyamoto (grows stronger with S3 supports), Tribhuwana (core sword support), Belisarius (top pike S3+), Guan Yu (solid support)
+CARRIES PARTIALLY: Hua Mulan (archer meta weakens S3), Yi Sun-Shin (meta dependent), Josephine (gets outclassed), Harald III (replaced by better supports), Hammurabi (placeholder support), Justinian (situational)
+LIMITED: Joan of Arc (niche rally only), Darius (gathering only), Epic heroes (lower ceiling)
+
+RESPONSE FORMAT — return ONLY valid JSON, no markdown:
+{
+  "marches": [
+    {
+      "id": "M1",
+      "verdict": "SOLID" | "ADJUST" | "RETHINK",
+      "longevity": "CARRIES WELL" | "CARRIES PARTIALLY" | "LIMITED",
+      "longevity_note": "one sentence max 18 words",
+      "reasons": ["reason max 20 words", "reason max 20 words"]
+    }
+  ],
+  "priorities": ["action max 20 words", "action max 20 words", "action max 20 words"]
+}`;
+
+  const userMsg = `Analyse my AoEM formation (Season 2 server, TC25+):\n\n` +
     marches.map(m =>
       `${m.march} (${m.label}):\n` +
       m.heroes.map(h =>
@@ -552,18 +562,19 @@ async function analyse() {
       ).join('\n')
     ).join('\n\n');
 
-  // Railway endpoint — system prompt and API key live server-side
   try {
-    const res = await fetch('https://aiga-web-production.up.railway.app/analyse', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: userMsg }),
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 900,
+        system: SYSTEM,
+        messages: [{ role:'user', content: userMsg }]
+      })
     });
     const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    const raw   = data.result || '';
-    const match = raw.match(/\{[\s\S]*\}/);
-    const json  = JSON.parse(match ? match[0] : raw);
+    const raw = data.content?.find(b => b.type==='text')?.text || '';
+    const json = JSON.parse(raw.replace(/```json|```/g,'').trim());
     renderResults(json);
   } catch(err) {
     console.error(err);
@@ -573,26 +584,24 @@ async function analyse() {
       </div>`;
     document.getElementById('results').classList.add('visible');
   }
-
   document.getElementById('loadingState').classList.remove('visible');
   btn.disabled = false;
 }
 
 function renderResults(json) {
   const vMap = {
-    SOLID:   { cls:'tag-solid',   label:'&#10003; Solid' },
-    ADJUST:  { cls:'tag-adjust',  label:'~ Adjust' },
-    RETHINK: { cls:'tag-rethink', label:'&#10007; Rethink' },
+    SOLID:  {cls:'tag-solid',   label:'✓ Solid'},
+    ADJUST: {cls:'tag-adjust',  label:'~ Adjust'},
+    RETHINK:{cls:'tag-rethink', label:'✗ Rethink'},
   };
   const lMap = {
-    'CARRIES WELL':     { cls:'tag-lon-well',    label:'&#8593; S3+' },
-    'CARRIES PARTIALLY':{ cls:'tag-lon-partial', label:'~ S3+' },
-    'LIMITED':          { cls:'tag-lon-limited', label:'&#8595; S3+' },
+    'CARRIES WELL':    {cls:'tag-lon-well',    label:'↑ S3+'},
+    'CARRIES PARTIALLY':{cls:'tag-lon-partial',label:'~ S3+'},
+    'LIMITED':         {cls:'tag-lon-limited', label:'↓ S3+'},
   };
-
   let html = '';
-  (json.marches || []).forEach(m => {
-    const v = vMap[m.verdict]   || vMap.ADJUST;
+  (json.marches||[]).forEach(m => {
+    const v = vMap[m.verdict] || vMap.ADJUST;
     const l = lMap[m.longevity] || lMap['CARRIES PARTIALLY'];
     html += `
       <div class="march-result">
@@ -602,18 +611,16 @@ function renderResults(json) {
           <span class="tag ${l.cls}">${l.label}</span>
         </div>
         ${m.longevity_note ? `<div class="lon-note">${m.longevity_note}</div>` : ''}
-        <ul class="reasons">${(m.reasons || []).map(r => `<li>${r}</li>`).join('')}</ul>
+        <ul class="reasons">${(m.reasons||[]).map(r=>`<li>${r}</li>`).join('')}</ul>
       </div>`;
   });
-
-  if ((json.priorities || []).length) {
+  if ((json.priorities||[]).length) {
     html += `
       <div class="priority-box">
-        <div class="priority-title">&#9876; Priority Actions</div>
-        <ol class="priority-list">${json.priorities.map(p => `<li>${p}</li>`).join('')}</ol>
+        <div class="priority-title">⚔ Priority Actions</div>
+        <ol class="priority-list">${json.priorities.map(p=>`<li>${p}</li>`).join('')}</ol>
       </div>`;
   }
-
   const results = document.getElementById('results');
   results.innerHTML = html;
   results.classList.add('visible');
