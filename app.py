@@ -17,7 +17,7 @@ from flask_cors import CORS
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
 CLAUDE_MODEL  = "claude-sonnet-4-20250514"
-MAX_TOKENS    = 800
+MAX_TOKENS    = 1200
 TEMPERATURE   = 0.3
 MAX_INPUT_LEN = 8000
 CONTEXT_TURNS = 10       # message pairs kept per session
@@ -244,15 +244,40 @@ def prune_sessions():
 # ─── Flask App ────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
-CORS(app, origins=ALLOWED_ORIGINS)
+CORS(
+    app,
+    origins=ALLOWED_ORIGINS,
+    methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+    supports_credentials=False,
+    max_age=86400
+)
 
 anthropic_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+
+
+@app.after_request
+def add_cors(response):
+    """Belt-and-suspenders CORS — ensures headers on every response including OPTIONS."""
+    origin = request.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"]  = origin
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        response.headers["Access-Control-Max-Age"]       = "86400"
+    return response
 
 # ─── Routes ───────────────────────────────────────────────────────────────────
 
 @app.route("/health")
 def health():
     return jsonify({"status": "ok"})
+
+
+@app.route("/ping", methods=["GET", "OPTIONS"])
+def ping():
+    """Lightweight connectivity check — no Claude call."""
+    return jsonify({"pong": True})
 
 
 @app.route("/")
@@ -288,6 +313,7 @@ def analyse():
 @app.route("/chat", methods=["POST"])
 def chat():
     """Main AIGA chat endpoint. Stateful per session_id."""
+
     prune_sessions()
 
     try:
