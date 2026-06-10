@@ -270,6 +270,9 @@
   #aiga-widget .aw-mount-grid{grid-template-columns:1fr;}
 }
 @media(prefers-reduced-motion:reduce){#aiga-widget .aw-dot{animation:none;opacity:.5;}}
+#aiga-widget select.aw-off-meta,#aiga-widget input.aw-off-meta{
+  border-color:#cc8844!important;background-color:rgba(204,136,68,.06)!important;}
+#aiga-widget .aw-off-meta-label::after{content:" ⚠";color:#cc8844;font-size:9px;}
 </style>
 
 <div id="aiga-widget">
@@ -352,81 +355,138 @@ function md(t){return DOMPurify.sanitize(marked.parse(t));}
 
 // ── HERO META ──────────────────────────────────────────────────────────────
 const HERO_META = [
-  {name:"Hua Mulan",type:"ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"Flying Swallow",skill2:"Starchaser",skills:["Armor Piercer","Infuriation","Act of Mercy","Double Attack","Furious Charge","Weak Spot Attack"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Attila the Hun",type:"CAV/ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"Nomadic Strength",skill2:"Annihilator",skills:["Armor Piercer","Infuriation","Act of Mercy","Weak Spot Attack","Warrior's Hymn","Critical Insight"],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Josephine",type:"ARC/SW",rarity:"Legendary",season:"S1 Wheel",skill1:"Steel Rose",skill2:"Warcry",skills:["Sunder","Infuriation","Siege Breaker","Double Attack","Protracted Battle","Weak Spot Attack"],ring:"Ring of Tulip",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Tribhuwana",type:"SW/CAV",rarity:"Legendary",season:"S1 Wheel",skill1:"Ode to Java",skill2:"Ode to Java",skills:["Shield Slam","Crashing Boulder","Peerless Strike","Earth Crush","High Spirit","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Valor"},
-  {name:"Yi Sun-Shin",type:"ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"",skill2:"",skills:[],ring:"Ring of Tulip",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Sun Tzu",type:"SW",rarity:"Legendary",season:"S1 Wheel",skill1:"Strategy Cuts Deeper",skill2:"The Way of War",skills:["Deception","Boulder Trap","Ultimate Strategy","High Spirit","Flash of Inspiration","Strategy Master's Gift"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond"},
-  {name:"Miyamoto Musashi",type:"SW",rarity:"Legendary",season:"VIP (Paid)",skill1:"Flash of Yang",skill2:"Moment of Yin",skills:["Shield Slam","Crashing Boulder","Earth Crush","Peerless Strike","High Spirit","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"King Arthur",type:"CAV/SW",rarity:"Mythical",season:"VIP17 (Paid)",skill1:"Glory of Knight",skill2:"Sword of Radiance",skills:["Crashing Boulder","Infuriation","Spirited Pursuit","Peerless Strike","High Spirit","Furious Charge"],ring:"Skyward Knight",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Guan Yu",type:"CAV",rarity:"Legendary",season:"Tavern",skill1:"Dragon Blade",skill2:"Gallantry",skills:["Infuriation","Armor Piercer","Fatal Blow","Weak Spot Attack","Berserker","Critical Insight"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Diao Chan",type:"GATH",rarity:"Legendary",season:"Tavern",skill1:"Diao Chan's Dance",skill2:"Silk Road",skills:["Efficient Harvest","Supplies Transportation"],ring:"Ring of Sunflower",mount_temp:"Protective",mount_trait:"Renewal"},
-  {name:"Darius the Great",type:"PIK/CAV",rarity:"Legendary",season:"Tavern",skill1:"Ironclade Blitz",skill2:"Conquest",skills:["Efficient Harvest","Sunder","Supplies Transportation","Spirited Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Violet",mount_temp:"Protective",mount_trait:"Renewal"},
-  {name:"Cleopatra",type:"CAV/SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Efficient Harvest","Supplies Transportation"],ring:"Ring of Violet",mount_temp:"Protective",mount_trait:"Renewal"},
-  {name:"Sejong the Great",type:"CAV",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Peaceful Haven","Tenacity","Protracted Battle"],ring:"Ring of Boar",mount_temp:"Protective",mount_trait:"Lifesaver"},
-  {name:"Joan of Arc",type:"PIK",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution"],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Hammurabi",type:"SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Valor"},
-  {name:"Harald III",type:"CAV/SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Valor"},
-  {name:"Lu Bu",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"One of a Kind General",skill2:"Unrivaled Prowess",skills:["Armor Piercer","Infuriation","Spirited Pursuit","Weak Spot Attack","Ripper Tiger","Critical Insight"],ring:"Ring of Daisy",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Yodit",type:"SW",rarity:"Legendary",season:"S2 Wheel",skill1:"Wrath Forged Blade",skill2:"Shadow of Terror",skills:["Shield Slam","Crashing Boulder","Peerless Strike","Battle Roar","Executor","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Hannibal",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Surprise Victory",skill2:"Peerless",skills:["Sowing Discord","Infuriation","Tactical Pursuit","Double Attack","Crushing Impact","Weak Spot Attack"],ring:"Ring of Crow",mount_temp:"Alert",mount_trait:"Spiritbond"},
-  {name:"Justinian the Great",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Envoy Of Peace",skill2:"Defensive Assault",skills:["Sowing Discord","Prayer For Harvest","War Tactic","Peaceful Haven","Protracted Battle","Crushing Impact"],ring:"Ring of Falcon",mount_temp:"Protective",mount_trait:"Lifesaver"},
-  {name:"Belisarius",type:"PIK/CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Eternal Eagle Flag",skill2:"The Last Romans",skills:["Sowing Discord","Suppression","Crushing Impact","Tactical Pursuit","Conquering Iron Hoof","Double Attack"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Battlemaster"},
-  {name:"Bellevue",type:"ARC",rarity:"Legendary",season:"S2 Wheel",skill1:"Imminent Tempest",skill2:"Black Tide",skills:["Armor Piercer","Infuriation","Act of Mercy","Weak Spot Attack","Pay in Blood","Dark Flag"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Theodora",type:"ARC/SW",rarity:"Legendary",season:"S2 Event",skill1:"Taking the Purple",skill2:"Dynastic Co-Rule",skills:["Suppression","Maneuver","War Tactic","Conflagration","Ultimate Strategy","Immortal Army"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond"},
-  {name:"Suleiman",type:"ARC",rarity:"Legendary",season:"S2 Event",skill1:"Law of Kanus",skill2:"Magnificent Conquest",skills:["Blaze Impact","Deception","Conflagration","Ultimate Strategy","Flash of Inspiration","Strategy Master's Gift"],ring:"Everflame Wings",mount_temp:"Alert",mount_trait:"Spiritbond"},
-  {name:"Leonidas I",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Firm Strike",skill2:"Unyielding Soul",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution","King's Blade","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Richard I",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Surmount",skill2:"Lionheart",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution","Forceful Retaliation","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Ram Khamhaeng",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Valor of Rama",skill2:"Splendor of Sukhothai",skills:["Fortification","Prayer for Harvest","Tenacity","Peaceful Haven","Savage","War Elephant"],ring:"Ring of Steed",mount_temp:"Protective",mount_trait:"Lifesaver"},
-  {name:"Octavian",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Accumulated Power",skill2:"Might of Ruler",skills:["Formation Attack","Change of Formation","King's Blade","Triple Offensive","Coordination","Whirlwind Sweep"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Julius Caesar",type:"PIK/SW",rarity:"Legendary",season:"S2 Event",skill1:"Triumphant Return",skill2:"Crownless King",skills:["Formation Attack","Change of Formation","King's Blade","Savage","Whirlwind Sweep","Coordination"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"El Cid",type:"CAV",rarity:"Legendary",season:"S2 Event",skill1:"Anthem of the Knight",skill2:"Patriotism",skills:["Armor Piercer","Infuriation","Roar of Victory","Double Attack","Furious Charge","Weak Spot Attack"],ring:"Ring of Night Wolf",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Robin Hood",type:"CAV",rarity:"Legendary",season:"S2 Event",skill1:"Forest Phantom",skill2:"Merry Companion",skills:["Armor Piercer","Fortification","Peaceful Haven","Pay in Blood","Protracted Battle","Righteous Judgement"],ring:"Ring of Falcon",mount_temp:"Protective",mount_trait:"Lifesaver"},
-  {name:"Rani Durgavati",type:"CAV/ARC",rarity:"Legendary",season:"S2 Event",skill1:"Blade of Gondwana",skill2:"Warrior Queen",skills:["Sunder","Armor Piercer","Bloodthirst","Spirited Pursuit","King's Blade","Warrior's Hymn"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Gallant"},
-  {name:"Ashoka",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Roar of Victory","Formation Attack","Change of Formation"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Frederick Barbarossa",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Philip IV",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Strategy Master's Gift","High Spirit","Ultimate Strategy"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond"},
-  {name:"Saladin",type:"CAV/ARC",rarity:"Legendary",season:"S3 Event",skill1:"Triple Clash",skill2:"Fury Of the Sands",skills:["Fervor","Enraged Strike","War Tactic","Tactical Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Night Wolf",mount_temp:"Fearless",mount_trait:"Army Sunder"},
-  {name:"Constantine",type:"SW",rarity:"Legendary",season:"S2 Event (VIP12)",skill1:"",skill2:"",skills:["Shield Slam","Crashing Boulder","Peerless Strike"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Bastion"},
-  {name:"Tomyris",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Bushra",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Boar",mount_temp:"Protective",mount_trait:"Lifesaver"},
-  {name:"Oda Nobunaga",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Toyotomi Hideyoshi",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Tokugawa Ieyasu",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Mansa Musa",type:"PIK",rarity:"Legendary",season:"S3 Wheel",skill1:"Spend a Fortune",skill2:"Devout Radiance",skills:["Vigilance","Mettle","Golden Odyssey","Fearless Retribution","Tenacity","King's Blade"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Charlemagne",type:"ARC/SW",rarity:"Legendary",season:"S3 Wheel",skill1:"Imperial Majesty",skill2:"Starchaser",skills:["Blaze Impact","Sowing Discord","War Tactic","Conflagration","Bloodthirst","Earth Crush"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond"},
-  {name:"Boudica",type:"PIK",rarity:"Legendary",season:"S3 Wheel",skill1:"Sawtooth Pike",skill2:"Swift Reprisal",skills:["Counterattack","Vigilance","Tenacity","King's Blade","Forceful Retaliation","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Ramesses II",type:"SW/ARC",rarity:"Legendary",season:"S3 MGE Event",skill1:"Son of Ra",skill2:"Storms of Set",skills:["Deception","Suppression","Flame of Genesis","Ultimate Strategy","High Spirit","Strategy Master's Gift"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond"},
-  {name:"Mehmed II",type:"ARC/SW",rarity:"Legendary",season:"S3 Event",skill1:"Sultan Caesar",skill2:"Fatih",skills:["Crashing Boulder","Sunder","Owl's Lament","Peaceful Haven","Bloodthirst","King's Blade"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Valor"},
-  {name:"Zhuge Liang",type:"SW/ARC",rarity:"Legendary",season:"S3 Event",skill1:"Stone Sentinel Maze",skill2:"Miracle of Qimen",skills:["Suppression","Sowing Discord","Conflagration","Borrowing the East Wind","War Tactic","Peaceful Haven"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Battlemaster"},
-  {name:"Lagertha",type:"SW",rarity:"Legendary",season:"S4 Wheel",skill1:"Berserker's Shield Dance",skill2:"Valkyrie's Edge",skills:["Shield Slam","Crashing Boulder","Bloodthirst","Peerless Strike","Raging Bloodline","High Spirit"],ring:"Lord of Eastern Heavens",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Timur",type:"CAV/ARC",rarity:"Legendary",season:"S4 MGE Event",skill1:"Exotic Cavalry",skill2:"Annihilation Blade",skills:["Armor Piercer","Infuriation","Tempered Steel","Critical Insight","Weak Spot Attack","Spirited Pursuit"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Cyrus the Great",type:"PIK",rarity:"Legendary",season:"S4 Event",skill1:"Isolated Green Vine",skill2:"King of the World",skills:["Counterattack","Vigilance","Fearless Retribution","Forceful Retaliation","Child of Prophecy","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Elizabeth I",type:"PIK",rarity:"Legendary",season:"S4 Event",skill1:"The Glorious Queen",skill2:"Golden Age",skills:["Sowing Discord","Suppression","Tudor Rose","Ultimate Strategy","Crushing Impact","Triple Offensive"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond"},
-  {name:"Vlad the Impaler",type:"PIK/CAV",rarity:"Legendary",season:"S4 Event",skill1:"King's Edict",skill2:"Dragon's Vigor",skills:["Counterattack","Vigilance","Deadly Dragonthron","Battle Roar","Whirlwind Sweep","Forceful Retaliation"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Otto",type:"CAV/PIK",rarity:"Legendary",season:"S5 Event",skill1:"Sacred Coronation",skill2:"Imperial Privilege",skills:["Formation Attack","Change of Formation","Holy Roman Empire","Savage","War Elephant","Furious Charge"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Gao Meng",type:"SW",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Wu Wei",type:"PIK",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
-  {name:"Kaso",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Yuan Xia",type:"ARC",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Axel",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Narses",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Nino",type:"SW",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
-  {name:"Luki",type:"ARC",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Overpower"},
-  {name:"Leo",type:"PIK",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker"}
+  {name:"Hua Mulan",type:"ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"Flying Swallow",skill2:"Starchaser",skills:["Armor Piercer","Infuriation","Act of Mercy","Double Attack","Furious Charge","Weak Spot Attack"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Weak Spot Attack",skill4_rec:"Double Attack"},
+  {name:"Attila the Hun",type:"CAV/ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"Nomadic Strength",skill2:"Annihilator",skills:["Armor Piercer","Infuriation","Act of Mercy","Weak Spot Attack","Warrior's Hymn","Critical Insight"],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Weak Spot Attack",skill4_rec:"Act of Mercy"},
+  {name:"Josephine",type:"ARC/SW",rarity:"Legendary",season:"S1 Wheel",skill1:"Steel Rose",skill2:"Warcry",skills:["Sunder","Infuriation","Siege Breaker","Double Attack","Protracted Battle","Weak Spot Attack"],ring:"Ring of Tulip",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Weak Spot Attack",skill4_rec:"Double Attack"},
+  {name:"Tribhuwana",type:"SW/CAV",rarity:"Legendary",season:"S1 Wheel",skill1:"Ode to Java",skill2:"Ode to Java",skills:["Shield Slam","Crashing Boulder","Peerless Strike","Earth Crush","High Spirit","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Valor",skill3_rec:"High Spirit",skill4_rec:"Furious Charge"},
+  {name:"Yi Sun-Shin",type:"ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"",skill2:"",skills:[],ring:"Ring of Tulip",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
+  {name:"Sun Tzu",type:"SW",rarity:"Legendary",season:"S1 Wheel",skill1:"Strategy Cuts Deeper",skill2:"The Way of War",skills:["Deception","Boulder Trap","Ultimate Strategy","High Spirit","Flash of Inspiration","Strategy Master's Gift"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Flash of Inspiration",skill4_rec:"Strategy Master's Gift"},
+  {name:"Miyamoto Musashi",type:"SW",rarity:"Legendary",season:"VIP (Paid)",skill1:"Flash of Yang",skill2:"Moment of Yin",skills:["Shield Slam","Crashing Boulder","Earth Crush","Peerless Strike","High Spirit","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Earth Crush",skill4_rec:"Furious Charge"},
+  {name:"King Arthur",type:"CAV/SW",rarity:"Mythical",season:"VIP17 (Paid)",skill1:"Glory of Knight",skill2:"Sword of Radiance",skills:["Crashing Boulder","Infuriation","Spirited Pursuit","Peerless Strike","High Spirit","Furious Charge"],ring:"Skyward Knight",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"High Spirit",skill4_rec:"Furious Charge"},
+  {name:"Guan Yu",type:"CAV",rarity:"Legendary",season:"Tavern",skill1:"Dragon Blade",skill2:"Gallantry",skills:["Infuriation","Armor Piercer","Fatal Blow","Weak Spot Attack","Berserker","Critical Insight"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Critical Insight",skill4_rec:"Weak Spot Attack"},
+  {name:"Diao Chan",type:"GATH",rarity:"Legendary",season:"Tavern",skill1:"Diao Chan's Dance",skill2:"Silk Road",skills:["Efficient Harvest","Supplies Transportation"],ring:"Ring of Sunflower",mount_temp:"Protective",mount_trait:"Renewal",skill3_rec:"Efficient Harvest",skill4_rec:"Supplies Transportation"},
+  {name:"Darius the Great",type:"PIK/CAV",rarity:"Legendary",season:"Tavern",skill1:"Ironclade Blitz",skill2:"Conquest",skills:["Efficient Harvest","Sunder","Supplies Transportation","Spirited Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Violet",mount_temp:"Protective",mount_trait:"Renewal",skill3_rec:"Efficient Harvest",skill4_rec:"Supplies Transportation"},
+  {name:"Cleopatra",type:"CAV/SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Efficient Harvest","Supplies Transportation"],ring:"Ring of Violet",mount_temp:"Protective",mount_trait:"Renewal",skill3_rec:"Efficient Harvest",skill4_rec:"Supplies Transportation"},
+  {name:"Sejong the Great",type:"CAV",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Peaceful Haven","Tenacity","Protracted Battle"],ring:"Ring of Boar",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"Tenacity",skill4_rec:"Peaceful Haven"},
+  {name:"Joan of Arc",type:"PIK",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution"],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Counterattack",skill4_rec:"Vigilance"},
+  {name:"Hammurabi",type:"SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Valor",skill3_rec:"",skill4_rec:""},
+  {name:"Harald III",type:"CAV/SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Valor",skill3_rec:"",skill4_rec:""},
+  {name:"Lu Bu",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"One of a Kind General",skill2:"Unrivaled Prowess",skills:["Armor Piercer","Infuriation","Spirited Pursuit","Weak Spot Attack","Ripper Tiger","Critical Insight"],ring:"Ring of Daisy",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Weak Spot Attack",skill4_rec:"Critical Insight"},
+  {name:"Yodit",type:"SW",rarity:"Legendary",season:"S2 Wheel",skill1:"Wrath Forged Blade",skill2:"Shadow of Terror",skills:["Shield Slam","Crashing Boulder","Peerless Strike","Battle Roar","Executor","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Executor",skill4_rec:"Battle Roar"},
+  {name:"Hannibal",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Surprise Victory",skill2:"Peerless",skills:["Sowing Discord","Infuriation","Tactical Pursuit","Double Attack","Crushing Impact","Weak Spot Attack"],ring:"Ring of Crow",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Crushing Impact",skill4_rec:"Double Attack"},
+  {name:"Justinian the Great",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Envoy Of Peace",skill2:"Defensive Assault",skills:["Sowing Discord","Prayer For Harvest","War Tactic","Peaceful Haven","Protracted Battle","Crushing Impact"],ring:"Ring of Falcon",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"War Tactic",skill4_rec:"Crushing Impact"},
+  {name:"Belisarius",type:"PIK/CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Eternal Eagle Flag",skill2:"The Last Romans",skills:["Sowing Discord","Suppression","Crushing Impact","Tactical Pursuit","Conquering Iron Hoof","Double Attack"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Battlemaster",skill3_rec:"Conquering Iron Hoof",skill4_rec:"Double Attack"},
+  {name:"Bellevue",type:"ARC",rarity:"Legendary",season:"S2 Wheel",skill1:"Imminent Tempest",skill2:"Black Tide",skills:["Armor Piercer","Infuriation","Act of Mercy","Weak Spot Attack","Pay in Blood","Dark Flag"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Weak Spot Attack",skill4_rec:"Dark Flag"},
+  {name:"Theodora",type:"ARC/SW",rarity:"Legendary",season:"S2 Event",skill1:"Taking the Purple",skill2:"Dynastic Co-Rule",skills:["Suppression","Maneuver","War Tactic","Conflagration","Ultimate Strategy","Immortal Army"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"War Tactic",skill4_rec:"Conflagration"},
+  {name:"Suleiman",type:"ARC",rarity:"Legendary",season:"S2 Event",skill1:"Law of Kanus",skill2:"Magnificent Conquest",skills:["Blaze Impact","Deception","Conflagration","Ultimate Strategy","Flash of Inspiration","Strategy Master's Gift"],ring:"Everflame Wings",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Conflagration",skill4_rec:"Strategy Master's Gift"},
+  {name:"Leonidas I",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Firm Strike",skill2:"Unyielding Soul",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution","King's Blade","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Fearless Retribution",skill4_rec:"Whirlwind Sweep"},
+  {name:"Richard I",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Surmount",skill2:"Lionheart",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution","Forceful Retaliation","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Forceful Retaliation",skill4_rec:"Whirlwind Sweep"},
+  {name:"Ram Khamhaeng",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Valor of Rama",skill2:"Splendor of Sukhothai",skills:["Fortification","Prayer for Harvest","Tenacity","Peaceful Haven","Savage","War Elephant"],ring:"Ring of Steed",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"Savage",skill4_rec:"War Elephant"},
+  {name:"Octavian",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Accumulated Power",skill2:"Might of Ruler",skills:["Formation Attack","Change of Formation","King's Blade","Triple Offensive","Coordination","Whirlwind Sweep"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"King's Blade",skill4_rec:"Whirlwind Sweep"},
+  {name:"Julius Caesar",type:"PIK/SW",rarity:"Legendary",season:"S2 Event",skill1:"Triumphant Return",skill2:"Crownless King",skills:["Formation Attack","Change of Formation","King's Blade","Savage","Whirlwind Sweep","Coordination"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Savage",skill4_rec:"King's Blade"},
+  {name:"El Cid",type:"CAV",rarity:"Legendary",season:"S2 Event",skill1:"Anthem of the Knight",skill2:"Patriotism",skills:["Armor Piercer","Infuriation","Roar of Victory","Double Attack","Furious Charge","Weak Spot Attack"],ring:"Ring of Night Wolf",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Roar of Victory",skill4_rec:"Double Attack"},
+  {name:"Robin Hood",type:"CAV",rarity:"Legendary",season:"S2 Event",skill1:"Forest Phantom",skill2:"Merry Companion",skills:["Armor Piercer","Fortification","Peaceful Haven","Pay in Blood","Protracted Battle","Righteous Judgement"],ring:"Ring of Falcon",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"Protracted Battle",skill4_rec:"Peaceful Haven"},
+  {name:"Rani Durgavati",type:"CAV/ARC",rarity:"Legendary",season:"S2 Event",skill1:"Blade of Gondwana",skill2:"Warrior Queen",skills:["Sunder","Armor Piercer","Bloodthirst","Spirited Pursuit","King's Blade","Warrior's Hymn"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Gallant",skill3_rec:"King's Blade",skill4_rec:"Warrior's Hymn"},
+  {name:"Ashoka",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Roar of Victory","Formation Attack","Change of Formation"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Roar of Victory",skill4_rec:"Formation Attack"},
+  {name:"Frederick Barbarossa",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Tenacity",skill4_rec:"Fearless Retribution"},
+  {name:"Philip IV",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Strategy Master's Gift","High Spirit","Ultimate Strategy"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Strategy Master's Gift",skill4_rec:"High Spirit"},
+  {name:"Saladin",type:"CAV/ARC",rarity:"Legendary",season:"S3 Event",skill1:"Triple Clash",skill2:"Fury Of the Sands",skills:["Fervor","Enraged Strike","War Tactic","Tactical Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Night Wolf",mount_temp:"Fearless",mount_trait:"Army Sunder",skill3_rec:"Roar of Victory",skill4_rec:"Weak Spot Attack"},
+  {name:"Constantine",type:"SW",rarity:"Legendary",season:"S2 Event (VIP12)",skill1:"",skill2:"",skills:["Shield Slam","Crashing Boulder","Peerless Strike"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Bastion",skill3_rec:"Crashing Boulder",skill4_rec:"Peerless Strike"},
+  {name:"Tomyris",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
+  {name:"Bushra",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Boar",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"",skill4_rec:""},
+  {name:"Oda Nobunaga",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
+  {name:"Toyotomi Hideyoshi",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
+  {name:"Tokugawa Ieyasu",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
+  {name:"Mansa Musa",type:"PIK",rarity:"Legendary",season:"S3 Wheel",skill1:"Spend a Fortune",skill2:"Devout Radiance",skills:["Vigilance","Mettle","Golden Odyssey","Fearless Retribution","Tenacity","King's Blade"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Golden Odyssey",skill4_rec:"Fearless Retribution"},
+  {name:"Charlemagne",type:"ARC/SW",rarity:"Legendary",season:"S3 Wheel",skill1:"Imperial Majesty",skill2:"Starchaser",skills:["Blaze Impact","Sowing Discord","War Tactic","Conflagration","Bloodthirst","Earth Crush"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"War Tactic",skill4_rec:"Conflagration"},
+  {name:"Boudica",type:"PIK",rarity:"Legendary",season:"S3 Wheel",skill1:"Sawtooth Pike",skill2:"Swift Reprisal",skills:["Counterattack","Vigilance","Tenacity","King's Blade","Forceful Retaliation","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"King's Blade",skill4_rec:"Forceful Retaliation"},
+  {name:"Ramesses II",type:"SW/ARC",rarity:"Legendary",season:"S3 MGE Event",skill1:"Son of Ra",skill2:"Storms of Set",skills:["Deception","Suppression","Flame of Genesis","Ultimate Strategy","High Spirit","Strategy Master's Gift"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Flame of Genesis",skill4_rec:"High Spirit"},
+  {name:"Mehmed II",type:"ARC/SW",rarity:"Legendary",season:"S3 Event",skill1:"Sultan Caesar",skill2:"Fatih",skills:["Crashing Boulder","Sunder","Owl's Lament","Peaceful Haven","Bloodthirst","King's Blade"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Valor",skill3_rec:"Owl's Lament",skill4_rec:"Peaceful Haven"},
+  {name:"Zhuge Liang",type:"SW/ARC",rarity:"Legendary",season:"S3 Event",skill1:"Stone Sentinel Maze",skill2:"Miracle of Qimen",skills:["Suppression","Sowing Discord","Conflagration","Borrowing the East Wind","War Tactic","Peaceful Haven"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Battlemaster",skill3_rec:"Borrowing the East Wind",skill4_rec:"War Tactic"},
+  {name:"Lagertha",type:"SW",rarity:"Legendary",season:"S4 Wheel",skill1:"Berserker's Shield Dance",skill2:"Valkyrie's Edge",skills:["Shield Slam","Crashing Boulder","Bloodthirst","Peerless Strike","Raging Bloodline","High Spirit"],ring:"Lord of Eastern Heavens",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Raging Bloodline",skill4_rec:"High Spirit"},
+  {name:"Timur",type:"CAV/ARC",rarity:"Legendary",season:"S4 MGE Event",skill1:"Exotic Cavalry",skill2:"Annihilation Blade",skills:["Armor Piercer","Infuriation","Tempered Steel","Critical Insight","Weak Spot Attack","Spirited Pursuit"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Weak Spot Attack",skill4_rec:"Tempered Steel"},
+  {name:"Cyrus the Great",type:"PIK",rarity:"Legendary",season:"S4 Event",skill1:"Isolated Green Vine",skill2:"King of the World",skills:["Counterattack","Vigilance","Fearless Retribution","Forceful Retaliation","Child of Prophecy","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Forceful Retaliation",skill4_rec:"Child of Prophecy"},
+  {name:"Elizabeth I",type:"PIK",rarity:"Legendary",season:"S4 Event",skill1:"The Glorious Queen",skill2:"Golden Age",skills:["Sowing Discord","Suppression","Tudor Rose","Ultimate Strategy","Crushing Impact","Triple Offensive"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Tudor Rose",skill4_rec:"Crushing Impact"},
+  {name:"Vlad the Impaler",type:"PIK/CAV",rarity:"Legendary",season:"S4 Event",skill1:"King's Edict",skill2:"Dragon's Vigor",skills:["Counterattack","Vigilance","Deadly Dragonthron","Battle Roar","Whirlwind Sweep","Forceful Retaliation"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Deadly Dragonthron",skill4_rec:"Whirlwind Sweep"},
+  {name:"Otto",type:"CAV/PIK",rarity:"Legendary",season:"S5 Event",skill1:"Sacred Coronation",skill2:"Imperial Privilege",skills:["Formation Attack","Change of Formation","Holy Roman Empire","Savage","War Elephant","Furious Charge"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Holy Roman Empire",skill4_rec:"Furious Charge"},
+  {name:"Gao Meng",type:"SW",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
+  {name:"Wu Wei",type:"PIK",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"",skill4_rec:""},
+  {name:"Kaso",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
+  {name:"Yuan Xia",type:"ARC",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
+  {name:"Axel",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
+  {name:"Narses",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
+  {name:"Nino",type:"SW",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
+  {name:"Luki",type:"ARC",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
+  {name:"Leo",type:"PIK",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"",skill4_rec:""}
 ];
 const HERO_BY_NAME = {};
 HERO_META.forEach(h => { HERO_BY_NAME[h.name] = h; });
 
 // ── GEAR META ─────────────────────────────────────────────────────────────
 const GEAR_META = {
-  Sword:   {Head:"Blazing Heart (L)",Hands:"Flowing Force (L)",Body:"Infinite Land (L)",Legs:"Shadowless Wind (L)"},
-  Pike:    {Head:"Power of Abyss (L)",Hands:"Ring of Chaos (L)",Body:"Master of Death (L)",Legs:"Nightmare Boots (L)"},
-  Cavalry: {Head:"Divine Crown (L)",Hands:"Contract of Light (L)",Body:"Omniscience (L)",Legs:"Dust-Free Boots (L)"},
-  Archer:  {Head:"Fiery Sun (L)",Hands:"Embrace of Effulgence (L)",Body:"Eternal Flare (L)",Legs:"Dawnbreak Boots (L)"},
-  Gathering:{Head:"",Hands:"",Body:"",Legs:""}
+  Sword:{
+    Head:[{n:"Blazing Heart",r:"L"},{n:"Laurel Crown",r:"E"},{n:"Linen Kerchief",r:"R"}],
+    Hands:[{n:"Flowing Force",r:"L"},{n:"Star Handguards",r:"E"},{n:"Sennit Bracer",r:"R"}],
+    Body:[{n:"Infinite Land",r:"L"},{n:"Silver Chest Armor",r:"E"},{n:"Wornout Armor",r:"R"}],
+    Legs:[{n:"Shadowless Wind",r:"L"},{n:"Shadow Light Boots",r:"E"},{n:"Wanderer's Boots",r:"R"}]
+  },
+  Pike:{
+    Head:[{n:"Power of Abyss",r:"L"},{n:"Plume Hat",r:"E"},{n:"Simple Straw Hat",r:"R"}],
+    Hands:[{n:"Ring of Chaos",r:"L"},{n:"Legacy Arm Armor",r:"E"},{n:"Linen Gloves",r:"R"}],
+    Body:[{n:"Master of Death",r:"L"},{n:"Silk Shirt",r:"E"},{n:"Cotton Top",r:"R"}],
+    Legs:[{n:"Nightmare Boots",r:"L"},{n:"Leather Boots",r:"E"},{n:"Handmade Boots",r:"R"}]
+  },
+  Cavalry:{
+    Head:[{n:"Divine Crown",r:"L"},{n:"Lion Helmet",r:"E"},{n:"Woollen Hood",r:"R"}],
+    Hands:[{n:"Contract of Light",r:"L"},{n:"White Wolf Bracers",r:"E"},{n:"Northland Gauntlets",r:"R"}],
+    Body:[{n:"Omniscience",r:"L"},{n:"Bear Chest Armor",r:"E"},{n:"Chamois Shirt",r:"R"}],
+    Legs:[{n:"Dust-Free Boots",r:"L"},{n:"Feathered Iron Boots",r:"E"},{n:"Furry Boots",r:"R"}]
+  },
+  Archer:{
+    Head:[{n:"Fiery Sun",r:"L"},{n:"Eagle Eye",r:"E"},{n:"Buckskin Hat",r:"R"}],
+    Hands:[{n:"Embrace of Effulgence",r:"L"},{n:"Skyshatter Gauntlets",r:"E"},{n:"Hunter Gauntlets",r:"R"}],
+    Body:[{n:"Eternal Flare",r:"L"},{n:"Falcon Armor",r:"E"},{n:"Grizzly Chest Armor",r:"R"}],
+    Legs:[{n:"Dawnbreak Boots",r:"L"},{n:"Night Owl Boots",r:"E"},{n:"Hare Boots",r:"R"}]
+  },
+  Gathering:{
+    Head:[{n:"Fiery Sun",r:"L"},{n:"Eagle Eye",r:"E"},{n:"Buckskin Hat",r:"R"}],
+    Hands:[{n:"Embrace of Effulgence",r:"L"},{n:"Skyshatter Gauntlets",r:"E"},{n:"Hunter Gauntlets",r:"R"}],
+    Body:[{n:"Eternal Flare",r:"L"},{n:"Falcon Armor",r:"E"},{n:"Grizzly Chest Armor",r:"R"}],
+    Legs:[{n:"Dawnbreak Boots",r:"L"},{n:"Night Owl Boots",r:"E"},{n:"Hare Boots",r:"R"}]
+  }
 };
+// ── REFERENCE DATA ──────────────────────────────────────────────────────
+const RINGS = [
+  // Tier 0
+  "Ring of Clover","Ring of Tulip","Ring of Violet","Ring of Daisy","Ring of Iris",
+  "Ring of Rose","Ring of Hyacinth","Ring of Lily","Ring of Laurel","Ring of Sunflower",
+  // Tier 1
+  "Ring of Bear","Ring of Rhino","Ring of Steed","Ring of Crow","Ring of Seahorse",
+  "Ring of Shark","Ring of Badger","Ring of Elephant","Ring of Lion","Ring of Serpent",
+  "Ring of Deer","Ring of Falcon","Ring of Night Wolf","Ring of Boar",
+  // Tier 2
+  "Tranquil Water","Lofty Mountain","Scorching Flame","Effulgent Sun","Azure Moon",
+  "Everflame Wings","Radiant Guardian","Lord of Eastern Heavens","Messenger of Destruction",
+  "Sacred Sage","Skyward Knight"
+];
+const TRAITS_BY_TEMP = {
+  Warbred:["Overpower","Gallant","Valor","Phalanx Breaker","Fierce"],
+  Alert:["Spiritbond","Stratagem","Cunning","Battlemaster"],
+  Fearless:["Thunderbolt","Army Sunder","Dustbane","Tidebreaker","Bastion","Peacemaker","Bedrock","Iron Ridge"],
+  Protective:["Lifesaver","Renewal","Healing Armor","Iron Ridge"],
+  Docile:["Legacy","Bloodline","Purity"],
+  Spirited:["Volatile","Surge"],
+  Mischievous:[]
+};
+const ADORNMENTS = [
+  // Attack
+  "Thunder","Wavebreaker","Blood Debt","Lightning Strike","Chain Slayer","Boiling Blood",
+  "War Prep","Swift Blade","Piercing Arrow","Ablaze Spirit","Rampant Blade","Iron Fang",
+  "Unyielding Iron","Primal Force","Storm Slash",
+  // Defence / Support
+  "Guiding Star","Unyielding Armor","Mystic Mirror","Sacred Lily","Stalwart Shield",
+  "Steadfast Guard","Mountain Root","Granite Wall","Iron Ridge","Shining Vow"
+];
 
 // ── STATE ────────────────────────────────────────────────────────────────
 const MARCH_IDS = ["M1","M2","M3","M4","M5"];
@@ -441,7 +501,7 @@ function emptyHero(){
     skill3:{name:"",level:"",stars:""},skill4:{name:"",level:"",stars:""},
     gear:{Head:{name:"",level:"",gems:0},Hands:{name:"",level:"",gems:0},Body:{name:"",level:"",gems:0},Legs:{name:"",level:"",gems:0}},
     ring:{name:"",level:""},
-    mount:{temperament:"",trait:"",rarity:"",adornment:"",adornment_level:""}
+    mount:{temperament:"",trait1:"",trait2:"",rarity:"",adornment:"",adornment_level:""}
   };
 }
 function emptyMarch(){
@@ -626,17 +686,79 @@ function gemsDots(marchId,slotIdx,slot,count){
   return html;
 }
 
+function gearOptions(troopType,slot,curVal){
+  const tt=troopType||"Sword";
+  const items=(GEAR_META[tt]&&GEAR_META[tt][slot])||GEAR_META.Sword[slot];
+  let html='<option value="">Select...</option>';
+  items.forEach(g=>{
+    const label=`${g.n} (${g.r})`;
+    const sel=curVal===label?" selected":"";
+    html+=`<option value="${label}"${sel}>${label}</option>`;
+  });
+  return html;
+}
+function gearDefault(troopType,slot){
+  const tt=troopType||"Sword";
+  const items=(GEAR_META[tt]&&GEAR_META[tt][slot])||GEAR_META.Sword[slot];
+  return items[0]?`${items[0].n} (${items[0].r})`:"";
+}
+function ringOptions(curVal,metaRing){
+  let html='<option value="">Select ring...</option>';
+  RINGS.forEach(r=>{
+    const sel=curVal===r?" selected":((!curVal&&r===metaRing)?" selected":"");
+    html+=`<option value="${r}"${sel}>${r}</option>`;
+  });
+  return html;
+}
+function traitOptions(temp,curVal){
+  const list=TRAITS_BY_TEMP[temp]||[];
+  let html='<option value="">Select trait...</option>';
+  list.forEach(t=>{
+    const sel=curVal===t?" selected":"";
+    html+=`<option value="${t}"${sel}>${t}</option>`;
+  });
+  return html;
+}
+function adornOptions(curVal){
+  let html='<option value="">Select adornment...</option>';
+  ADORNMENTS.forEach(a=>{
+    const sel=curVal===a?" selected":"";
+    html+=`<option value="${a}"${sel}>${a}</option>`;
+  });
+  // If current value not in list, add it
+  if(curVal&&!ADORNMENTS.includes(curVal))
+    html+=`<option value="${curVal}" selected>${curVal} (custom)</option>`;
+  return html;
+}
+function offMetaClass(val,meta){return meta&&val&&val!==meta?" aw-off-meta":"";}
+
 function renderHeroSlot(marchId,slotIdx,h,troopType){
   const label=["Lead","Support 1","Support 2"][slotIdx];
-  const gear=GEAR_META[troopType]||GEAR_META.Sword;
-  const skillSel3=h.skill3.name||"";const skillSel4=h.skill4.name||"";
+  const meta=HERO_BY_NAME[h.name]||{};
+  const s3def=meta.skill3_rec||"";const s4def=meta.skill4_rec||"";
+  const ringDef=meta.ring||"";
+  const tempDef=meta.mount_temp||"";const traitDef=meta.mount_trait||"";
+
+  // Current skill3/4 values (default to rec if empty)
+  const s3val=h.skill3.name||(s3def);
+  const s4val=h.skill4.name||(s4def);
+  const ringVal=h.ring.name||(ringDef);
+  const tempVal=h.mount.temperament||(tempDef);
+  const tr1Val=h.mount.trait1||(traitDef);
+  const tr2Val=h.mount.trait2||"";
+
+  const s3off=offMetaClass(h.skill3.name,s3def);
+  const s4off=offMetaClass(h.skill4.name,s4def);
+  const ringOff=offMetaClass(h.ring.name,ringDef);
+  const tempOff=offMetaClass(h.mount.temperament,tempDef);
+  const tr1Off=offMetaClass(h.mount.trait1,traitDef);
 
   return `<div class="aw-hero-slot" id="slot-${marchId}-${slotIdx}">
     <div class="aw-slot-label">${label}</div>
     <div class="aw-hero-top">
       <select class="aw-hero-sel" data-march="${marchId}" data-slot="${slotIdx}">${heroOptions(h.name)}</select>
       <input type="number" class="aw-lv-inp" placeholder="Lv" min="1" max="140"
-        value="${h.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="level">
+        value="${h.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="level">
       <select class="aw-rank-sel" data-march="${marchId}" data-slot="${slotIdx}" data-field="rank">
         <option value="">R</option>${[1,2,3,4,5,6].map(r=>`<option value="${r}"${h.rank==r?" selected":""}>${r}</option>`).join("")}
       </select>
@@ -644,64 +766,73 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
     <div class="aw-sec">Skills</div>
     <div class="aw-skill-row">
       <span class="aw-skill-num">1</span>
-      <input type="text" placeholder="Commander skill" value="${h.skill1.name||''}"
+      <input type="text" placeholder="Commander skill" value="${h.skill1.name||""}"
         data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1name" class="aw-s1name">
       <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill1.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1level">
+        value="${h.skill1.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1level">
     </div>
     <div class="aw-skill-row">
       <span class="aw-skill-num">2</span>
-      <input type="text" placeholder="Signature skill" value="${h.skill2.name||''}"
+      <input type="text" placeholder="Signature skill" value="${h.skill2.name||""}"
         data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2name" class="aw-s2name">
       <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill2.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2level">
+        value="${h.skill2.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2level">
     </div>
     <div class="aw-skill-row">
       <span class="aw-skill-num">3</span>
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3name" class="aw-s3sel">${skillOptions(h.name,skillSel3)}</select>
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3name"
+        class="aw-s3sel${s3off}" data-meta="${s3def}">${skillOptions(h.name,s3val)}</select>
       <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill3.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3level">
+        value="${h.skill3.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3level">
       <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
-        value="${h.skill3.stars||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3stars">
+        value="${h.skill3.stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3stars">
     </div>
     <div class="aw-skill-row">
       <span class="aw-skill-num">4</span>
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4name" class="aw-s4sel">${skillOptions(h.name,skillSel4)}</select>
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4name"
+        class="aw-s4sel${s4off}" data-meta="${s4def}">${skillOptions(h.name,s4val)}</select>
       <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill4.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4level">
+        value="${h.skill4.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4level">
       <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
-        value="${h.skill4.stars||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4stars">
+        value="${h.skill4.stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4stars">
     </div>
     <div class="aw-sec">Gear</div>
     ${["Head","Hands","Body","Legs"].map(slot=>`
     <div class="aw-gear-row">
       <span class="aw-slot-tag">${slot}</span>
-      <input type="text" placeholder="${gear[slot]||slot}" value="${h.gear[slot].name||''}"
-        data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearname">
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearname"
+        data-meta="${gearDefault(troopType,slot)}"
+        class="${offMetaClass(h.gear[slot].name,gearDefault(troopType,slot))}">${gearOptions(troopType,slot,h.gear[slot].name)}</select>
       <input type="number" class="aw-glv" placeholder="Lv" min="1" max="80"
-        value="${h.gear[slot].level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearlevel">
+        value="${h.gear[slot].level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearlevel">
       <div class="aw-gems">${gemsDots(marchId,slotIdx,slot,h.gear[slot].gems||0)}</div>
     </div>`).join("")}
     <div class="aw-sec">Ring</div>
     <div class="aw-ring-row">
-      <input type="text" placeholder="Ring name" value="${h.ring.name||''}"
-        data-march="${marchId}" data-slot="${slotIdx}" data-field="ringname">
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="ringname"
+        class="${ringOff}" data-meta="${ringDef}">${ringOptions(ringVal,ringDef)}</select>
       <input type="number" class="aw-rlv" placeholder="Lv" min="1" max="50"
-        value="${h.ring.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="ringlevel">
+        value="${h.ring.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="ringlevel">
     </div>
     <div class="aw-sec">Mount</div>
     <div class="aw-mount-grid">
       <div class="aw-field">
-        <label>Temperament</label>
-        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttemp">
+        <label class="${tempOff?'aw-off-meta-label':''}">Temperament</label>
+        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttemp"
+          class="${tempOff}" data-meta="${tempDef}">
           <option value="">Select...</option>
-          ${MOUNT_TEMPS.map(t=>`<option value="${t}"${h.mount.temperament===t?" selected":""}>${t}</option>`).join("")}
+          ${MOUNT_TEMPS.map(t=>`<option value="${t}"${tempVal===t?" selected":""}>${t}</option>`).join("")}
         </select>
       </div>
       <div class="aw-field">
-        <label>Trait</label>
-        <input type="text" placeholder="e.g. Fierce" value="${h.mount.trait||''}"
-          data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttrait">
+        <label class="${tr1Off?'aw-off-meta-label':''}">Trait 1</label>
+        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttrait1"
+          class="${tr1Off}" data-meta="${traitDef}" id="trait1-${marchId}-${slotIdx}">${traitOptions(tempVal,tr1Val)}</select>
+      </div>
+      <div class="aw-field">
+        <label>Trait 2 (optional)</label>
+        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttrait2"
+          id="trait2-${marchId}-${slotIdx}">${traitOptions(tempVal,tr2Val)}</select>
       </div>
       <div class="aw-field">
         <label>Rarity</label>
@@ -710,61 +841,20 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
           ${MOUNT_RARITIES.map(r=>`<option value="${r}"${h.mount.rarity===r?" selected":""}>${r}</option>`).join("")}
         </select>
       </div>
-      <div class="aw-field">
-        <label>Adornment</label>
-        <input type="text" placeholder="Name" value="${h.mount.adornment||''}"
-          data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadorn">
-      </div>
     </div>
-    <div class="aw-mount-adorn">
-      <span style="font-size:10px;color:var(--aw-faint);align-self:center;flex-shrink:0;">Adorn Lv</span>
-      <input type="number" class="aw-adlv" placeholder="Lv" min="1" max="60"
-        value="${h.mount.adornment_level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadornlv">
+    <div class="aw-mount-adorn" style="margin-top:6px;display:flex;gap:6px;align-items:flex-end;">
+      <div class="aw-field" style="flex:1;">
+        <label>Adornment</label>
+        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadorn">${adornOptions(h.mount.adornment||"")}</select>
+      </div>
+      <div class="aw-field">
+        <label>Level</label>
+        <input type="number" class="aw-adlv" placeholder="Lv" min="1" max="60"
+          value="${h.mount.adornment_level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadornlv"
+          style="width:56px;">
+      </div>
     </div>
   </div>`;
-}
-
-let openMarch = "M1";
-function renderProfile(){
-  // Account
-  const a=STATE.account;
-  document.getElementById("p-tc").value=a.tc||"";
-  document.getElementById("p-vip").value=a.vip||"";
-  document.getElementById("p-herocap").value=a.herocap||"";
-  document.getElementById("p-civ").value=a.civ||"";
-
-  // Marches
-  const ml=document.getElementById("aw-march-list");
-  ml.innerHTML="";
-  MARCH_IDS.forEach(id=>{
-    const m=STATE.marches[id];
-    const isOpen=id===openMarch;
-    const heroSummary=m.heroes.map(h=>h.name||"—").join(" · ");
-    const card=document.createElement("div");card.className="aw-march";
-    card.innerHTML=`
-      <div class="aw-march-hdr${isOpen?" open":""}" data-march="${id}">
-        <span class="aw-march-id">${id}</span>
-        <span class="aw-march-summary">${m.troopType?m.troopType+" — ":""}<span style="color:var(--aw-faint)">${heroSummary}</span></span>
-        <span class="aw-chevron">&#9660;</span>
-      </div>
-      <div class="aw-march-body${isOpen?" open":""}" id="body-${id}">
-        <div class="aw-troop-row">
-          <label>Troop Type</label>
-          <select data-march="${id}" class="aw-troop-sel">
-            <option value="">Select...</option>
-            ${TROOP_TYPES.map(t=>`<option value="${t}"${m.troopType===t?" selected":""}>${t}</option>`).join("")}
-          </select>
-        </div>
-        <div class="aw-hero-slots">
-          ${m.heroes.map((h,i)=>renderHeroSlot(id,i,h,m.troopType)).join("")}
-        </div>
-      </div>`;
-    ml.appendChild(card);
-  });
-
-  // Hero pool
-  renderPool();
-  bindProfileEvents();
 }
 
 function renderPool(){
@@ -952,14 +1042,45 @@ function bindProfileEvents(){
   });
 
   // Mount fields
-  const mountFields={mounttemp:"temperament",mounttrait:"trait",mountrarity:"rarity",mountadorn:"adornment",mountadornlv:"adornment_level"};
+  const mountFields={mounttemp:"temperament",mounttrait1:"trait1",mounttrait2:"trait2",mountrarity:"rarity",mountadorn:"adornment",mountadornlv:"adornment_level"};
   Object.keys(mountFields).forEach(field=>{
     document.querySelectorAll(`[data-field='${field}']`).forEach(el=>{
       const ev=el.tagName==="SELECT"?"change":"input";
       el.addEventListener(ev,()=>{
         const {march:mId,slot:si}=el.dataset;
-        STATE.marches[mId].heroes[parseInt(si)].mount[mountFields[field]]=el.value;queueSave();
+        STATE.marches[mId].heroes[parseInt(si)].mount[mountFields[field]]=el.value;
+        // If temperament changes, refresh trait dropdowns
+        if(field==="mounttemp"){
+          const idx=parseInt(si);
+          const t1=document.getElementById(`trait1-${mId}-${idx}`);
+          const t2=document.getElementById(`trait2-${mId}-${idx}`);
+          if(t1){t1.innerHTML=traitOptions(el.value,STATE.marches[mId].heroes[idx].mount.trait1||"");}
+          if(t2){t2.innerHTML=traitOptions(el.value,STATE.marches[mId].heroes[idx].mount.trait2||"");}
+        }
+        // Off-meta check
+        const meta=el.getAttribute("data-meta");
+        if(meta)el.classList.toggle("aw-off-meta",!!el.value&&el.value!==meta);
+        queueSave();
       });
+    });
+  });
+  // Off-meta check for ring + skill dropdowns on change
+  document.querySelectorAll("#aiga-widget [data-meta]").forEach(el=>{
+    if(el.tagName==="SELECT"&&!el.dataset.field?.startsWith("mount")){
+      el.addEventListener("change",()=>{
+        const meta=el.getAttribute("data-meta");
+        if(meta)el.classList.toggle("aw-off-meta",!!el.value&&el.value!==meta);
+      });
+    }
+  });
+  // Gear dropdown off-meta check
+  document.querySelectorAll("[data-field='gearname']").forEach(sel=>{
+    sel.addEventListener("change",()=>{
+      const {march:mId,slot:si,gslot}=sel.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].name=sel.value;
+      const meta=sel.getAttribute("data-meta");
+      if(meta)sel.classList.toggle("aw-off-meta",!!sel.value&&sel.value!==meta);
+      queueSave();
     });
   });
 
@@ -1039,7 +1160,8 @@ function buildMarkdown(){
       lines.push(`  - Gear: ${gear}`);
       lines.push(`  - Ring: ${h.ring.name||"—"}${h.ring.level?" lv"+h.ring.level:""}`);
       const mt=h.mount;
-      lines.push(`  - Mount: ${mt.temperament||"—"} / ${mt.trait||"—"} / ${mt.rarity||"—"}${mt.adornment?" | Adorn: "+mt.adornment+(mt.adornment_level?" lv"+mt.adornment_level:""):""}`);
+      const traits=[mt.trait1,mt.trait2].filter(Boolean).join(" + ")||"—";
+      lines.push(`  - Mount: ${mt.temperament||"—"} / ${traits} / ${mt.rarity||"—"}${mt.adornment?" | Adorn: "+mt.adornment+(mt.adornment_level?" lv"+mt.adornment_level:""):""}`);
     });
     lines.push("");
   });
@@ -1075,17 +1197,27 @@ async function sendProfileToAPI(text){
     const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({message:text,session_id:sessionId})});
     hideTyping();
+    const rawText=await res.text();
+    console.log("[AIGA] profile response status:",res.status,"body:",rawText.slice(0,300));
     if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      addMsg("error",err.error||"Something went wrong. Please try again.");
+      let errMsg="Server error "+res.status;
+      try{const err=JSON.parse(rawText);errMsg=err.error||errMsg;}catch(e){}
+      addMsg("error",errMsg+" — see browser console for details.");
       setDisabled(false);return;
     }
-    const data=await res.json();
+    let data;
+    try{data=JSON.parse(rawText);}
+    catch(e){
+      console.error("[AIGA] JSON parse failed:",rawText.slice(0,500));
+      addMsg("error","Response parse error (status "+res.status+"). See browser console.");
+      setDisabled(false);return;
+    }
     addMsg("aiga",data.response);
     if(typeof data.remaining==="number")updateRemaining(data.remaining);
   }catch(e){
     hideTyping();
-    addMsg("error","Could not reach AIGA. Check your connection and try again.");
+    console.error("[AIGA] Fetch error:",e);
+    addMsg("error","Fetch failed: "+e.message);
   }finally{
     if(!inputEl.disabled){sendBtn.disabled=!inputEl.value.trim();inputEl.focus();}
     scroll();
