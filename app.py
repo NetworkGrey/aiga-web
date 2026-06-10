@@ -28,6 +28,8 @@ ALLOWED_ORIGINS = [
     "https://aiga-web-production.up.railway.app",
     "https://networkgrey.co.za",
     "https://www.networkgrey.co.za",
+    "https://aiga.networkgrey.co.za",
+    "https://aiga.networkgrey.co.za/aiga-assistant/",
     "http://localhost:5000",
     "http://127.0.0.1:5000",
 ]
