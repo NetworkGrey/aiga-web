@@ -1,0 +1,1115 @@
+<!-- AIGA Chat + Profile Widget v1.0 | Network Grey | Paste into WordPress Custom HTML block -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
+<style>
+#aiga-widget {
+  --aw-bg:#1a1a1a; --aw-card:#242424; --aw-header:#1e1e1e; --aw-input:#2a2a2a;
+  --aw-user:#2e2e2e; --aw-border:#333; --aw-border-lt:#2a2a2a;
+  --aw-text:#fff; --aw-muted:#999; --aw-faint:#555;
+  --aw-gold:#c9a84c; --aw-gold-dim:#8a7035; --aw-error:#cc4444;
+  --aw-radius:8px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  font-size:14px; line-height:1.6;
+  background:var(--aw-bg); border-radius:12px; overflow:hidden;
+  border:1px solid var(--aw-border);
+  display:flex; flex-direction:column;
+  height:720px; max-width:860px; margin:0 auto;
+  box-shadow:0 4px 40px rgba(0,0,0,.5);
+}
+#aiga-widget *{box-sizing:border-box;margin:0;padding:0;}
+#aiga-widget a{color:var(--aw-gold);}
+
+/* Header */
+#aiga-widget .aw-hdr{
+  background:var(--aw-header); border-bottom:1px solid var(--aw-border);
+  padding:12px 18px; display:flex; align-items:center;
+  justify-content:space-between; flex-shrink:0;
+}
+#aiga-widget .aw-logo{display:flex;flex-direction:column;gap:1px;}
+#aiga-widget .aw-logo-ng{font-family:'Cinzel',serif;font-size:7px;letter-spacing:5px;color:var(--aw-faint);text-transform:uppercase;}
+#aiga-widget .aw-logo-aiga{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--aw-gold);letter-spacing:3px;}
+#aiga-widget .aw-hdr-right{display:flex;align-items:center;gap:10px;}
+#aiga-widget .aw-hdr-sub{font-size:11px;color:var(--aw-faint);}
+#aiga-widget .aw-profile-btn{
+  background:transparent; border:1px solid var(--aw-border);
+  color:var(--aw-muted); font-size:11px; font-family:'Cinzel',serif;
+  letter-spacing:1px; padding:5px 12px; border-radius:4px; cursor:pointer;
+  transition:all .15s;
+}
+#aiga-widget .aw-profile-btn:hover{border-color:var(--aw-gold);color:var(--aw-gold);}
+#aiga-widget .aw-profile-btn.active{border-color:var(--aw-gold);color:var(--aw-gold);background:rgba(201,168,76,.08);}
+
+/* Panel system */
+#aiga-widget .aw-panel{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+#aiga-widget .aw-panel.hidden{display:none;}
+
+/* ── CHAT ── */
+#aiga-widget .aw-feed{
+  flex:1; overflow-y:auto; padding:18px 14px;
+  display:flex; flex-direction:column; gap:13px; scroll-behavior:smooth;
+}
+#aiga-widget .aw-feed::-webkit-scrollbar{width:3px;}
+#aiga-widget .aw-feed::-webkit-scrollbar-thumb{background:var(--aw-border);border-radius:2px;}
+#aiga-widget .aw-msg{display:flex;flex-direction:column;gap:3px;max-width:90%;}
+#aiga-widget .aw-msg.aiga{align-self:flex-start;align-items:flex-start;}
+#aiga-widget .aw-msg.user{align-self:flex-end;align-items:flex-end;}
+#aiga-widget .aw-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+#aiga-widget .aw-msg.aiga .aw-lbl{color:var(--aw-gold);}
+#aiga-widget .aw-msg.user .aw-lbl{color:var(--aw-faint);}
+#aiga-widget .aw-bbl{padding:9px 13px;border-radius:var(--aw-radius);font-size:14px;line-height:1.65;}
+#aiga-widget .aw-msg.aiga .aw-bbl{background:var(--aw-card);border:1px solid var(--aw-border);color:var(--aw-text);}
+#aiga-widget .aw-msg.user .aw-bbl{background:var(--aw-user);border:1px solid var(--aw-border-lt);color:var(--aw-text);}
+#aiga-widget .aw-msg.error .aw-bbl{background:#2a1a1a;border:1px solid var(--aw-error);color:#ff8888;}
+#aiga-widget .aw-bbl h2,#aiga-widget .aw-bbl h3{font-family:'Cinzel',serif;color:var(--aw-gold);margin:11px 0 4px;font-size:12px;}
+#aiga-widget .aw-bbl h2:first-child,#aiga-widget .aw-bbl h3:first-child{margin-top:0;}
+#aiga-widget .aw-bbl p{margin:0 0 6px;}
+#aiga-widget .aw-bbl p:last-child{margin-bottom:0;}
+#aiga-widget .aw-bbl ul,#aiga-widget .aw-bbl ol{margin:3px 0 6px 16px;}
+#aiga-widget .aw-bbl li{margin-bottom:2px;}
+#aiga-widget .aw-bbl strong{color:#fff;font-weight:600;}
+#aiga-widget .aw-bbl table{width:100%;border-collapse:collapse;margin:7px 0;font-size:12px;}
+#aiga-widget .aw-bbl th{background:#111;color:var(--aw-gold);font-weight:600;font-size:10px;text-align:left;padding:5px 8px;border-bottom:1px solid var(--aw-border);}
+#aiga-widget .aw-bbl td{padding:4px 8px;border-bottom:1px solid var(--aw-border-lt);color:var(--aw-muted);}
+#aiga-widget .aw-bbl tr:last-child td{border-bottom:none;}
+
+/* Typing */
+#aiga-widget .aw-typing{align-self:flex-start;display:flex;flex-direction:column;gap:3px;}
+#aiga-widget .aw-typing .aw-lbl{color:var(--aw-gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+#aiga-widget .aw-dots{display:flex;gap:5px;padding:9px 13px;background:var(--aw-card);border:1px solid var(--aw-border);border-radius:var(--aw-radius);}
+#aiga-widget .aw-dot{width:6px;height:6px;background:var(--aw-gold-dim);border-radius:50%;animation:aw-pulse 1.4s ease-in-out infinite;}
+#aiga-widget .aw-dot:nth-child(2){animation-delay:.2s;}
+#aiga-widget .aw-dot:nth-child(3){animation-delay:.4s;}
+@keyframes aw-pulse{0%,80%,100%{opacity:.3;transform:scale(.85);}40%{opacity:1;transform:scale(1);background:var(--aw-gold);}}
+#aiga-widget .aw-notice{padding:5px 14px;font-size:11px;text-align:center;display:none;flex-shrink:0;}
+#aiga-widget .aw-notice.show{display:block;color:#cc8844;}
+#aiga-widget .aw-bar{background:var(--aw-header);border-top:1px solid var(--aw-border);padding:10px 14px;flex-shrink:0;}
+#aiga-widget .aw-bar-row{display:flex;gap:8px;align-items:flex-end;}
+#aiga-widget .aw-wrap{flex:1;position:relative;}
+#aiga-widget textarea{
+  width:100%;background:var(--aw-input);border:1px solid var(--aw-border);
+  border-radius:var(--aw-radius);color:var(--aw-text);font-family:inherit;
+  font-size:14px;line-height:1.5;padding:8px 11px;resize:none;
+  min-height:40px;max-height:110px;overflow-y:auto;transition:border-color .15s;display:block;
+}
+#aiga-widget textarea::placeholder{color:var(--aw-faint);}
+#aiga-widget textarea:focus{outline:none;border-color:var(--aw-gold-dim);}
+#aiga-widget .aw-send{
+  background:var(--aw-gold);border:none;border-radius:var(--aw-radius);
+  color:#111;cursor:pointer;font-family:'Cinzel',serif;font-size:10px;
+  font-weight:700;letter-spacing:1px;padding:8px 15px;height:40px;
+  flex-shrink:0;transition:background .15s,opacity .15s;
+}
+#aiga-widget .aw-send:hover:not(:disabled){background:#ddb95a;}
+#aiga-widget .aw-send:disabled{opacity:.35;cursor:not-allowed;}
+#aiga-widget .aw-footer{margin-top:4px;font-size:10px;color:var(--aw-faint);display:flex;justify-content:space-between;}
+
+/* ── PROFILE PANEL ── */
+#aiga-widget .aw-prof-scroll{flex:1;overflow-y:auto;padding:0;}
+#aiga-widget .aw-prof-scroll::-webkit-scrollbar{width:3px;}
+#aiga-widget .aw-prof-scroll::-webkit-scrollbar-thumb{background:var(--aw-border);border-radius:2px;}
+
+/* Account strip */
+#aiga-widget .aw-account{
+  padding:14px 18px; border-bottom:1px solid var(--aw-border);
+  background:var(--aw-header);
+}
+#aiga-widget .aw-account-title{
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;
+  color:var(--aw-faint);text-transform:uppercase;margin-bottom:10px;
+}
+#aiga-widget .aw-account-row{display:flex;gap:12px;flex-wrap:wrap;}
+#aiga-widget .aw-field{display:flex;flex-direction:column;gap:4px;}
+#aiga-widget .aw-field label{font-size:9px;color:var(--aw-faint);letter-spacing:.5px;text-transform:uppercase;}
+#aiga-widget input[type=number],#aiga-widget input[type=text],#aiga-widget select{
+  background:var(--aw-input);border:1px solid var(--aw-border);
+  border-radius:4px;padding:5px 8px;color:var(--aw-text);
+  font-family:inherit;font-size:12px;outline:none;
+  transition:border-color .15s;-webkit-appearance:none;appearance:none;
+}
+#aiga-widget input:focus,#aiga-widget select:focus{border-color:var(--aw-gold-dim);}
+#aiga-widget input[type=number]{width:72px;}
+#aiga-widget .aw-field select{min-width:120px;}
+#aiga-widget select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;padding-right:24px;cursor:pointer;
+}
+#aiga-widget option,#aiga-widget optgroup{background:var(--aw-card);color:var(--aw-text);}
+
+/* March accordion */
+#aiga-widget .aw-march-list{padding:12px 18px;display:flex;flex-direction:column;gap:8px;}
+#aiga-widget .aw-march{border:1px solid var(--aw-border);border-radius:6px;overflow:hidden;}
+#aiga-widget .aw-march-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;background:var(--aw-card);cursor:pointer;user-select:none;
+}
+#aiga-widget .aw-march-hdr:hover{background:#2e2e2e;}
+#aiga-widget .aw-march-hdr.open{border-bottom:1px solid var(--aw-border);}
+#aiga-widget .aw-march-id{
+  font-family:'Cinzel',serif;font-size:12px;font-weight:600;
+  color:var(--aw-gold);letter-spacing:1px;margin-right:10px;
+}
+#aiga-widget .aw-march-summary{font-size:12px;color:var(--aw-muted);flex:1;}
+#aiga-widget .aw-chevron{color:var(--aw-faint);font-size:11px;transition:transform .2s;}
+#aiga-widget .aw-march-hdr.open .aw-chevron{transform:rotate(180deg);}
+#aiga-widget .aw-march-body{display:none;padding:14px;}
+#aiga-widget .aw-march-body.open{display:block;}
+
+/* Troop type selector */
+#aiga-widget .aw-troop-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+#aiga-widget .aw-troop-row label{font-size:11px;color:var(--aw-muted);}
+#aiga-widget .aw-troop-row select{min-width:140px;}
+
+/* Hero slots */
+#aiga-widget .aw-hero-slots{display:flex;flex-direction:column;gap:12px;}
+#aiga-widget .aw-hero-slot{
+  background:var(--aw-header);border:1px solid var(--aw-border-lt);
+  border-radius:6px;padding:11px;
+}
+#aiga-widget .aw-slot-label{
+  font-size:9px;color:var(--aw-gold-dim);letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:8px;
+}
+#aiga-widget .aw-hero-top{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;}
+#aiga-widget .aw-hero-top select{flex:1;min-width:160px;}
+#aiga-widget .aw-hero-top .aw-lv-inp{width:60px;}
+#aiga-widget .aw-hero-top .aw-rank-sel{width:60px;}
+
+/* Section labels inside hero */
+#aiga-widget .aw-sec{
+  font-size:9px;color:var(--aw-faint);letter-spacing:1px;
+  text-transform:uppercase;margin:9px 0 6px;
+  border-top:1px solid var(--aw-border-lt);padding-top:7px;
+}
+#aiga-widget .aw-skill-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;}
+#aiga-widget .aw-skill-row input[type=text]{flex:1;min-width:0;font-size:12px;}
+#aiga-widget .aw-skill-row .aw-sk-lv{width:50px;flex-shrink:0;}
+#aiga-widget .aw-skill-row .aw-sk-star{width:46px;flex-shrink:0;}
+#aiga-widget .aw-skill-row select{flex:1;min-width:0;font-size:12px;}
+#aiga-widget .aw-skill-num{font-size:9px;color:var(--aw-faint);width:14px;flex-shrink:0;}
+
+/* Gear */
+#aiga-widget .aw-gear-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;}
+#aiga-widget .aw-gear-row .aw-slot-tag{font-size:9px;color:var(--aw-faint);width:34px;flex-shrink:0;}
+#aiga-widget .aw-gear-row input[type=text]{flex:1;min-width:0;font-size:12px;}
+#aiga-widget .aw-gear-row .aw-glv{width:46px;flex-shrink:0;}
+#aiga-widget .aw-gems{display:flex;gap:3px;align-items:center;flex-shrink:0;}
+#aiga-widget .aw-gem{
+  width:13px;height:13px;border-radius:2px;border:1px solid var(--aw-border);
+  background:var(--aw-input);cursor:pointer;transition:background .1s;
+}
+#aiga-widget .aw-gem.on{background:var(--aw-gold-dim);border-color:var(--aw-gold);}
+
+/* Ring + Mount */
+#aiga-widget .aw-ring-row{display:flex;gap:6px;align-items:center;margin-bottom:9px;}
+#aiga-widget .aw-ring-row input[type=text]{flex:1;min-width:0;font-size:12px;}
+#aiga-widget .aw-ring-row .aw-rlv{width:50px;flex-shrink:0;}
+#aiga-widget .aw-mount-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+#aiga-widget .aw-mount-grid select,#aiga-widget .aw-mount-grid input{width:100%;}
+#aiga-widget .aw-mount-adorn{display:flex;gap:6px;margin-top:6px;}
+#aiga-widget .aw-mount-adorn input[type=text]{flex:1;min-width:0;font-size:12px;}
+#aiga-widget .aw-mount-adorn .aw-adlv{width:50px;flex-shrink:0;}
+
+/* Hero pool */
+#aiga-widget .aw-pool-section{padding:0 18px 14px;}
+#aiga-widget .aw-pool-title{
+  font-family:'Cinzel',serif;font-size:11px;color:var(--aw-gold);
+  letter-spacing:1px;margin:14px 0 8px;
+}
+#aiga-widget .aw-pool-list{display:flex;flex-direction:column;gap:6px;}
+#aiga-widget .aw-pool-row{display:flex;gap:6px;align-items:center;}
+#aiga-widget .aw-pool-row select{flex:1;min-width:140px;font-size:12px;}
+#aiga-widget .aw-pool-row input{width:56px;flex-shrink:0;}
+#aiga-widget .aw-pool-row .aw-rank-sel{width:56px;}
+#aiga-widget .aw-pool-type{font-size:10px;color:var(--aw-faint);width:50px;flex-shrink:0;}
+#aiga-widget .aw-pool-add{
+  margin-top:8px;background:transparent;border:1px dashed var(--aw-border);
+  color:var(--aw-muted);font-size:12px;padding:6px;border-radius:4px;
+  cursor:pointer;width:100%;transition:border-color .15s;
+}
+#aiga-widget .aw-pool-add:hover{border-color:var(--aw-gold-dim);color:var(--aw-gold);}
+
+/* Profile footer */
+#aiga-widget .aw-prof-foot{
+  background:var(--aw-header);border-top:1px solid var(--aw-border);
+  padding:11px 18px;display:flex;gap:10px;align-items:center;
+  justify-content:space-between;flex-shrink:0;
+}
+#aiga-widget .aw-save-status{font-size:11px;color:var(--aw-faint);}
+#aiga-widget .aw-prof-actions{display:flex;gap:8px;}
+#aiga-widget .aw-btn{
+  background:var(--aw-card);border:1px solid var(--aw-border);
+  color:var(--aw-muted);font-size:11px;font-family:'Cinzel',serif;
+  letter-spacing:.5px;padding:7px 14px;border-radius:4px;
+  cursor:pointer;transition:all .15s;
+}
+#aiga-widget .aw-btn:hover{border-color:var(--aw-gold-dim);color:var(--aw-gold);}
+#aiga-widget .aw-btn-primary{
+  background:var(--aw-gold);border-color:var(--aw-gold);
+  color:#111;font-weight:700;
+}
+#aiga-widget .aw-btn-primary:hover{background:#ddb95a;}
+#aiga-widget .aw-profile-nudge{
+  background:rgba(201,168,76,.08);border:1px solid var(--aw-gold-dim);
+  border-radius:6px;padding:9px 13px;display:flex;
+  align-items:center;justify-content:space-between;gap:10px;
+  margin-bottom:2px;
+}
+#aiga-widget .aw-profile-nudge span{font-size:13px;color:var(--aw-muted);}
+#aiga-widget .aw-nudge-btn{
+  background:var(--aw-gold);border:none;color:#111;
+  font-family:'Cinzel',serif;font-size:10px;font-weight:700;
+  letter-spacing:1px;padding:6px 12px;border-radius:4px;
+  cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+
+@media(max-width:540px){
+  #aiga-widget{height:640px;border-radius:0;}
+  #aiga-widget .aw-hdr-sub{display:none;}
+  #aiga-widget .aw-mount-grid{grid-template-columns:1fr;}
+}
+@media(prefers-reduced-motion:reduce){#aiga-widget .aw-dot{animation:none;opacity:.5;}}
+</style>
+
+<div id="aiga-widget">
+  <div class="aw-hdr">
+    <div class="aw-logo">
+      <span class="aw-logo-ng">Network Grey</span>
+      <span class="aw-logo-aiga">AIGA</span>
+    </div>
+    <div class="aw-hdr-right">
+      <span class="aw-hdr-sub">AoEM Advisor</span>
+      <button class="aw-profile-btn" id="aw-prof-toggle">&#9881; Profile</button>
+    </div>
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div class="aw-panel" id="aw-chat-panel">
+    <div class="aw-feed" id="aw-feed"></div>
+    <div class="aw-notice" id="aw-notice"></div>
+    <div class="aw-bar">
+      <div class="aw-bar-row">
+        <div class="aw-wrap">
+          <textarea id="aw-input" placeholder="Ask me about AoEM — I'll do my best." maxlength="2000" rows="1"></textarea>
+        </div>
+        <button class="aw-send" id="aw-send" disabled>Send</button>
+      </div>
+      <div class="aw-footer">
+        <span id="aw-remaining">Free tier — 20 questions per day</span>
+        <span>Powered by Network Grey ⚔</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE PANEL -->
+  <div class="aw-panel hidden" id="aw-prof-panel">
+    <div class="aw-prof-scroll" id="aw-prof-scroll">
+      <!-- Account strip -->
+      <div class="aw-account">
+        <div class="aw-account-title">Account</div>
+        <div class="aw-account-row">
+          <div class="aw-field"><label>TC Level</label><input type="number" id="p-tc" min="1" max="40" placeholder="29"></div>
+          <div class="aw-field"><label>VIP</label><input type="number" id="p-vip" min="0" max="20" placeholder="6"></div>
+          <div class="aw-field"><label>Hero Cap</label><input type="number" id="p-herocap" min="100" max="140" placeholder="105"></div>
+          <div class="aw-field">
+            <label>Civilization</label>
+            <select id="p-civ">
+              <option value="">Select...</option>
+              <option>Japanese</option><option>French</option><option>Chinese</option>
+              <option>British</option><option>Byzantines</option><option>Koreans</option>
+              <option>Romans</option><option>Egyptians</option><option>Arabs</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- Marches -->
+      <div class="aw-march-list" id="aw-march-list"></div>
+      <!-- Hero Pool -->
+      <div class="aw-pool-section">
+        <div class="aw-pool-title">Hero Pool</div>
+        <div class="aw-pool-list" id="aw-pool-list"></div>
+        <button class="aw-pool-add" id="aw-pool-add">+ Add hero</button>
+      </div>
+    </div>
+    <div class="aw-prof-foot">
+      <span class="aw-save-status" id="aw-save-status">Not saved</span>
+      <div class="aw-prof-actions">
+        <button class="aw-btn" id="aw-reset-btn">Reset</button>
+        <button class="aw-btn aw-btn-primary" id="aw-submit-btn">Submit Profile</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const API = 'https://aiga-web-production.up.railway.app/chat';
+const STORE_KEY = 'aiga_profile_v1';
+const sessionId = typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2);
+marked.setOptions({breaks:true,gfm:true});
+function md(t){return DOMPurify.sanitize(marked.parse(t));}
+
+// ── HERO META ──────────────────────────────────────────────────────────────
+const HERO_META = [
+  {name:"Hua Mulan",type:"ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"Flying Swallow",skill2:"Starchaser",skills:["Armor Piercer","Infuriation","Act of Mercy","Double Attack","Furious Charge","Weak Spot Attack"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Attila the Hun",type:"CAV/ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"Nomadic Strength",skill2:"Annihilator",skills:["Armor Piercer","Infuriation","Act of Mercy","Weak Spot Attack","Warrior's Hymn","Critical Insight"],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Josephine",type:"ARC/SW",rarity:"Legendary",season:"S1 Wheel",skill1:"Steel Rose",skill2:"Warcry",skills:["Sunder","Infuriation","Siege Breaker","Double Attack","Protracted Battle","Weak Spot Attack"],ring:"Ring of Tulip",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Tribhuwana",type:"SW/CAV",rarity:"Legendary",season:"S1 Wheel",skill1:"Ode to Java",skill2:"Ode to Java",skills:["Shield Slam","Crashing Boulder","Peerless Strike","Earth Crush","High Spirit","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Valor"},
+  {name:"Yi Sun-Shin",type:"ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"",skill2:"",skills:[],ring:"Ring of Tulip",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Sun Tzu",type:"SW",rarity:"Legendary",season:"S1 Wheel",skill1:"Strategy Cuts Deeper",skill2:"The Way of War",skills:["Deception","Boulder Trap","Ultimate Strategy","High Spirit","Flash of Inspiration","Strategy Master's Gift"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond"},
+  {name:"Miyamoto Musashi",type:"SW",rarity:"Legendary",season:"VIP (Paid)",skill1:"Flash of Yang",skill2:"Moment of Yin",skills:["Shield Slam","Crashing Boulder","Earth Crush","Peerless Strike","High Spirit","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"King Arthur",type:"CAV/SW",rarity:"Mythical",season:"VIP17 (Paid)",skill1:"Glory of Knight",skill2:"Sword of Radiance",skills:["Crashing Boulder","Infuriation","Spirited Pursuit","Peerless Strike","High Spirit","Furious Charge"],ring:"Skyward Knight",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Guan Yu",type:"CAV",rarity:"Legendary",season:"Tavern",skill1:"Dragon Blade",skill2:"Gallantry",skills:["Infuriation","Armor Piercer","Fatal Blow","Weak Spot Attack","Berserker","Critical Insight"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Diao Chan",type:"GATH",rarity:"Legendary",season:"Tavern",skill1:"Diao Chan's Dance",skill2:"Silk Road",skills:["Efficient Harvest","Supplies Transportation"],ring:"Ring of Sunflower",mount_temp:"Protective",mount_trait:"Renewal"},
+  {name:"Darius the Great",type:"PIK/CAV",rarity:"Legendary",season:"Tavern",skill1:"Ironclade Blitz",skill2:"Conquest",skills:["Efficient Harvest","Sunder","Supplies Transportation","Spirited Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Violet",mount_temp:"Protective",mount_trait:"Renewal"},
+  {name:"Cleopatra",type:"CAV/SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Efficient Harvest","Supplies Transportation"],ring:"Ring of Violet",mount_temp:"Protective",mount_trait:"Renewal"},
+  {name:"Sejong the Great",type:"CAV",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Peaceful Haven","Tenacity","Protracted Battle"],ring:"Ring of Boar",mount_temp:"Protective",mount_trait:"Lifesaver"},
+  {name:"Joan of Arc",type:"PIK",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution"],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Hammurabi",type:"SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Valor"},
+  {name:"Harald III",type:"CAV/SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Valor"},
+  {name:"Lu Bu",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"One of a Kind General",skill2:"Unrivaled Prowess",skills:["Armor Piercer","Infuriation","Spirited Pursuit","Weak Spot Attack","Ripper Tiger","Critical Insight"],ring:"Ring of Daisy",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Yodit",type:"SW",rarity:"Legendary",season:"S2 Wheel",skill1:"Wrath Forged Blade",skill2:"Shadow of Terror",skills:["Shield Slam","Crashing Boulder","Peerless Strike","Battle Roar","Executor","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Hannibal",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Surprise Victory",skill2:"Peerless",skills:["Sowing Discord","Infuriation","Tactical Pursuit","Double Attack","Crushing Impact","Weak Spot Attack"],ring:"Ring of Crow",mount_temp:"Alert",mount_trait:"Spiritbond"},
+  {name:"Justinian the Great",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Envoy Of Peace",skill2:"Defensive Assault",skills:["Sowing Discord","Prayer For Harvest","War Tactic","Peaceful Haven","Protracted Battle","Crushing Impact"],ring:"Ring of Falcon",mount_temp:"Protective",mount_trait:"Lifesaver"},
+  {name:"Belisarius",type:"PIK/CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Eternal Eagle Flag",skill2:"The Last Romans",skills:["Sowing Discord","Suppression","Crushing Impact","Tactical Pursuit","Conquering Iron Hoof","Double Attack"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Battlemaster"},
+  {name:"Bellevue",type:"ARC",rarity:"Legendary",season:"S2 Wheel",skill1:"Imminent Tempest",skill2:"Black Tide",skills:["Armor Piercer","Infuriation","Act of Mercy","Weak Spot Attack","Pay in Blood","Dark Flag"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Theodora",type:"ARC/SW",rarity:"Legendary",season:"S2 Event",skill1:"Taking the Purple",skill2:"Dynastic Co-Rule",skills:["Suppression","Maneuver","War Tactic","Conflagration","Ultimate Strategy","Immortal Army"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond"},
+  {name:"Suleiman",type:"ARC",rarity:"Legendary",season:"S2 Event",skill1:"Law of Kanus",skill2:"Magnificent Conquest",skills:["Blaze Impact","Deception","Conflagration","Ultimate Strategy","Flash of Inspiration","Strategy Master's Gift"],ring:"Everflame Wings",mount_temp:"Alert",mount_trait:"Spiritbond"},
+  {name:"Leonidas I",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Firm Strike",skill2:"Unyielding Soul",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution","King's Blade","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Richard I",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Surmount",skill2:"Lionheart",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution","Forceful Retaliation","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Ram Khamhaeng",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Valor of Rama",skill2:"Splendor of Sukhothai",skills:["Fortification","Prayer for Harvest","Tenacity","Peaceful Haven","Savage","War Elephant"],ring:"Ring of Steed",mount_temp:"Protective",mount_trait:"Lifesaver"},
+  {name:"Octavian",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Accumulated Power",skill2:"Might of Ruler",skills:["Formation Attack","Change of Formation","King's Blade","Triple Offensive","Coordination","Whirlwind Sweep"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Julius Caesar",type:"PIK/SW",rarity:"Legendary",season:"S2 Event",skill1:"Triumphant Return",skill2:"Crownless King",skills:["Formation Attack","Change of Formation","King's Blade","Savage","Whirlwind Sweep","Coordination"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"El Cid",type:"CAV",rarity:"Legendary",season:"S2 Event",skill1:"Anthem of the Knight",skill2:"Patriotism",skills:["Armor Piercer","Infuriation","Roar of Victory","Double Attack","Furious Charge","Weak Spot Attack"],ring:"Ring of Night Wolf",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Robin Hood",type:"CAV",rarity:"Legendary",season:"S2 Event",skill1:"Forest Phantom",skill2:"Merry Companion",skills:["Armor Piercer","Fortification","Peaceful Haven","Pay in Blood","Protracted Battle","Righteous Judgement"],ring:"Ring of Falcon",mount_temp:"Protective",mount_trait:"Lifesaver"},
+  {name:"Rani Durgavati",type:"CAV/ARC",rarity:"Legendary",season:"S2 Event",skill1:"Blade of Gondwana",skill2:"Warrior Queen",skills:["Sunder","Armor Piercer","Bloodthirst","Spirited Pursuit","King's Blade","Warrior's Hymn"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Gallant"},
+  {name:"Ashoka",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Roar of Victory","Formation Attack","Change of Formation"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Frederick Barbarossa",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Philip IV",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Strategy Master's Gift","High Spirit","Ultimate Strategy"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond"},
+  {name:"Saladin",type:"CAV/ARC",rarity:"Legendary",season:"S3 Event",skill1:"Triple Clash",skill2:"Fury Of the Sands",skills:["Fervor","Enraged Strike","War Tactic","Tactical Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Night Wolf",mount_temp:"Fearless",mount_trait:"Army Sunder"},
+  {name:"Constantine",type:"SW",rarity:"Legendary",season:"S2 Event (VIP12)",skill1:"",skill2:"",skills:["Shield Slam","Crashing Boulder","Peerless Strike"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Bastion"},
+  {name:"Tomyris",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Bushra",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Boar",mount_temp:"Protective",mount_trait:"Lifesaver"},
+  {name:"Oda Nobunaga",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Toyotomi Hideyoshi",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Tokugawa Ieyasu",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Mansa Musa",type:"PIK",rarity:"Legendary",season:"S3 Wheel",skill1:"Spend a Fortune",skill2:"Devout Radiance",skills:["Vigilance","Mettle","Golden Odyssey","Fearless Retribution","Tenacity","King's Blade"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Charlemagne",type:"ARC/SW",rarity:"Legendary",season:"S3 Wheel",skill1:"Imperial Majesty",skill2:"Starchaser",skills:["Blaze Impact","Sowing Discord","War Tactic","Conflagration","Bloodthirst","Earth Crush"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond"},
+  {name:"Boudica",type:"PIK",rarity:"Legendary",season:"S3 Wheel",skill1:"Sawtooth Pike",skill2:"Swift Reprisal",skills:["Counterattack","Vigilance","Tenacity","King's Blade","Forceful Retaliation","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Ramesses II",type:"SW/ARC",rarity:"Legendary",season:"S3 MGE Event",skill1:"Son of Ra",skill2:"Storms of Set",skills:["Deception","Suppression","Flame of Genesis","Ultimate Strategy","High Spirit","Strategy Master's Gift"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond"},
+  {name:"Mehmed II",type:"ARC/SW",rarity:"Legendary",season:"S3 Event",skill1:"Sultan Caesar",skill2:"Fatih",skills:["Crashing Boulder","Sunder","Owl's Lament","Peaceful Haven","Bloodthirst","King's Blade"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Valor"},
+  {name:"Zhuge Liang",type:"SW/ARC",rarity:"Legendary",season:"S3 Event",skill1:"Stone Sentinel Maze",skill2:"Miracle of Qimen",skills:["Suppression","Sowing Discord","Conflagration","Borrowing the East Wind","War Tactic","Peaceful Haven"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Battlemaster"},
+  {name:"Lagertha",type:"SW",rarity:"Legendary",season:"S4 Wheel",skill1:"Berserker's Shield Dance",skill2:"Valkyrie's Edge",skills:["Shield Slam","Crashing Boulder","Bloodthirst","Peerless Strike","Raging Bloodline","High Spirit"],ring:"Lord of Eastern Heavens",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Timur",type:"CAV/ARC",rarity:"Legendary",season:"S4 MGE Event",skill1:"Exotic Cavalry",skill2:"Annihilation Blade",skills:["Armor Piercer","Infuriation","Tempered Steel","Critical Insight","Weak Spot Attack","Spirited Pursuit"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Cyrus the Great",type:"PIK",rarity:"Legendary",season:"S4 Event",skill1:"Isolated Green Vine",skill2:"King of the World",skills:["Counterattack","Vigilance","Fearless Retribution","Forceful Retaliation","Child of Prophecy","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Elizabeth I",type:"PIK",rarity:"Legendary",season:"S4 Event",skill1:"The Glorious Queen",skill2:"Golden Age",skills:["Sowing Discord","Suppression","Tudor Rose","Ultimate Strategy","Crushing Impact","Triple Offensive"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond"},
+  {name:"Vlad the Impaler",type:"PIK/CAV",rarity:"Legendary",season:"S4 Event",skill1:"King's Edict",skill2:"Dragon's Vigor",skills:["Counterattack","Vigilance","Deadly Dragonthron","Battle Roar","Whirlwind Sweep","Forceful Retaliation"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Otto",type:"CAV/PIK",rarity:"Legendary",season:"S5 Event",skill1:"Sacred Coronation",skill2:"Imperial Privilege",skills:["Formation Attack","Change of Formation","Holy Roman Empire","Savage","War Elephant","Furious Charge"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Gao Meng",type:"SW",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Wu Wei",type:"PIK",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker"},
+  {name:"Kaso",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Yuan Xia",type:"ARC",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Axel",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Narses",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Nino",type:"SW",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce"},
+  {name:"Luki",type:"ARC",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Overpower"},
+  {name:"Leo",type:"PIK",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker"}
+];
+const HERO_BY_NAME = {};
+HERO_META.forEach(h => { HERO_BY_NAME[h.name] = h; });
+
+// ── GEAR META ─────────────────────────────────────────────────────────────
+const GEAR_META = {
+  Sword:   {Head:"Blazing Heart (L)",Hands:"Flowing Force (L)",Body:"Infinite Land (L)",Legs:"Shadowless Wind (L)"},
+  Pike:    {Head:"Power of Abyss (L)",Hands:"Ring of Chaos (L)",Body:"Master of Death (L)",Legs:"Nightmare Boots (L)"},
+  Cavalry: {Head:"Divine Crown (L)",Hands:"Contract of Light (L)",Body:"Omniscience (L)",Legs:"Dust-Free Boots (L)"},
+  Archer:  {Head:"Fiery Sun (L)",Hands:"Embrace of Effulgence (L)",Body:"Eternal Flare (L)",Legs:"Dawnbreak Boots (L)"},
+  Gathering:{Head:"",Hands:"",Body:"",Legs:""}
+};
+
+// ── STATE ────────────────────────────────────────────────────────────────
+const MARCH_IDS = ["M1","M2","M3","M4","M5"];
+const TROOP_TYPES = ["Sword","Pike","Cavalry","Archer","Gathering"];
+const MOUNT_TEMPS = ["Warbred","Alert","Fearless","Protective","Docile","Spirited","Mischievous"];
+const MOUNT_RARITIES = ["Courser","Destrier","Skywing","Celestial Charger"];
+
+function emptyHero(){
+  return {
+    name:"",level:"",rank:"",
+    skill1:{name:"",level:""},skill2:{name:"",level:""},
+    skill3:{name:"",level:"",stars:""},skill4:{name:"",level:"",stars:""},
+    gear:{Head:{name:"",level:"",gems:0},Hands:{name:"",level:"",gems:0},Body:{name:"",level:"",gems:0},Legs:{name:"",level:"",gems:0}},
+    ring:{name:"",level:""},
+    mount:{temperament:"",trait:"",rarity:"",adornment:"",adornment_level:""}
+  };
+}
+function emptyMarch(){
+  return {troopType:"",heroes:[emptyHero(),emptyHero(),emptyHero()]};
+}
+function defaultState(){
+  const s={account:{tc:"",vip:"",herocap:"",civ:""},marches:{},pool:[]};
+  MARCH_IDS.forEach(id=>s.marches[id]=emptyMarch());
+  return s;
+}
+
+let STATE = defaultState();
+let SAVE_TIMER = null;
+let nudgeSent = false;
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(raw){STATE=JSON.parse(raw);setSaveStatus("Loaded");}
+  }catch(e){}
+}
+function saveState(){
+  STATE.lastUpdated=new Date().toISOString();
+  try{localStorage.setItem(STORE_KEY,JSON.stringify(STATE));setSaveStatus("Saved");}
+  catch(e){setSaveStatus("Save failed");}
+}
+function queueSave(){
+  setSaveStatus("Saving...");
+  if(SAVE_TIMER)clearTimeout(SAVE_TIMER);
+  SAVE_TIMER=setTimeout(saveState,600);
+}
+function setSaveStatus(txt){
+  const el=document.getElementById("aw-save-status");
+  if(el)el.textContent=txt;
+}
+
+// ── DOM REFS ──────────────────────────────────────────────────────────────
+const feed=document.getElementById("aw-feed");
+const inputEl=document.getElementById("aw-input");
+const sendBtn=document.getElementById("aw-send");
+const notice=document.getElementById("aw-notice");
+const remaining=document.getElementById("aw-remaining");
+const chatPanel=document.getElementById("aw-chat-panel");
+const profPanel=document.getElementById("aw-prof-panel");
+const profToggle=document.getElementById("aw-prof-toggle");
+
+// ── CHAT ──────────────────────────────────────────────────────────────────
+function scroll(){feed.scrollTo({top:feed.scrollHeight,behavior:"smooth"});}
+
+function addMsg(role,text){
+  const d=document.createElement("div");d.className="aw-msg "+role;
+  const lbl=document.createElement("div");lbl.className="aw-lbl";
+  lbl.textContent=role==="aiga"?"AIGA":"You";
+  const bbl=document.createElement("div");bbl.className="aw-bbl";
+  if(role==="aiga"||role==="error"){bbl.innerHTML=md(text);}
+  else{bbl.textContent=text;}
+  // Profile nudge for first AIGA message when no profile
+  if(role==="aiga"&&!nudgeSent&&!hasProfile()){
+    const nudge=document.createElement("div");nudge.className="aw-profile-nudge";
+    nudge.innerHTML='<span>Complete your profile for account-specific advice</span>';
+    const nb=document.createElement("button");nb.className="aw-nudge-btn";nb.textContent="Set up profile";
+    nb.onclick=()=>openProfile();
+    nudge.appendChild(nb);
+    d.appendChild(lbl);d.appendChild(bbl);d.appendChild(nudge);
+  } else {
+    d.appendChild(lbl);d.appendChild(bbl);
+  }
+  feed.appendChild(d);scroll();
+}
+
+function showTyping(){
+  const d=document.createElement("div");d.className="aw-typing";d.id="aw-typing";
+  const lbl=document.createElement("div");lbl.className="aw-lbl";lbl.textContent="AIGA";
+  const dots=document.createElement("div");dots.className="aw-dots";
+  dots.innerHTML='<div class="aw-dot"></div><div class="aw-dot"></div><div class="aw-dot"></div>';
+  d.appendChild(lbl);d.appendChild(dots);feed.appendChild(d);scroll();
+}
+function hideTyping(){const el=document.getElementById("aw-typing");if(el)el.remove();}
+function setDisabled(s){inputEl.disabled=s;sendBtn.disabled=s||!inputEl.value.trim();}
+function updateRemaining(n){
+  if(n<=5){remaining.textContent=n+" question"+(n===1?"":"s")+" left today";if(n<=2)remaining.style.color="#cc8844";}
+  if(n===0){notice.textContent="Daily limit reached.";notice.className="aw-notice show";setDisabled(true);}
+}
+
+async function sendChatMessage(text){
+  notice.className="aw-notice";
+  addMsg("user",text);
+  setDisabled(true);showTyping();
+  try{
+    const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:text,session_id:sessionId})});
+    hideTyping();
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      if(res.status===429){addMsg("error",err.error||"Daily limit reached.");setDisabled(true);return;}
+      addMsg("error",err.error||"Something went wrong. Please try again.");setDisabled(false);return;
+    }
+    const data=await res.json();
+    addMsg("aiga",data.response);
+    if(typeof data.remaining==="number")updateRemaining(data.remaining);
+  }catch(e){
+    hideTyping();addMsg("error","Could not reach AIGA. Check your connection and try again.");
+  }finally{
+    if(!inputEl.disabled){sendBtn.disabled=!inputEl.value.trim();inputEl.focus();}
+    scroll();
+  }
+}
+
+async function send(){
+  const text=inputEl.value.trim();if(!text)return;
+  inputEl.value="";inputEl.style.height="auto";
+  await sendChatMessage(text);
+}
+
+inputEl.addEventListener("input",function(){
+  this.style.height="auto";this.style.height=Math.min(this.scrollHeight,110)+"px";
+  sendBtn.disabled=!this.value.trim();
+});
+inputEl.addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();if(!sendBtn.disabled)send();}
+});
+sendBtn.addEventListener("click",send);
+
+// ── PROFILE TOGGLE ────────────────────────────────────────────────────────
+function openProfile(){
+  chatPanel.classList.add("hidden");
+  profPanel.classList.remove("hidden");
+  profToggle.classList.add("active");
+  profToggle.textContent="× Close";
+  renderProfile();
+}
+function closeProfile(){
+  chatPanel.classList.remove("hidden");
+  profPanel.classList.add("hidden");
+  profToggle.classList.remove("active");
+  profToggle.textContent="⚙ Profile";
+}
+profToggle.addEventListener("click",()=>{
+  profPanel.classList.contains("hidden")?openProfile():closeProfile();
+});
+
+// ── PROFILE BUILDER ───────────────────────────────────────────────────────
+function hasProfile(){
+  try{return !!localStorage.getItem(STORE_KEY);}catch(e){return false;}
+}
+
+function heroOptions(selected){
+  let html='<option value="">Select hero...</option>';
+  // Group by season
+  const seasons={};
+  HERO_META.forEach(h=>{
+    const s=h.season;if(!seasons[s])seasons[s]=[];seasons[s].push(h);
+  });
+  Object.keys(seasons).forEach(s=>{
+    html+=`<optgroup label="${s}">`;
+    seasons[s].forEach(h=>{
+      const sel=h.name===selected?" selected":"";
+      html+=`<option value="${h.name}"${sel}>${h.name} [${h.type}]</option>`;
+    });
+    html+="</optgroup>";
+  });
+  return html;
+}
+
+function skillOptions(heroName,selected){
+  const h=HERO_BY_NAME[heroName];
+  if(!h||!h.skills.length)return'<option value="">Select skill...</option>';
+  let html='<option value="">Select skill...</option>';
+  h.skills.forEach(s=>{
+    const sel=s===selected?" selected":"";
+    html+=`<option value="${s}"${sel}>${s}</option>`;
+  });
+  return html;
+}
+
+function gemsDots(marchId,slotIdx,slot,count){
+  let html='';
+  for(let i=1;i<=3;i++){
+    const on=i<=count?" on":"";
+    html+=`<div class="aw-gem${on}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-gem="${i}"></div>`;
+  }
+  return html;
+}
+
+function renderHeroSlot(marchId,slotIdx,h,troopType){
+  const label=["Lead","Support 1","Support 2"][slotIdx];
+  const gear=GEAR_META[troopType]||GEAR_META.Sword;
+  const skillSel3=h.skill3.name||"";const skillSel4=h.skill4.name||"";
+
+  return `<div class="aw-hero-slot" id="slot-${marchId}-${slotIdx}">
+    <div class="aw-slot-label">${label}</div>
+    <div class="aw-hero-top">
+      <select class="aw-hero-sel" data-march="${marchId}" data-slot="${slotIdx}">${heroOptions(h.name)}</select>
+      <input type="number" class="aw-lv-inp" placeholder="Lv" min="1" max="140"
+        value="${h.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="level">
+      <select class="aw-rank-sel" data-march="${marchId}" data-slot="${slotIdx}" data-field="rank">
+        <option value="">R</option>${[1,2,3,4,5,6].map(r=>`<option value="${r}"${h.rank==r?" selected":""}>${r}</option>`).join("")}
+      </select>
+    </div>
+    <div class="aw-sec">Skills</div>
+    <div class="aw-skill-row">
+      <span class="aw-skill-num">1</span>
+      <input type="text" placeholder="Commander skill" value="${h.skill1.name||''}"
+        data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1name" class="aw-s1name">
+      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
+        value="${h.skill1.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1level">
+    </div>
+    <div class="aw-skill-row">
+      <span class="aw-skill-num">2</span>
+      <input type="text" placeholder="Signature skill" value="${h.skill2.name||''}"
+        data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2name" class="aw-s2name">
+      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
+        value="${h.skill2.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2level">
+    </div>
+    <div class="aw-skill-row">
+      <span class="aw-skill-num">3</span>
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3name" class="aw-s3sel">${skillOptions(h.name,skillSel3)}</select>
+      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
+        value="${h.skill3.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3level">
+      <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
+        value="${h.skill3.stars||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3stars">
+    </div>
+    <div class="aw-skill-row">
+      <span class="aw-skill-num">4</span>
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4name" class="aw-s4sel">${skillOptions(h.name,skillSel4)}</select>
+      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
+        value="${h.skill4.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4level">
+      <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
+        value="${h.skill4.stars||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4stars">
+    </div>
+    <div class="aw-sec">Gear</div>
+    ${["Head","Hands","Body","Legs"].map(slot=>`
+    <div class="aw-gear-row">
+      <span class="aw-slot-tag">${slot}</span>
+      <input type="text" placeholder="${gear[slot]||slot}" value="${h.gear[slot].name||''}"
+        data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearname">
+      <input type="number" class="aw-glv" placeholder="Lv" min="1" max="80"
+        value="${h.gear[slot].level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearlevel">
+      <div class="aw-gems">${gemsDots(marchId,slotIdx,slot,h.gear[slot].gems||0)}</div>
+    </div>`).join("")}
+    <div class="aw-sec">Ring</div>
+    <div class="aw-ring-row">
+      <input type="text" placeholder="Ring name" value="${h.ring.name||''}"
+        data-march="${marchId}" data-slot="${slotIdx}" data-field="ringname">
+      <input type="number" class="aw-rlv" placeholder="Lv" min="1" max="50"
+        value="${h.ring.level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="ringlevel">
+    </div>
+    <div class="aw-sec">Mount</div>
+    <div class="aw-mount-grid">
+      <div class="aw-field">
+        <label>Temperament</label>
+        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttemp">
+          <option value="">Select...</option>
+          ${MOUNT_TEMPS.map(t=>`<option value="${t}"${h.mount.temperament===t?" selected":""}>${t}</option>`).join("")}
+        </select>
+      </div>
+      <div class="aw-field">
+        <label>Trait</label>
+        <input type="text" placeholder="e.g. Fierce" value="${h.mount.trait||''}"
+          data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttrait">
+      </div>
+      <div class="aw-field">
+        <label>Rarity</label>
+        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountrarity">
+          <option value="">Select...</option>
+          ${MOUNT_RARITIES.map(r=>`<option value="${r}"${h.mount.rarity===r?" selected":""}>${r}</option>`).join("")}
+        </select>
+      </div>
+      <div class="aw-field">
+        <label>Adornment</label>
+        <input type="text" placeholder="Name" value="${h.mount.adornment||''}"
+          data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadorn">
+      </div>
+    </div>
+    <div class="aw-mount-adorn">
+      <span style="font-size:10px;color:var(--aw-faint);align-self:center;flex-shrink:0;">Adorn Lv</span>
+      <input type="number" class="aw-adlv" placeholder="Lv" min="1" max="60"
+        value="${h.mount.adornment_level||''}" data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadornlv">
+    </div>
+  </div>`;
+}
+
+let openMarch = "M1";
+function renderProfile(){
+  // Account
+  const a=STATE.account;
+  document.getElementById("p-tc").value=a.tc||"";
+  document.getElementById("p-vip").value=a.vip||"";
+  document.getElementById("p-herocap").value=a.herocap||"";
+  document.getElementById("p-civ").value=a.civ||"";
+
+  // Marches
+  const ml=document.getElementById("aw-march-list");
+  ml.innerHTML="";
+  MARCH_IDS.forEach(id=>{
+    const m=STATE.marches[id];
+    const isOpen=id===openMarch;
+    const heroSummary=m.heroes.map(h=>h.name||"—").join(" · ");
+    const card=document.createElement("div");card.className="aw-march";
+    card.innerHTML=`
+      <div class="aw-march-hdr${isOpen?" open":""}" data-march="${id}">
+        <span class="aw-march-id">${id}</span>
+        <span class="aw-march-summary">${m.troopType?m.troopType+" — ":""}<span style="color:var(--aw-faint)">${heroSummary}</span></span>
+        <span class="aw-chevron">&#9660;</span>
+      </div>
+      <div class="aw-march-body${isOpen?" open":""}" id="body-${id}">
+        <div class="aw-troop-row">
+          <label>Troop Type</label>
+          <select data-march="${id}" class="aw-troop-sel">
+            <option value="">Select...</option>
+            ${TROOP_TYPES.map(t=>`<option value="${t}"${m.troopType===t?" selected":""}>${t}</option>`).join("")}
+          </select>
+        </div>
+        <div class="aw-hero-slots">
+          ${m.heroes.map((h,i)=>renderHeroSlot(id,i,h,m.troopType)).join("")}
+        </div>
+      </div>`;
+    ml.appendChild(card);
+  });
+
+  // Hero pool
+  renderPool();
+  bindProfileEvents();
+}
+
+function renderPool(){
+  const pl=document.getElementById("aw-pool-list");
+  pl.innerHTML="";
+  (STATE.pool||[]).forEach((p,i)=>{
+    const div=document.createElement("div");div.className="aw-pool-row";
+    const type=p.name&&HERO_BY_NAME[p.name]?HERO_BY_NAME[p.name].type:"";
+    div.innerHTML=`
+      <select class="aw-pool-hero-sel" data-pool="${i}">${heroOptions(p.name)}</select>
+      <input type="number" placeholder="Lv" min="1" max="140" value="${p.level||''}" data-pool="${i}" data-field="level" class="aw-pool-lv">
+      <select class="aw-rank-sel" data-pool="${i}" data-field="rank">
+        <option value="">R</option>${[1,2,3,4,5,6].map(r=>`<option value="${r}"${p.rank==r?" selected":""}>${r}</option>`).join("")}
+      </select>
+      <span class="aw-pool-type">${type}</span>
+      <button class="aw-pool-del" data-pool="${i}" style="background:none;border:none;color:var(--aw-faint);cursor:pointer;font-size:14px;">×</button>`;
+    pl.appendChild(div);
+  });
+}
+
+function bindProfileEvents(){
+  // Account
+  ["p-tc","p-vip","p-herocap","p-civ"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.oninput=el.onchange=()=>{
+      const key=id==="p-tc"?"tc":id==="p-vip"?"vip":id==="p-herocap"?"herocap":"civ";
+      STATE.account[key]=el.value;queueSave();
+    };
+  });
+
+  // March accordion
+  document.querySelectorAll("#aiga-widget .aw-march-hdr").forEach(hdr=>{
+    hdr.onclick=()=>{
+      const id=hdr.dataset.march;
+      openMarch=openMarch===id?"":id;
+      renderProfile();
+    };
+  });
+
+  // Troop type
+  document.querySelectorAll("#aiga-widget .aw-troop-sel").forEach(sel=>{
+    sel.onchange=()=>{
+      const id=sel.dataset.march;
+      STATE.marches[id].troopType=sel.value;
+      queueSave();
+      // Update gear placeholders for all heroes
+      renderProfile();
+    };
+  });
+
+  // Hero select — auto-populate
+  document.querySelectorAll("#aiga-widget .aw-hero-sel").forEach(sel=>{
+    sel.onchange=()=>{
+      const {march:mId,slot:si}=sel.dataset;
+      const idx=parseInt(si);
+      const heroName=sel.value;
+      const h=STATE.marches[mId].heroes[idx];
+      h.name=heroName;
+      const meta=HERO_BY_NAME[heroName];
+      if(meta){
+        if(!h.skill1.name)h.skill1.name=meta.skill1||"";
+        if(!h.skill2.name)h.skill2.name=meta.skill2||"";
+        if(!h.ring.name)h.ring.name=meta.ring||"";
+        if(!h.mount.temperament)h.mount.temperament=meta.mount_temp||"";
+        if(!h.mount.trait)h.mount.trait=meta.mount_trait||"";
+      }
+      // Auto-populate gear from troop type
+      const tt=STATE.marches[mId].troopType;
+      if(tt&&GEAR_META[tt]){
+        const g=GEAR_META[tt];
+        ["Head","Hands","Body","Legs"].forEach(slot=>{
+          if(!h.gear[slot].name)h.gear[slot].name="";
+        });
+      }
+      queueSave();
+      // Re-render this march to update skill dropdowns and placeholders
+      openMarch=mId;renderProfile();
+    };
+  });
+
+  // Skills 1+2 text inputs
+  document.querySelectorAll("[data-field='skill1name'],[data-field='skill2name']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si,field}=inp.dataset;
+      const idx=parseInt(si);
+      const sk=field==="skill1name"?"skill1":"skill2";
+      STATE.marches[mId].heroes[idx][sk].name=inp.value;queueSave();
+    };
+  });
+  document.querySelectorAll("[data-field='skill1level'],[data-field='skill2level']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si,field}=inp.dataset;
+      const idx=parseInt(si);
+      const sk=field==="skill1level"?"skill1":"skill2";
+      STATE.marches[mId].heroes[idx][sk].level=inp.value;queueSave();
+    };
+  });
+
+  // Skills 3+4 dropdowns
+  document.querySelectorAll("[data-field='skill3name'],[data-field='skill4name']").forEach(sel=>{
+    sel.onchange=()=>{
+      const {march:mId,slot:si,field}=sel.dataset;
+      const idx=parseInt(si);
+      const sk=field==="skill3name"?"skill3":"skill4";
+      STATE.marches[mId].heroes[idx][sk].name=sel.value;queueSave();
+    };
+  });
+  document.querySelectorAll("[data-field='skill3level'],[data-field='skill4level']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si,field}=inp.dataset;
+      const idx=parseInt(si);
+      const sk=field==="skill3level"?"skill3":"skill4";
+      STATE.marches[mId].heroes[idx][sk].level=inp.value;queueSave();
+    };
+  });
+  document.querySelectorAll("[data-field='skill3stars'],[data-field='skill4stars']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si,field}=inp.dataset;
+      const idx=parseInt(si);
+      const sk=field==="skill3stars"?"skill3":"skill4";
+      STATE.marches[mId].heroes[idx][sk].stars=inp.value;queueSave();
+    };
+  });
+
+  // Hero level + rank
+  document.querySelectorAll("[data-field='level']").forEach(inp=>{
+    if(!inp.dataset.march)return;
+    inp.oninput=()=>{
+      const {march:mId,slot:si}=inp.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].level=inp.value;queueSave();
+    };
+  });
+  document.querySelectorAll("[data-field='rank']").forEach(sel=>{
+    if(!sel.dataset.march)return;
+    sel.onchange=()=>{
+      const {march:mId,slot:si}=sel.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].rank=sel.value;queueSave();
+    };
+  });
+
+  // Gear name + level
+  document.querySelectorAll("[data-field='gearname']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si,gslot}=inp.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].name=inp.value;queueSave();
+    };
+  });
+  document.querySelectorAll("[data-field='gearlevel']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si,gslot}=inp.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].level=inp.value;queueSave();
+    };
+  });
+
+  // Gems toggle
+  document.querySelectorAll("#aiga-widget .aw-gem").forEach(gem=>{
+    gem.onclick=()=>{
+      const {march:mId,slot:si,gslot,gem:gn}=gem.dataset;
+      const idx=parseInt(si);const gIdx=parseInt(gn);
+      const h=STATE.marches[mId].heroes[idx];
+      const cur=h.gear[gslot].gems||0;
+      h.gear[gslot].gems=cur===gIdx?gIdx-1:gIdx;
+      queueSave();
+      // Update visual
+      const slot=gem.parentElement;
+      slot.querySelectorAll(".aw-gem").forEach((g,i)=>{
+        g.classList.toggle("on",i<h.gear[gslot].gems);
+      });
+    };
+  });
+
+  // Ring
+  document.querySelectorAll("[data-field='ringname']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si}=inp.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].ring.name=inp.value;queueSave();
+    };
+  });
+  document.querySelectorAll("[data-field='ringlevel']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si}=inp.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].ring.level=inp.value;queueSave();
+    };
+  });
+
+  // Mount fields
+  const mountFields={mounttemp:"temperament",mounttrait:"trait",mountrarity:"rarity",mountadorn:"adornment",mountadornlv:"adornment_level"};
+  Object.keys(mountFields).forEach(field=>{
+    document.querySelectorAll(`[data-field='${field}']`).forEach(el=>{
+      const ev=el.tagName==="SELECT"?"change":"input";
+      el.addEventListener(ev,()=>{
+        const {march:mId,slot:si}=el.dataset;
+        STATE.marches[mId].heroes[parseInt(si)].mount[mountFields[field]]=el.value;queueSave();
+      });
+    });
+  });
+
+  // Hero pool events
+  document.querySelectorAll("#aiga-widget .aw-pool-hero-sel").forEach(sel=>{
+    sel.onchange=()=>{
+      const i=parseInt(sel.dataset.pool);
+      STATE.pool[i].name=sel.value;
+      // Update type display
+      const type=sel.value&&HERO_BY_NAME[sel.value]?HERO_BY_NAME[sel.value].type:"";
+      sel.parentElement.querySelector(".aw-pool-type").textContent=type;
+      queueSave();
+    };
+  });
+  document.querySelectorAll("#aiga-widget .aw-pool-lv").forEach(inp=>{
+    inp.oninput=()=>{STATE.pool[parseInt(inp.dataset.pool)].level=inp.value;queueSave();};
+  });
+  document.querySelectorAll(".aw-pool-del").forEach(btn=>{
+    btn.onclick=()=>{STATE.pool.splice(parseInt(btn.dataset.pool),1);queueSave();renderPool();bindPoolEvents();};
+  });
+
+  // Pool rank selects
+  document.querySelectorAll("#aw-pool-list .aw-rank-sel").forEach(sel=>{
+    sel.onchange=()=>{STATE.pool[parseInt(sel.dataset.pool)].rank=sel.value;queueSave();};
+  });
+}
+
+function bindPoolEvents(){
+  document.querySelectorAll("#aiga-widget .aw-pool-hero-sel").forEach(sel=>{
+    sel.onchange=()=>{
+      const i=parseInt(sel.dataset.pool);
+      STATE.pool[i].name=sel.value;
+      const type=sel.value&&HERO_BY_NAME[sel.value]?HERO_BY_NAME[sel.value].type:"";
+      sel.parentElement.querySelector(".aw-pool-type").textContent=type;queueSave();
+    };
+  });
+  document.querySelectorAll("#aiga-widget .aw-pool-lv").forEach(inp=>{
+    inp.oninput=()=>{STATE.pool[parseInt(inp.dataset.pool)].level=inp.value;queueSave();};
+  });
+  document.querySelectorAll(".aw-pool-del").forEach(btn=>{
+    btn.onclick=()=>{STATE.pool.splice(parseInt(btn.dataset.pool),1);queueSave();renderPool();bindPoolEvents();};
+  });
+  document.querySelectorAll("#aw-pool-list .aw-rank-sel").forEach(sel=>{
+    sel.onchange=()=>{STATE.pool[parseInt(sel.dataset.pool)].rank=sel.value;queueSave();};
+  });
+}
+
+document.getElementById("aw-pool-add").onclick=()=>{
+  if(!STATE.pool)STATE.pool=[];
+  STATE.pool.push({name:"",level:"",rank:""});
+  queueSave();renderPool();bindPoolEvents();
+};
+
+// ── PROFILE MARKDOWN ──────────────────────────────────────────────────────
+function buildMarkdown(){
+  const a=STATE.account;
+  const lines=["# AIGA Player Profile",`*Submitted ${new Date().toLocaleString()}*`,""];
+  lines.push(`**Account:** TC ${a.tc||"?"} · VIP ${a.vip||"?"} · Hero cap ${a.herocap||"?"} · ${a.civ||"?"}`,"");
+
+  MARCH_IDS.forEach(id=>{
+    const m=STATE.marches[id];
+    if(!m.heroes.some(h=>h.name))return;
+    lines.push(`## ${id} — ${m.troopType||"?"}`);
+    const labels=["Lead","Support 1","Support 2"];
+    m.heroes.forEach((h,i)=>{
+      if(!h.name){lines.push(`- ${labels[i]}: empty`);return;}
+      lines.push(`- **${labels[i]}: ${h.name}** (Lv ${h.level||"?"} · R${h.rank||"?"})`);
+      const s1=h.skill1.name?`${h.skill1.name} lv${h.skill1.level||"?"}`:"—";
+      const s2=h.skill2.name?`${h.skill2.name} lv${h.skill2.level||"?"}`:"—";
+      const s3=h.skill3.name?`${h.skill3.name} lv${h.skill3.level||"?"}${h.skill3.stars?" ★"+h.skill3.stars:""}`:"—";
+      const s4=h.skill4.name?`${h.skill4.name} lv${h.skill4.level||"?"}${h.skill4.stars?" ★"+h.skill4.stars:""}`:"—";
+      lines.push(`  - Skills: ${s1} | ${s2} | ${s3} | ${s4}`);
+      const gear=["Head","Hands","Body","Legs"].map(sl=>{
+        const g=h.gear[sl];
+        return g.name?`${sl}: ${g.name} lv${g.level||"?"} ◆${g.gems||0}`:`${sl}: —`;
+      }).join(" | ");
+      lines.push(`  - Gear: ${gear}`);
+      lines.push(`  - Ring: ${h.ring.name||"—"}${h.ring.level?" lv"+h.ring.level:""}`);
+      const mt=h.mount;
+      lines.push(`  - Mount: ${mt.temperament||"—"} / ${mt.trait||"—"} / ${mt.rarity||"—"}${mt.adornment?" | Adorn: "+mt.adornment+(mt.adornment_level?" lv"+mt.adornment_level:""):""}`);
+    });
+    lines.push("");
+  });
+
+  if(STATE.pool&&STATE.pool.length){
+    lines.push("## Hero Pool");
+    STATE.pool.forEach(p=>{
+      if(!p.name)return;
+      const type=HERO_BY_NAME[p.name]?HERO_BY_NAME[p.name].type:"";
+      lines.push(`- **${p.name}** (Lv ${p.level||"?"} · R${p.rank||"?"} · ${type})`);
+    });
+  }
+  return lines.join("
+");
+}
+
+// ── SUBMIT PROFILE ────────────────────────────────────────────────────────
+document.getElementById("aw-submit-btn").onclick=async()=>{
+  saveState();
+  const summary=buildMarkdown();
+  closeProfile();
+  nudgeSent=true;
+  // Show brief message in chat — don't dump raw markdown
+  addMsg("user","Profile submitted — please analyse my account.");
+  // Send full profile + instruction to API without re-adding user bubble
+  const prompt="Please analyse the following player profile. Give a concise account overview and flag the top 3-5 issues or improvements. Do not repeat the profile back to me.\n\n"+summary;
+  await sendProfileToAPI(prompt);
+};
+
+async function sendProfileToAPI(text){
+  setDisabled(true);showTyping();
+  try{
+    const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:text,session_id:sessionId})});
+    hideTyping();
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      addMsg("error",err.error||"Something went wrong. Please try again.");
+      setDisabled(false);return;
+    }
+    const data=await res.json();
+    addMsg("aiga",data.response);
+    if(typeof data.remaining==="number")updateRemaining(data.remaining);
+  }catch(e){
+    hideTyping();
+    addMsg("error","Could not reach AIGA. Check your connection and try again.");
+  }finally{
+    if(!inputEl.disabled){sendBtn.disabled=!inputEl.value.trim();inputEl.focus();}
+    scroll();
+  }
+}
+
+document.getElementById("aw-reset-btn").onclick=()=>{
+  if(!confirm("Reset all profile data?"))return;
+  localStorage.removeItem(STORE_KEY);
+  STATE=defaultState();
+  renderProfile();setSaveStatus("Reset");
+};
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+marked.setOptions({breaks:true,gfm:true});
+loadState();
+
+// Welcome
+addMsg("aiga","**Welcome to AIGA** — your Age of Empires Mobile advisor.
+
+Ask me about heroes, marches, gear, events, troops or base progression.
+
+Ask me about AoEM — I\'ll do my best.");
+inputEl.focus();
+
+})();
+</script>
