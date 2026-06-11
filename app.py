@@ -28,8 +28,6 @@ ALLOWED_ORIGINS = [
     "https://aiga-web-production.up.railway.app",
     "https://networkgrey.co.za",
     "https://www.networkgrey.co.za",
-    "https://aiga.networkgrey.co.za",
-    "https://aiga.networkgrey.co.za/aiga-assistant/",
     "http://localhost:5000",
     "http://127.0.0.1:5000",
 ]
@@ -214,6 +212,42 @@ Island Tactics coins ×2 per day (12h cap) | 8 free Advent spins | 20 alliance d
 
 ---
 
+## READING SCREENSHOTS — CALIBRATION
+
+When a player uploads an in-game screenshot, extract and report exactly what is visible. Do not infer what is not shown.
+
+**March formation screen** (Edit Troop / march lineup):
+- Read each hero name, level (Lv.X), and star rank (count filled stars)
+- Read the commander skill shown at the bottom of each hero card
+- Read troop type selected (Swordsmen / Pikemen / Cavalry / Archers)
+- Read Units in Troop count (e.g. 18,702 / 102,780)
+- Note any status shown (Gathering, Rally, etc.)
+- Flag: wrong hero in wrong slot, wrong troop type for the hero, gathering heroes in combat slots
+
+**Hero profile screen** (Heroes page, individual hero detail):
+- Read hero name, level (Lv.X/cap), XP bar fraction if visible
+- Read Unit Capacity
+- Read each gear piece level (Lv.X shown below the icon) and star rating (filled stars)
+- Read ring level (Lv.X shown on ring icon)
+- Read each skill level (number shown on skill icon) and star rating (filled stars below)
+- Read Skill Points total if visible
+- Flag: gear below lv20, ring below T1, skills below lv30, ring not matching meta recommendation
+
+**Battle report screen**:
+- Read outcome (Victory / Defeat)
+- Read casualty ratio (X:Y)
+- Read troops lost vs enemy troops lost for each battle segment
+- Read gravely wounded, lightly wounded, retreat counts
+- Read merits earned
+- Read enemy troop type and count if visible
+- Read hero power values (your hero power vs enemy)
+- Flag: casualty ratio above 1:1 (losses exceeding enemy losses), mixed troop types in march, low hero power relative to enemy
+
+**General rules for screenshots:**
+- Report exactly what you see — do not guess values that are blurred or off-screen
+- If a value is partially visible, note it as approximate
+- After reading the screenshot, provide specific actionable flags — not a list of everything visible
+
 ## WHAT AIGA DOES NOT DO
 - Advise on real-money spending decisions
 - Confirm exploits, bugs or unofficial mechanics
@@ -292,6 +326,11 @@ def aiga_chat():
     return send_from_directory(".", "AIGA_Chat.html")
 
 
+@app.route("/commander")
+def commander():
+    return send_from_directory(".", "AIGA_Commander.html")
+
+
 @app.route("/analyse", methods=["POST"])
 def analyse():
     """March Analyser endpoint — proxies to Claude if needed server-side."""
@@ -326,22 +365,41 @@ def chat():
         return jsonify({"error": "Invalid request."}), 400
 
     # Input validation
-    if not raw_message:
+    image_data = str(data.get("image", "")).strip()
+    image_type = str(data.get("image_type", "image/jpeg")).strip()
+
+    if not raw_message and not image_data:
         return jsonify({"error": "Empty message."}), 400
-    message = html.escape(raw_message)[:MAX_INPUT_LEN]
+    message = html.escape(raw_message)[:MAX_INPUT_LEN] if raw_message else "Please analyse this screenshot."
 
     session = get_session(session_id)
 
-    # Rate limit — 20 messages per session lifetime (resets when session expires)
+    # Rate limit
     if session["message_count"] >= RATE_LIMIT:
         return jsonify({
             "error": "Daily limit reached. Come back tomorrow or upgrade to Commander tier.",
             "session_id": session_id,
         }), 429
 
+    # Build message content — multimodal if image present
+    if image_data:
+        user_content = [
+            {
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": image_type,
+                    "data": image_data,
+                }
+            },
+            {"type": "text", "text": message}
+        ]
+    else:
+        user_content = message
+
     # Build message history
     history = list(session["history"])
-    history.append({"role": "user", "content": message})
+    history.append({"role": "user", "content": user_content})
 
     try:
         response = anthropic_client.messages.create(
@@ -354,7 +412,7 @@ def chat():
         reply = response.content[0].text
 
         # Update session
-        session["history"].append({"role": "user",      "content": message})
+        session["history"].append({"role": "user",      "content": user_content})
         session["history"].append({"role": "assistant", "content": reply})
         # Trim to last N turns
         if len(session["history"]) > CONTEXT_TURNS * 2:
