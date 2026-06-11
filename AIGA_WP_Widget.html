@@ -270,6 +270,48 @@
   #aiga-widget .aw-mount-grid{grid-template-columns:1fr;}
 }
 @media(prefers-reduced-motion:reduce){#aiga-widget .aw-dot{animation:none;opacity:.5;}}
+#aiga-widget .aw-upload-btn{
+  background:transparent;border:1px solid var(--aw-border);
+  border-radius:var(--aw-radius);color:var(--aw-muted);
+  cursor:pointer;font-size:16px;height:40px;width:40px;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:border-color .15s,color .15s;
+}
+#aiga-widget .aw-upload-btn:hover{border-color:var(--aw-gold-dim);color:var(--aw-gold);}
+#aiga-widget .aw-upload-btn.has-image{border-color:var(--aw-gold);color:var(--aw-gold);}
+#aiga-widget .aw-upload-btn:disabled{opacity:.35;cursor:not-allowed;}
+#aiga-widget .aw-preview-bar{
+  padding:6px 14px 0;display:flex;align-items:center;gap:8px;
+}
+#aiga-widget .aw-preview-bar img{
+  height:48px;width:48px;object-fit:cover;border-radius:4px;
+  border:1px solid var(--aw-gold);
+}
+#aiga-widget .aw-preview-info{flex:1;font-size:11px;color:var(--aw-muted);}
+#aiga-widget .aw-preview-clear{
+  background:none;border:none;color:var(--aw-faint);
+  cursor:pointer;font-size:16px;padding:2px 4px;
+  transition:color .15s;
+}
+#aiga-widget .aw-preview-clear:hover{color:var(--aw-error);}
+#aiga-widget .aw-upload-count{font-size:10px;color:var(--aw-faint);}
+#aiga-widget .aw-msg-img{
+  max-width:200px;max-height:160px;border-radius:4px;
+  border:1px solid var(--aw-border);display:block;margin-bottom:6px;
+}
+#aiga-widget .aw-cta-bubble{
+  background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.04));
+  border-color:var(--aw-gold-dim)!important;
+}
+#aiga-widget .aw-cta-bubble strong{color:var(--aw-gold);}
+#aiga-widget .aw-cta-btn{
+  display:inline-block;margin-top:10px;
+  background:var(--aw-gold);color:#111;
+  font-family:'Cinzel',serif;font-size:11px;font-weight:700;
+  letter-spacing:1px;padding:7px 16px;border-radius:4px;
+  text-decoration:none;transition:background .15s;
+}
+#aiga-widget .aw-cta-btn:hover{background:#ddb95a;color:#111;}
 #aiga-widget select.aw-off-meta,#aiga-widget input.aw-off-meta{
   border-color:#cc8844!important;background-color:rgba(204,136,68,.06)!important;}
 #aiga-widget .aw-off-meta-label::after{content:" ⚠";color:#cc8844;font-size:9px;}
@@ -292,7 +334,14 @@
     <div class="aw-feed" id="aw-feed"></div>
     <div class="aw-notice" id="aw-notice"></div>
     <div class="aw-bar">
+      <div class="aw-preview-bar" id="aw-preview-bar" style="display:none">
+        <img id="aw-preview-img" src="" alt="Staged image">
+        <div class="aw-preview-info" id="aw-preview-info"></div>
+        <button class="aw-preview-clear" id="aw-preview-clear" title="Remove image">×</button>
+      </div>
       <div class="aw-bar-row">
+        <input type="file" id="aw-file-input" accept="image/*" style="display:none">
+        <button class="aw-upload-btn" id="aw-upload-btn" title="Upload screenshot">&#128247;</button>
         <div class="aw-wrap">
           <textarea id="aw-input" placeholder="Ask me about AoEM — I'll do my best." maxlength="2000" rows="1"></textarea>
         </div>
@@ -300,7 +349,8 @@
       </div>
       <div class="aw-footer">
         <span id="aw-remaining">Free tier — 20 questions per day</span>
-        <span>Powered by Network Grey ⚔</span>
+        <span id="aw-upload-count" class="aw-upload-count"></span>
+        <span>Network Grey ⚔</span>
       </div>
     </div>
   </div>
@@ -605,20 +655,177 @@ async function sendChatMessage(text){
   }catch(e){
     hideTyping();addMsg("error","Could not reach AIGA. Check your connection and try again.");
   }finally{
-    if(!inputEl.disabled){sendBtn.disabled=!inputEl.value.trim();inputEl.focus();}
+    setDisabled(false);
+    sendBtn.disabled=!inputEl.value.trim();
+    try{inputEl.focus();}catch(_){}
     scroll();
   }
 }
 
+// ── IMAGE UPLOAD ─────────────────────────────────────────────────────────
+const MAX_UPLOADS    = 3;
+const MAX_IMG_PX     = 1024;
+let   uploadCount    = 0;
+let   stagedImage    = null;   // {base64, type, name}
+
+const fileInput    = document.getElementById("aw-file-input");
+const uploadBtn    = document.getElementById("aw-upload-btn");
+const previewBar   = document.getElementById("aw-preview-bar");
+const previewImg   = document.getElementById("aw-preview-img");
+const previewInfo  = document.getElementById("aw-preview-info");
+const previewClear = document.getElementById("aw-preview-clear");
+const uploadCount_el = document.getElementById("aw-upload-count");
+
+function updateUploadUI(){
+  if(uploadCount >= MAX_UPLOADS){
+    uploadBtn.disabled = true;
+    uploadBtn.title = "Upload limit reached ("+MAX_UPLOADS+"/"+MAX_UPLOADS+")";
+    uploadCount_el.textContent = MAX_UPLOADS+"/"+MAX_UPLOADS+" uploads used";
+  } else if(uploadCount > 0){
+    uploadCount_el.textContent = uploadCount+"/"+MAX_UPLOADS+" uploads used";
+  } else {
+    uploadCount_el.textContent = "";
+  }
+}
+
+function showUpgradeCTA(){
+  const d = document.createElement("div");
+  d.className = "aw-msg aiga";
+  const lbl = document.createElement("div");
+  lbl.className = "aw-lbl"; lbl.textContent = "AIGA";
+  const bbl = document.createElement("div");
+  bbl.className = "aw-bbl aw-cta-bubble";
+  bbl.innerHTML = `<strong>You've used all ${MAX_UPLOADS} free image uploads.</strong><br><br>`
+    + `Upgrade to <strong>Commander tier</strong> for unlimited screenshots, `
+    + `full account analysis, march optimisation and priority access.<br>`
+    + `<a class="aw-cta-btn" href="https://networkgrey.co.za/commander" target="_blank">`
+    + `Upgrade to Commander →</a>`;
+  d.appendChild(lbl); d.appendChild(bbl);
+  feed.appendChild(d); scroll();
+}
+
+function clearStaged(){
+  stagedImage = null;
+  previewBar.style.display = "none";
+  previewImg.src = "";
+  uploadBtn.classList.remove("has-image");
+  fileInput.value = "";
+}
+
+async function resizeToBase64(file){
+  return new Promise((resolve, reject)=>{
+    if(!file.type.startsWith("image/")){
+      reject(new Error("Not an image file")); return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = ()=>{
+        const canvas = document.createElement("canvas");
+        let w = img.width, h = img.height;
+        if(w > MAX_IMG_PX || h > MAX_IMG_PX){
+          const r = Math.min(MAX_IMG_PX/w, MAX_IMG_PX/h);
+          w = Math.round(w*r); h = Math.round(h*r);
+        }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+        resolve(dataUrl.split(",")[1]);   // base64 only
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+uploadBtn.addEventListener("click", ()=> fileInput.click());
+
+fileInput.addEventListener("change", async ()=>{
+  const file = fileInput.files[0];
+  if(!file) return;
+  if(uploadCount >= MAX_UPLOADS){
+    addMsg("error","Upload limit reached ("+MAX_UPLOADS+" max per session)."); return;
+  }
+  try{
+    const b64 = await resizeToBase64(file);
+    stagedImage = { base64: b64, type: "image/jpeg", name: file.name };
+    previewImg.src = "data:image/jpeg;base64," + b64;
+    const kb = Math.round(b64.length * 0.75 / 1024);
+    previewInfo.textContent = file.name + " — ready to send";
+    previewBar.style.display = "flex";
+    uploadBtn.classList.add("has-image");
+    sendBtn.disabled = false;
+  }catch(err){
+    addMsg("error","Could not load image: "+err.message);
+  }
+});
+
+previewClear.addEventListener("click", clearStaged);
+
 async function send(){
-  const text=inputEl.value.trim();if(!text)return;
-  inputEl.value="";inputEl.style.height="auto";
-  await sendChatMessage(text);
+  const text=inputEl.value.trim();
+  if(!text && !stagedImage) return;
+  const msgText = text || "Please analyse this screenshot.";
+  inputEl.value=""; inputEl.style.height="auto";
+
+  if(stagedImage){
+    // Show image + text in user bubble
+    const d=document.createElement("div"); d.className="aw-msg user";
+    const lbl=document.createElement("div"); lbl.className="aw-lbl"; lbl.textContent="You";
+    const bbl=document.createElement("div"); bbl.className="aw-bbl";
+    const imgEl=document.createElement("img");
+    imgEl.src="data:image/jpeg;base64,"+stagedImage.base64;
+    imgEl.className="aw-msg-img";
+    bbl.appendChild(imgEl);
+    if(text){ const p=document.createElement("div"); p.textContent=text; bbl.appendChild(p); }
+    d.appendChild(lbl); d.appendChild(bbl);
+    feed.appendChild(d); scroll();
+
+    const imgData = stagedImage.base64;
+    const imgType = stagedImage.type;
+    clearStaged();
+    uploadCount++;
+    updateUploadUI();
+
+    // Send to API with image
+    setDisabled(true); showTyping();
+    try{
+      const res = await fetch(API,{
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({message:msgText, session_id:sessionId, image:imgData, image_type:imgType})
+      });
+      hideTyping();
+      const rawText = await res.text();
+      if(!res.ok){
+        let e="Server error "+res.status;
+        try{e=JSON.parse(rawText).error||e;}catch(_){}
+        addMsg("error",e); setDisabled(false); return;
+      }
+      const data = JSON.parse(rawText);
+      addMsg("aiga", data.response||"No response.");
+      if(typeof data.remaining==="number") updateRemaining(data.remaining);
+      // Show upgrade CTA after final free upload
+      if(uploadCount >= MAX_UPLOADS){
+        setTimeout(showUpgradeCTA, 800);
+      }
+    }catch(e){
+      hideTyping(); addMsg("error","Upload failed: "+e.message);
+    }finally{
+      setDisabled(false);
+      sendBtn.disabled=!inputEl.value.trim()&&!stagedImage;
+      try{inputEl.focus();}catch(_){}
+      scroll();
+    }
+  } else {
+    await sendChatMessage(msgText);
+  }
 }
 
 inputEl.addEventListener("input",function(){
   this.style.height="auto";this.style.height=Math.min(this.scrollHeight,110)+"px";
-  sendBtn.disabled=!this.value.trim();
+  sendBtn.disabled=!this.value.trim()&&!stagedImage;
 });
 inputEl.addEventListener("keydown",function(e){
   if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();if(!sendBtn.disabled)send();}
@@ -1219,7 +1426,9 @@ async function sendProfileToAPI(text){
     console.error("[AIGA] Fetch error:",e);
     addMsg("error","Fetch failed: "+e.message);
   }finally{
-    if(!inputEl.disabled){sendBtn.disabled=!inputEl.value.trim();inputEl.focus();}
+    setDisabled(false);
+    sendBtn.disabled=!inputEl.value.trim();
+    try{inputEl.focus();}catch(_){}
     scroll();
   }
 }
