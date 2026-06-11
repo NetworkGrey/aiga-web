@@ -1,0 +1,300 @@
+<!-- AIGA Commander — Coming Soon placeholder | Network Grey -->
+<!-- Paste into WordPress Custom HTML block on the AIGA Commander page -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+#aiga-commander {
+  --bg:#1a1a1a; --card:#242424; --header:#1e1e1e;
+  --border:#333; --text:#fff; --muted:#999; --faint:#555;
+  --gold:#c9a84c; --gold-dim:#8a7035;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  font-size:14px; line-height:1.6;
+  background:var(--bg); border-radius:12px;
+  border:1px solid var(--border);
+  max-width:860px; margin:0 auto;
+  box-shadow:0 4px 40px rgba(0,0,0,.5);
+  overflow:hidden;
+}
+#aiga-commander * { box-sizing:border-box; margin:0; padding:0; }
+
+/* Header */
+#aiga-commander .ac-header {
+  background:var(--header); border-bottom:1px solid var(--border);
+  padding:16px 24px; display:flex; align-items:center;
+  justify-content:space-between;
+}
+#aiga-commander .ac-logo { display:flex; flex-direction:column; gap:1px; }
+#aiga-commander .ac-logo-ng {
+  font-family:'Cinzel',serif; font-size:7px;
+  letter-spacing:5px; color:var(--faint); text-transform:uppercase;
+}
+#aiga-commander .ac-logo-aiga {
+  font-family:'Cinzel',serif; font-size:18px;
+  font-weight:700; color:var(--gold); letter-spacing:3px;
+}
+#aiga-commander .ac-tier-badge {
+  font-family:'Cinzel',serif; font-size:10px; font-weight:700;
+  letter-spacing:2px; color:#111;
+  background:var(--gold); padding:5px 14px; border-radius:4px;
+  text-transform:uppercase;
+}
+
+/* Body */
+#aiga-commander .ac-body {
+  padding:40px 32px; display:flex; flex-direction:column;
+  align-items:center; gap:28px;
+}
+
+/* Coming soon badge */
+#aiga-commander .ac-soon {
+  display:inline-flex; align-items:center; gap:8px;
+  border:1px solid var(--gold-dim); border-radius:20px;
+  padding:5px 16px; font-size:11px; letter-spacing:2px;
+  text-transform:uppercase; color:var(--gold);
+}
+#aiga-commander .ac-soon::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--gold); animation:ac-pulse 2s ease-in-out infinite;
+}
+@keyframes ac-pulse {
+  0%,100%{opacity:.4;} 50%{opacity:1;}
+}
+
+/* Headline */
+#aiga-commander .ac-headline {
+  text-align:center;
+}
+#aiga-commander .ac-headline h2 {
+  font-family:'Cinzel',serif; font-size:22px; font-weight:700;
+  color:var(--text); letter-spacing:1px; margin-bottom:10px;
+}
+#aiga-commander .ac-headline p {
+  font-size:14px; color:var(--muted); max-width:500px; line-height:1.7;
+}
+
+/* Feature grid */
+#aiga-commander .ac-features {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:12px; width:100%; max-width:600px;
+}
+#aiga-commander .ac-feature {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:8px; padding:14px 16px;
+  display:flex; gap:12px; align-items:flex-start;
+}
+#aiga-commander .ac-feature-icon {
+  font-size:18px; flex-shrink:0; margin-top:1px;
+}
+#aiga-commander .ac-feature-text strong {
+  display:block; font-size:12px; color:var(--text);
+  margin-bottom:3px; font-weight:600;
+}
+#aiga-commander .ac-feature-text span {
+  font-size:11px; color:var(--muted); line-height:1.5;
+}
+
+/* Divider */
+#aiga-commander .ac-divider {
+  width:100%; max-width:600px;
+  border:none; border-top:1px solid var(--border);
+}
+
+/* Auth + Payment placeholders */
+#aiga-commander .ac-actions {
+  display:flex; flex-direction:column;
+  align-items:center; gap:12px; width:100%; max-width:360px;
+}
+#aiga-commander .ac-action-label {
+  font-size:11px; color:var(--faint); letter-spacing:1px;
+  text-transform:uppercase; text-align:center;
+}
+#aiga-commander .ac-google-btn {
+  display:flex; align-items:center; gap:10px;
+  background:#fff; border:none; border-radius:6px;
+  padding:10px 20px; width:100%; justify-content:center;
+  font-family:inherit; font-size:13px; font-weight:600;
+  color:#3c4043; cursor:not-allowed; opacity:.5;
+  position:relative;
+}
+#aiga-commander .ac-google-btn svg {
+  width:18px; height:18px; flex-shrink:0;
+}
+#aiga-commander .ac-pay-btn {
+  display:flex; align-items:center; gap:10px;
+  background:var(--gold); border:none; border-radius:6px;
+  padding:10px 20px; width:100%; justify-content:center;
+  font-family:'Cinzel',serif; font-size:12px; font-weight:700;
+  letter-spacing:1px; color:#111; cursor:not-allowed; opacity:.5;
+}
+#aiga-commander .ac-placeholder-note {
+  font-size:10px; color:var(--faint); text-align:center;
+  font-style:italic;
+}
+
+/* Notify form */
+#aiga-commander .ac-notify {
+  background:rgba(201,168,76,.06); border:1px solid var(--gold-dim);
+  border-radius:8px; padding:20px 24px;
+  width:100%; max-width:460px; text-align:center;
+}
+#aiga-commander .ac-notify p {
+  font-size:13px; color:var(--muted); margin-bottom:14px;
+}
+#aiga-commander .ac-notify-row {
+  display:flex; gap:8px;
+}
+#aiga-commander .ac-notify input {
+  flex:1; background:#2a2a2a; border:1px solid var(--border);
+  border-radius:6px; padding:9px 12px; color:var(--text);
+  font-family:inherit; font-size:13px; outline:none;
+  transition:border-color .15s;
+}
+#aiga-commander .ac-notify input:focus { border-color:var(--gold-dim); }
+#aiga-commander .ac-notify input::placeholder { color:var(--faint); }
+#aiga-commander .ac-notify button {
+  background:var(--gold); border:none; border-radius:6px;
+  padding:9px 18px; color:#111; font-family:'Cinzel',serif;
+  font-size:11px; font-weight:700; letter-spacing:1px;
+  cursor:pointer; white-space:nowrap; transition:background .15s;
+  flex-shrink:0;
+}
+#aiga-commander .ac-notify button:hover { background:#ddb95a; }
+#aiga-commander .ac-notify .ac-notify-thanks {
+  display:none; font-size:13px; color:var(--gold);
+}
+
+/* Footer */
+#aiga-commander .ac-footer {
+  background:var(--header); border-top:1px solid var(--border);
+  padding:12px 24px; text-align:center;
+  font-size:11px; color:var(--faint);
+}
+
+@media(max-width:560px){
+  #aiga-commander .ac-features { grid-template-columns:1fr; }
+  #aiga-commander .ac-body { padding:28px 18px; }
+  #aiga-commander .ac-notify-row { flex-direction:column; }
+}
+</style>
+
+<div id="aiga-commander">
+  <div class="ac-header">
+    <div class="ac-logo">
+      <span class="ac-logo-ng">Network Grey</span>
+      <span class="ac-logo-aiga">AIGA</span>
+    </div>
+    <span class="ac-tier-badge">Commander</span>
+  </div>
+
+  <div class="ac-body">
+
+    <div class="ac-soon">&#9679; Coming Soon</div>
+
+    <div class="ac-headline">
+      <h2>Full Strategic Command</h2>
+      <p>AIGA Commander delivers account-specific analysis, deep KB injection and unlimited screenshot uploads — everything the free tier does, taken further.</p>
+    </div>
+
+    <div class="ac-features">
+      <div class="ac-feature">
+        <span class="ac-feature-icon">&#128247;</span>
+        <div class="ac-feature-text">
+          <strong>Unlimited uploads</strong>
+          <span>Hero profiles, march screenshots, battle reports — no cap</span>
+        </div>
+      </div>
+      <div class="ac-feature">
+        <span class="ac-feature-icon">&#9876;</span>
+        <div class="ac-feature-text">
+          <strong>Deep march analysis</strong>
+          <span>Full KB injection — exact hero builds, gear priorities, skill sequencing</span>
+        </div>
+      </div>
+      <div class="ac-feature">
+        <span class="ac-feature-icon">&#128197;</span>
+        <div class="ac-feature-text">
+          <strong>Event planning</strong>
+          <span>MGE/MEE day-by-day resource allocation against your actual account</span>
+        </div>
+      </div>
+      <div class="ac-feature">
+        <span class="ac-feature-icon">&#9881;</span>
+        <div class="ac-feature-text">
+          <strong>Saved profile</strong>
+          <span>Profile synced across devices — AIGA knows your account on every session</span>
+        </div>
+      </div>
+      <div class="ac-feature">
+        <span class="ac-feature-icon">&#128202;</span>
+        <div class="ac-feature-text">
+          <strong>Resource planner</strong>
+          <span>Exact XP, SP and gear costs mapped to your current heroes</span>
+        </div>
+      </div>
+      <div class="ac-feature">
+        <span class="ac-feature-icon">&#127942;</span>
+        <div class="ac-feature-text">
+          <strong>Rally coordinator</strong>
+          <span>Alliance war lineups, KvK preparation and MEE scoring strategy</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="ac-divider">
+
+    <!-- Auth + Payment placeholders — activate at launch -->
+    <div class="ac-actions">
+      <div class="ac-action-label">At launch</div>
+
+      <!-- Google Sign-In placeholder -->
+      <button class="ac-google-btn" disabled title="Available at launch">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Sign in with Google
+      </button>
+
+      <!-- Payment placeholder -->
+      <button class="ac-pay-btn" disabled title="Available at launch">
+        &#128179; Subscribe — Commander Tier
+      </button>
+
+      <p class="ac-placeholder-note">Login and payment activate at launch. No action needed now.</p>
+    </div>
+
+    <hr class="ac-divider">
+
+    <!-- Notify me form -->
+    <div class="ac-notify">
+      <p>Be the first to know when Commander launches — leave your email below.</p>
+      <div class="ac-notify-row">
+        <input type="email" id="ac-email" placeholder="your@email.com">
+        <button onclick="acNotify()">Notify me</button>
+      </div>
+      <p class="ac-notify-thanks" id="ac-thanks">&#10003; You're on the list. We'll be in touch.</p>
+    </div>
+
+  </div><!-- /ac-body -->
+
+  <div class="ac-footer">
+    AIGA Commander &mdash; Network Grey &nbsp;&#9895;&nbsp; Powered by Anthropic Claude
+  </div>
+</div>
+
+<script>
+function acNotify(){
+  const email = document.getElementById('ac-email').value.trim();
+  if(!email || !email.includes('@')) return;
+  document.getElementById('ac-email').style.display = 'none';
+  document.querySelector('.ac-notify button').style.display = 'none';
+  document.getElementById('ac-thanks').style.display = 'block';
+  // TODO: POST email to backend or Airtable at launch
+  console.log('[AIGA Commander] Notify request:', email);
+}
+document.getElementById('ac-email').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') acNotify();
+});
+</script>
