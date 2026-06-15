@@ -1334,7 +1334,75 @@ function bindPoolEvents(){
     sel.onchange=()=>{STATE.pool[parseInt(sel.dataset.pool)].rank=sel.value;queueSave();};
   });
 }
+// ============================================================================
+// WIDGET PATCH — inject this block into AIGA_WP_Widget.html
+//
+// WHERE TO INSERT:
+//   Find the line:  document.getElementById("aw-pool-add").onclick=()=>{
+//   Insert THIS ENTIRE BLOCK immediately above that line.
+//
+// WHY:
+//   openMarch was used but never declared (ReferenceError on profile open).
+//   renderProfile() was called in openProfile() and bindProfileEvents()
+//   but never defined — march accordion renders nothing without it.
+// ============================================================================
 
+// ── OPEN MARCH TRACKER ────────────────────────────────────────────────────────
+// Tracks which march accordion is currently expanded. null = all closed.
+let openMarch = null;
+
+// ── RENDER PROFILE ────────────────────────────────────────────────────────────
+function renderProfile() {
+  // Restore account field values from STATE
+  const a = STATE.account;
+  const tcEl  = document.getElementById("p-tc");
+  const vipEl = document.getElementById("p-vip");
+  const hcEl  = document.getElementById("p-herocap");
+  const civEl = document.getElementById("p-civ");
+  if (tcEl)  tcEl.value  = a.tc      || "";
+  if (vipEl) vipEl.value = a.vip     || "";
+  if (hcEl)  hcEl.value  = a.herocap || "";
+  if (civEl) civEl.value = a.civ     || "";
+
+  // Render march accordions
+  const marchList = document.getElementById("aw-march-list");
+  if (!marchList) return;
+
+  let html = "";
+  MARCH_IDS.forEach(id => {
+    const m = STATE.marches[id];
+    const isOpen = openMarch === id;
+    const leadName = m.heroes[0] && m.heroes[0].name ? m.heroes[0].name : "Empty";
+    const summary  = m.troopType ? `${m.troopType} · ${leadName}` : leadName;
+
+    html += `
+      <div class="aw-march" id="march-${id}">
+        <div class="aw-march-hdr${isOpen ? " open" : ""}" data-march="${id}">
+          <span class="aw-march-id">${id}</span>
+          <span class="aw-march-summary">${summary}</span>
+          <span class="aw-chevron">▾</span>
+        </div>
+        <div class="aw-march-body${isOpen ? " open" : ""}">
+          <div class="aw-troop-row">
+            <label>Troop type</label>
+            <select class="aw-troop-sel" data-march="${id}">
+              <option value="">Select...</option>
+              ${TROOP_TYPES.map(t =>
+                `<option value="${t}"${m.troopType === t ? " selected" : ""}>${t}</option>`
+              ).join("")}
+            </select>
+          </div>
+          <div class="aw-hero-slots">
+            ${m.heroes.map((h, idx) => renderHeroSlot(id, idx, h, m.troopType)).join("")}
+          </div>
+        </div>
+      </div>`;
+  });
+
+  marchList.innerHTML = html;
+  renderPool();
+  bindProfileEvents();
+}
 document.getElementById("aw-pool-add").onclick=()=>{
   if(!STATE.pool)STATE.pool=[];
   STATE.pool.push({name:"",level:"",rank:""});
