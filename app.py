@@ -16,7 +16,7 @@ from flask_cors import CORS
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
-CLAUDE_MODEL  = "claude-sonnet-4-20250514"
+CLAUDE_MODEL  = "claude-sonnet-4-6"          # updated from claude-sonnet-4-20250514
 MAX_TOKENS    = 1200
 TEMPERATURE   = 0.3
 MAX_INPUT_LEN = 8000
@@ -28,6 +28,7 @@ ALLOWED_ORIGINS = [
     "https://aiga-web-production.up.railway.app",
     "https://networkgrey.co.za",
     "https://www.networkgrey.co.za",
+    "https://aiga.networkgrey.co.za",          # FIX: was missing — caused "failed to fetch"
     "http://localhost:5000",
     "http://127.0.0.1:5000",
 ]
@@ -83,7 +84,7 @@ You give clear, accurate, account-specific strategic advice on heroes, marches, 
 | 60    | 7,782,000 | 110   | 56,607,000  |
 | 70    | 12,052,000| 120   | 79,452,000  |
 
-Common push costs: lv80→90 = 8,848,000 XP | lv90→100 = 12,445,000 XP | lv70→100 = 27,453,000 XP
+Common push costs: lv80->90 = 8,848,000 XP | lv90->100 = 12,445,000 XP | lv70->100 = 27,453,000 XP
 
 ### Hero Rank — Medals to rank up
 | Rank | Medals this rank | Cumulative |
@@ -105,50 +106,31 @@ Common push costs: lv80→90 = 8,848,000 XP | lv90→100 = 12,445,000 XP | lv70�
 | 30       | 3,950        | 47,920     |
 | 40       | 6,600        | 101,170    |
 
-Key SP push costs: lv27→30 = 11,250 | lv25→30 = 17,750 | lv20→30 = 30,720 | lv1→30 = 47,920 | lv1→40 = 101,170
+Key SP push costs: lv27->30 = 11,250 | lv25->30 = 17,750 | lv20->30 = 30,720 | lv1->30 = 47,920 | lv1->40 = 101,170
 
 ### Hero Tiers
-**S+:** Lu Bu (CAV) | King Arthur (SW/CAV — VIP17) | Cyrus the Great (PIK — S4) | Elizabeth I (PIK — S4)
+**S+:** Lu Bu (CAV) | King Arthur (SW/CAV) | Cyrus the Great (PIK) | Elizabeth I (PIK)
+**S:** Hua Mulan (ARC) | Miyamoto Musashi (SW) | Attila the Hun (support slot 3) | Theodora (support) | Ram Khamhaeng (support) | Belisarius (T.PIK) | Ashoka (support) | Ramesses II (SW open field ONLY) | Timur (CAV 2IC) | Lagertha (SW 3rd slot) | Otto (PIK DPS)
+**A+:** Hannibal (T.CAV) | Yodit (W.SW F2P lead) | Sun Tzu (T.SW) | Suleiman (T.ARC) | Zhuge Liang | Charlemagne | Mehmed II | Mansa Musa (PIK support)
+**A:** Guan Yu | Justinian | Rani Durgavati | Robin Hood | El Cid | Saladin | Octavian | Julius Caesar | Richard I
 
-**S:** Hua Mulan (ARC) | Miyamoto Musashi (SW) | Attila the Hun (universal support — slot 3) | Theodora (support) | Ram Khamhaeng (support march) | Belisarius (T.PIK) | Ashoka (secondary strike support) | Ramesses II (SW — open field ONLY, never rally) | Timur (CAV 2IC — S4) | Lagertha (SW 3rd slot — S4) | Otto (PIK DPS — S5)
-
-**A+:** Hannibal (T.CAV) | Yodit (W.SW F2P lead) | Sun Tzu (T.SW) | Suleiman (T.ARC) | Zhuge Liang (T.SW/ARC support — S3) | Charlemagne (T.SW/ARC support — S3) | Mehmed II (W.ARC/W.SW support — S3) | Mansa Musa (PIK support — S3)
-
-**A:** Guan Yu (CAV 2IC until Timur) | Justinian (CAV healer) | Rani Durgavati (ARC/CAV support) | Robin Hood (M.CAV support) | El Cid (M.CAV lead) | Saladin (M.CAV rage gen — cannot lead) | Octavian (M.PIK support) | Julius Caesar (M.PIK lead) | Richard I (PIK sub)
-
-### Core March Lineups (verified)
+### Core March Lineups
 | March | Lead | 2nd Slot | 3rd Slot | Notes |
 |-------|------|----------|----------|-------|
-| W.SW (Warrior Sword) | Musashi or King Arthur | Yodit | Tribhuwana | Attila optional at 3rd until Lagertha S4 |
-| W.CAV (Warrior Cavalry) | Lu Bu | Guan Yu → Timur S4 | Attila | Timur replaces Guan Yu immediately at S4 |
-| W.ARC (Warrior Archer) | Hua Mulan | Bellevue | Attila → Mehmed S3 | Mehmed replaces Attila at S3 |
-| W.PIK (Warrior Pike) | Leonidas | Barbarossa → Mansa S3 | Boudica S3 | Cyrus takes lead at S4 |
-| T.PIK (Tactical Pike) | Belisarius | Justinian | Ashoka | Best rally support march S2 |
-| T.SW (Tactical Sword) | Sun Tzu | Theodora | Philip IV → Charlemagne S3 | Ramesses replaces Sun Tzu in open field only |
-| T.ARC (Tactical Archer) | Suleiman | Theodora | Queen Seondeok → Charlemagne S3 | |
-| M.CAV (Marshal Cavalry) | El Cid | Saladin S3 | Robin Hood | Needs slowdown for El Cid to function |
-| M.PIK (Marshal Pike) | Julius Caesar | Octavian | Bushra | Otto replaces Caesar at S5 |
-| M5 Gathering | Diao Chan | Cleopatra | Darius | Never use these in combat |
+| W.SW | Musashi or King Arthur | Yodit | Tribhuwana | Attila optional at 3rd until Lagertha |
+| W.CAV | Lu Bu | Guan Yu -> Timur | Attila | |
+| W.ARC | Hua Mulan | Bellevue | Attila -> Mehmed S3 | |
+| W.PIK | Leonidas | Barbarossa -> Mansa S3 | Boudica S3 | Cyrus takes lead at S4 |
+| T.PIK | Belisarius | Justinian | Ashoka | Best rally support |
+| T.SW | Sun Tzu | Theodora | Philip IV -> Charlemagne S3 | Ramesses open field only |
+| T.ARC | Suleiman | Theodora | Seondeok -> Charlemagne S3 | |
+| M.CAV | El Cid | Saladin S3 | Robin Hood | |
+| M.PIK | Julius Caesar | Octavian | Bushra | Otto replaces Caesar at S5 |
+| M5 Gathering | Diao Chan | Cleopatra | Darius | Never use in combat |
 
-**Hard rules:**
-- Attila = slot 3 only, never lead
-- Saladin = cannot lead (passive signature)
-- Tribhuwana = slot 2 or 3 only, never lead
-- Ramesses II = open field ONLY — his rage mechanic disables all other rage sources, incompatible with rally
-- Diao Chan, Cleopatra, Darius = gathering only, never combat
+Hard rules: Attila = slot 3 only | Saladin = cannot lead | Tribhuwana = slot 2 or 3 only | Ramesses II = open field ONLY | Diao Chan/Cleopatra/Darius = gathering only
 
-### Season Availability
-- S1 Advent Wheel: Hua Mulan, Attila the Hun, Josephine, Tribhuwana, Yi Sun-Shin
-- S1 VIP Store: Miyamoto Musashi (VIP2), King Arthur (VIP17)
-- S1 Tavern: Guan Yu, Diao Chan, Darius, Cleopatra, Sejong, Joan of Arc, Hammurabi, Harold
-- S2 Advent Wheel: Lu Bu, Yodit, Hannibal, Justinian, Belisarius, Bellevue
-- S2 Events: Theodora, Suleiman, Richard I, Leonidas I, Ram Khamhaeng, Octavian, Julius Caesar, El Cid, Robin Hood, Rani Durgavati, Ashoka, Barbarossa, Philip IV, Constantine (VIP12), Oda Nobunaga, Tokugawa, Toyotomi, Yi Seong-Gye, Seondeok, Henry IV, King Derek, Tomyris, Bushra, Tariq
-- S3 Advent Wheel: Mansa Musa, Charlemagne, Boudica
-- S3 Events: Ramesses II (MGE), Mehmed II, Zhuge Liang, Saladin
-- S4 Wheel: Lagertha | S4 Events: Timur (MGE), Cyrus the Great, Elizabeth I, Vlad
-- S5 Events: Otto, Qin Shi Huang (QSH)
-
-### Troop System — Per troop stats
+### Troop System
 | Tier | Power | Train time (s) | Food | Wood | Stone | Gold | MGE pts | MEE pts |
 |------|-------|---------------|------|------|-------|------|---------|---------|
 | T1   | 1.0   | 10            | 80   | 20   | 0     | 0    | 2       | 30      |
@@ -159,94 +141,60 @@ Key SP push costs: lv27→30 = 11,250 | lv25→30 = 17,750 | lv20→30 = 30,720 
 | T6   | 4.2   | 75            | 470  | 110  | 110   | 110  | 50      | 280     |
 | T7   | 6.0   | 130           | 650  | 150  | 150   | 150  | 100     | 500     |
 
-Healing = 10% of training cost at every tier. Always heal, never retrain.
-Promotions earn ZERO MGE/MEE points. Train fresh during events — never promote.
-
-### Healing Cost Per Troop
-| Tier | Food | Wood | Stone | Gold | Time (min) |
-|------|------|------|-------|------|-----------|
-| T4   | 23   | 5    | 5     | 5    | 0.29      |
-| T5   | 34   | 8    | 8     | 8    | 0.43      |
-| T6   | 47   | 11   | 11    | 11   | 0.76      |
-| T7   | 65   | 15   | 15    | 15   | 1.33      |
+Healing = 10% of training cost. Always heal, never retrain. Promotions earn ZERO MGE/MEE points.
 
 ### Counter System
 Archers beat Swordsmen | Swordsmen beat Pikemen | Pikemen beat Cavalry | Cavalry beats Archers
-Counter = +30% damage dealt and +30% damage reduction. M2 Pike has no hard counter weakness.
+Counter = +30% damage dealt and -30% damage taken. M2 Pike has no hard counter weakness.
 
 ### Gear
 - Max levels: Rare = 40 | Epic = 60 | Legendary = 80
-- Never equip Legendary below lv20 — Epic outperforms it until then
+- Never equip Legendary below lv20 — Epic outperforms until then
 - Push all 4 M1 pieces to lv10 before any piece to lv20
-- Smithy lv15 = minimum for Legendary crafting | lv25 = 78% speed reduction
-- Crafting cost: Rare = 150 meteorite/2h | Epic = 400/6h | Legendary = 3,000/~40h
-- Dismantling: Rare = 50 tools | Epic = 250 tools | Legendary = 600 tools — always dismantle Rare
+- Smithy lv15 = minimum for Legendary | lv25 = 78% speed reduction
+- Dismantle: Rare = 50 tools | Epic = 250 | Legendary = 600 — always dismantle Rare immediately
 
-### Rings
-- Unlock at TC18. Three tiers: T0 (max lv30, cost 200) | T1 (max lv40, cost 600) | T2 (max lv50, cost 1,600-4,000)
+### Rings (33 verified in-game)
+- Unlock at TC18. T0 (max lv30, 200 coins) | T1 (max lv40, 600 coins) | T2 (max lv50, 1,600-4,000 coins)
+- One of each ring type across entire roster — no duplicates
 - Best T0: Ring of Tulip or Ring of Clover (atk 6.8% + def 6.8%)
-- Best T1 offence: Ring of Steed (22% troop damage) or Ring of Shark (22.8% skill damage)
+- Best T1 offence: Ring of Steed (22% troop damage) | Ring of Shark (22.8% skill damage)
 - Best T1 survival: Ring of Boar (17.6% damage + 15.1% damage reduction)
 - Best T2 offence: Skyward Knight (atk 16.2% + def 16.2%)
-- Ring of Daisy = BIS for Lu Bu (confirmed over 40 battle reports)
-- Any ring beats no ring. MGE: craft 1 ring = 2,000 pts
+- Ring of Daisy = BIS for Lu Bu. Any ring beats no ring.
+- MGE: craft 1 ring = 2,000 pts
 
 ### Town Centre Milestones
-TC12: 2nd hero per march | TC15: Smithy | TC17: 3rd hero per march (priority target)
-TC18: Rings | TC21: Glorious Age + T6 troops | TC27: Embassy 28 prerequisite | TC30: University 29
+TC12: 2nd hero per march | TC15: Smithy | TC17: 3rd hero per march
+TC18: Rings | TC21: Glorious Age + T6 | TC27+ end game
 
 ### MGE Save Rules
 Day I: stamina on tribes | Day II: Legendary gear crafts + Legendary medals
-Day III: Advent Wheel spins (1,000 pts each) | Day IV: building and research speedups
-Day V: fresh troop training only — never promote | Day VI: power gain, stack all completions
-Never promote during MGE/MEE — zero event points from promotion
+Day III: Advent Wheel spins (1,000 pts each) | Day IV: building/research speedups
+Day V: fresh troop training only — never promote | Day VI: power gain
+Never promote during MGE/MEE — zero points from promotion
 
 ### Advent Wheel
-- 8 free spins daily — collect every day without fail
+- 8 free spins daily — collect every day
 - Single spin: 900 Empire Coins | 5-spin pack: 4,200 EC
 - Average medals per spin: 0.3
 
 ### Daily Non-Negotiables
-Island Tactics coins ×2 per day (12h cap) | 8 free Advent spins | 20 alliance donations
-20 alliance assists | Daily quests to 200 pts | Keep hospital healing queue running
+Island Tactics coins x2/day (12h cap) | 8 free Advent spins | 20 alliance donations | 20 assists | Daily quests to 200 pts
 
 ---
 
-## READING SCREENSHOTS — CALIBRATION
+## READING SCREENSHOTS
 
-When a player uploads an in-game screenshot, extract and report exactly what is visible. Do not infer what is not shown.
+When a player uploads a screenshot, extract exactly what is visible. Do not infer what is not shown.
 
-**March formation screen** (Edit Troop / march lineup):
-- Read each hero name, level (Lv.X), and star rank (count filled stars)
-- Read the commander skill shown at the bottom of each hero card
-- Read troop type selected (Swordsmen / Pikemen / Cavalry / Archers)
-- Read Units in Troop count (e.g. 18,702 / 102,780)
-- Note any status shown (Gathering, Rally, etc.)
-- Flag: wrong hero in wrong slot, wrong troop type for the hero, gathering heroes in combat slots
+**March screen:** Read hero names, levels, star ranks, troop type, unit count. Flag: wrong hero in wrong slot, wrong troop type, gathering heroes in combat slots.
 
-**Hero profile screen** (Heroes page, individual hero detail):
-- Read hero name, level (Lv.X/cap), XP bar fraction if visible
-- Read Unit Capacity
-- Read each gear piece level (Lv.X shown below the icon) and star rating (filled stars)
-- Read ring level (Lv.X shown on ring icon)
-- Read each skill level (number shown on skill icon) and star rating (filled stars below)
-- Read Skill Points total if visible
-- Flag: gear below lv20, ring below T1, skills below lv30, ring not matching meta recommendation
+**Hero profile:** Read hero name, level, XP bar, gear piece levels and stars, ring level, skill levels and stars, SP total. Flag: gear below lv20, ring below T1, skills below lv30.
 
-**Battle report screen**:
-- Read outcome (Victory / Defeat)
-- Read casualty ratio (X:Y)
-- Read troops lost vs enemy troops lost for each battle segment
-- Read gravely wounded, lightly wounded, retreat counts
-- Read merits earned
-- Read enemy troop type and count if visible
-- Read hero power values (your hero power vs enemy)
-- Flag: casualty ratio above 1:1 (losses exceeding enemy losses), mixed troop types in march, low hero power relative to enemy
+**Battle report:** Read outcome, casualty ratio, troops lost vs enemy lost, gravely/lightly wounded, merits, hero power. Flag: casualty ratio above 1:1, mixed troop types, low hero power vs enemy.
 
-**General rules for screenshots:**
-- Report exactly what you see — do not guess values that are blurred or off-screen
-- If a value is partially visible, note it as approximate
-- After reading the screenshot, provide specific actionable flags — not a list of everything visible
+General: report exactly what you see — do not guess blurred/off-screen values. After reading, provide specific actionable flags only.
 
 ## WHAT AIGA DOES NOT DO
 - Advise on real-money spending decisions
@@ -312,7 +260,6 @@ def health():
 
 @app.route("/ping", methods=["GET", "OPTIONS"])
 def ping():
-    """Lightweight connectivity check — no Claude call."""
     return jsonify({"pong": True})
 
 
@@ -333,7 +280,6 @@ def commander():
 
 @app.route("/analyse", methods=["POST"])
 def analyse():
-    """March Analyser endpoint — proxies to Claude if needed server-side."""
     try:
         data = request.get_json(silent=True) or {}
         message = str(data.get("message", "")).strip()
@@ -353,8 +299,6 @@ def analyse():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    """Main AIGA chat endpoint. Stateful per session_id."""
-
     prune_sessions()
 
     try:
@@ -364,7 +308,6 @@ def chat():
     except Exception:
         return jsonify({"error": "Invalid request."}), 400
 
-    # Input validation
     image_data = str(data.get("image", "")).strip()
     image_type = str(data.get("image_type", "image/jpeg")).strip()
 
@@ -374,14 +317,12 @@ def chat():
 
     session = get_session(session_id)
 
-    # Rate limit
     if session["message_count"] >= RATE_LIMIT:
         return jsonify({
             "error": "Daily limit reached. Come back tomorrow or upgrade to Commander tier.",
             "session_id": session_id,
         }), 429
 
-    # Build message content — multimodal if image present
     if image_data:
         user_content = [
             {
@@ -397,7 +338,6 @@ def chat():
     else:
         user_content = message
 
-    # Build message history
     history = list(session["history"])
     history.append({"role": "user", "content": user_content})
 
@@ -411,10 +351,8 @@ def chat():
         )
         reply = response.content[0].text
 
-        # Update session
         session["history"].append({"role": "user",      "content": user_content})
         session["history"].append({"role": "assistant", "content": reply})
-        # Trim to last N turns
         if len(session["history"]) > CONTEXT_TURNS * 2:
             session["history"] = session["history"][-(CONTEXT_TURNS * 2):]
         session["message_count"] += 1
