@@ -16,7 +16,7 @@ from flask_cors import CORS
 
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 
-CLAUDE_MODEL  = "claude-sonnet-4-6"          # updated from claude-sonnet-4-20250514
+CLAUDE_MODEL  = "claude-sonnet-4-6"
 MAX_TOKENS    = 1200
 TEMPERATURE   = 0.3
 MAX_INPUT_LEN = 8000
@@ -28,7 +28,7 @@ ALLOWED_ORIGINS = [
     "https://aiga-web-production.up.railway.app",
     "https://networkgrey.co.za",
     "https://www.networkgrey.co.za",
-    "https://aiga.networkgrey.co.za",          # FIX: was missing — caused "failed to fetch"
+    "https://aiga.networkgrey.co.za",
     "http://localhost:5000",
     "http://127.0.0.1:5000",
 ]
@@ -154,22 +154,90 @@ Counter = +30% damage dealt and -30% damage taken. M2 Pike has no hard counter w
 - Smithy lv15 = minimum for Legendary | lv25 = 78% speed reduction
 - Dismantle: Rare = 50 tools | Epic = 250 | Legendary = 600 — always dismantle Rare immediately
 
-### Rings (33 verified in-game)
-- Unlock at TC18. T0 (max lv30, 200 coins) | T1 (max lv40, 600 coins) | T2 (max lv50, 1,600-4,000 coins)
-- One of each ring type across entire roster — no duplicates
-- Best T0: Ring of Tulip or Ring of Clover (atk 6.8% + def 6.8%)
-- Best T1 offence: Ring of Steed (22% troop damage) | Ring of Shark (22.8% skill damage)
-- Best T1 survival: Ring of Boar (17.6% damage + 15.1% damage reduction)
-- Best T2 offence: Skyward Knight (atk 16.2% + def 16.2%)
-- Ring of Daisy = BIS for Lu Bu. Any ring beats no ring.
-- MGE: craft 1 ring = 2,000 pts
+### Rings — 33 confirmed in-game (NOT 35 — Ring of Mamba does not exist in-game)
+- Unlock at TC18. T0 Flower (10 rings, max lv30, 200 coins) | T1 Animal (14 rings, max lv40, 600 coins) | T2 Element (9 rings, 1,600-4,000 coins)
+- One ring per hero. One of each ring type across entire roster — no duplicate ring names equipped simultaneously
+- Upgrading a ring (T0->T1) returns the old ring to inventory — cascades down to the next priority hero
+- Allocation priority: M1 Lead -> M1 Sup1 -> M1 Sup2 -> M2 Lead -> ... -> M5 Sup2, except meta overrides below
+- Any ring beats no ring
+
+**T0 must-have:** Daisy (Double Strike, DPS lead — 20% chance might dmg on normal attack) | Clover (Armor Maintenance, survivability — 50% chance -25% dmg taken for 3s every 6s)
+**T0 avoid on combat heroes:** Hyacinth (XP only), Laurel (siege only) — gathering-only: Violet, Sunflower
+
+**T1 must-have:** Falcon (Blessing of Oasis, universal support — recover units or -32% dmg taken) | Boar (Burning Will, PIK support — below 60% units +42% passive skill dmg)
+**T1 meta override — Lu Bu specific:** Ring of Night Wolf (Ablaze Spirit — every 9 normal attacks +25% normal/secondary dmg, -35 armor for 3s). This overrides standard march-position allocation priority.
+
+**T2 must-have (cheap tier):** Tranquil Water (suits any march lead/support) | Lofty Mountain (best general DPS lead — first 18s -15% might dmg taken, after 18s +15% troop dmg)
+**T2 must-have (balance tier):** Skyward Knight (best tactical support — -15% hero dmg dealt unpurifiable, +17% commander dmg, +10% sig activation) | Messenger of Destruction (best PIK lead, non-negotiable for Cyrus-type — -20% normal attack dmg unpurifiable, +75% passive skill dmg)
+**T2 late-game BIS:** Everflame Wings (tactical formations, silence mechanic at lv30+) | Sacred Sage (turn-based formations only — Julius Caesar/Octavian type)
+**T2 avoid regardless of cost:** Lord of Eastern Heavens (community-confirmed ignore tier) | Radiant Guardian (F2P ignore — only relevant for Mulan/Belisarius)
+
+**MGE ring scoring:** Craft 1 ring = 2,000 pts | Copper Dust = 400 pts | Silver Dust = 1,000 pts | Fine Gold = 3,000 pts | Meteor Steel = 20,000 pts. Save ring crafting for MGE Day II.
+
+### Mounts — 7 confirmed temperaments, 30 confirmed traits
+**Specialized temperaments (bias mutation toward a trait pool):**
+| Temperament | Pool bias | Mutation rate |
+|---|---|---|
+| Warbred | Might Damage pool | 80.19% |
+| Alert | Strategy Damage pool | 80.18% |
+| Fearless | Universal pool | 78.95% |
+| Protective | Healing pool | 80.17% |
+
+**Control temperaments (adjust inheritance/mutation ratio only — no pool bias):**
+| Temperament | Inheritance / Mutation | Use case |
+|---|---|---|
+| Docile | 55% / 45% | Preserve and lock in an existing trait |
+| Spirited | 45% / 55% | Generate a new trait you don't have |
+| Mischievous | 50% / 50% | No strategic use — breed out or filler |
+
+**Important:** "Fearless" is both a temperament name AND one specific trait inside the Universal pool (solo battle damage reduction). They are not the same thing.
+
+**Might Damage traits (5, Warbred pool):** Overpower (+2-10% active skill might dmg) | Gallant (+2-10% secondary strike might dmg) | Valor (+2-10% passive skill might dmg) | Phalanx Breaker (+2-10% turn-based might dmg) | Fierce (+4.5-22.5% normal attack dmg)
+
+**Strategy Damage traits (4, Alert pool):** Spiritbond (+2-10% active skill strategy dmg) | Stratagem (+2-10% secondary strike strategy dmg) | Cunning (+2-10% passive skill strategy dmg, currently no meta heroes use this) | Battlemaster (+2-10% turn-based strategy dmg, currently no meta heroes use this)
+
+**Universal traits (15, Fearless pool):** Thunderbolt (+2.7-13.5% crit dmg) | Army Sunder (+1.8-9% ALL damage types — best universal second trait) | Dustbane (+2-10% solo battle dmg) | Tidebreaker (+2-10% rally/group battle dmg — best for rally players) | Fearless trait (-0.7-3.5% solo battle dmg taken) | Bastion (-0.7-3.5% rally/group dmg taken) | Iron Ridge (-0.6-3% might dmg taken, only in heavy-Might metas) | Tactician (-0.6-3% strategy dmg taken) | Bedrock (-0.48-2.4% ALL dmg taken, covers both Might+Strategy — default defensive pick over Iron Ridge) | Peacemaker (-1-3% active skill dmg taken) | Blade Sever (-0.6-3% secondary strike dmg taken) | Entrenchment (-0.6-3% passive skill dmg taken) | Stalwart (-1-3% turn-based dmg taken) | Perseverance (-1.2-6% normal attack dmg taken) | Siege (+3-10% siege effectiveness, siege battles only)
+
+**Healing traits (3, Protective pool):** Lifesaver (-0.96-4.8% dmg taken for 3s after mounted hero causes recovery — primary trait for any hero with recovery in kit) | Renewal (+2.3-11.5% healing effect) | Healing Armor (+0.8-4% healing received by troop)
+
+**Gathering traits (3, separate pool — no temperament bias):** Swift (+1-10% gathering speed) | Abundance (+1-10% resources gathered) | Full Stores (+2-8% load capacity). Never mix with combat traits. Never equip on combat heroes.
+
+**Key corrections:** Lu Bu's primary breeding target is Fearless temperament (for the Thunderbolt trait), NOT Warbred. Every offensive skill-type trait has a defensive mirror (Overpower<->Peacemaker, Gallant<->Blade Sever, Valor<->Entrenchment, Phalanx Breaker<->Stalwart, Fierce<->Perseverance, Army Sunder<->Bedrock, Dustbane<->Fearless trait, Tidebreaker<->Bastion).
+
+**Mount quality:** Courser (Common) -> Destrier (Epic, requires hero lv40+) -> Skywing (Legendary) -> Celestial Charger (Mythical, only from Legendary x Legendary breeding, ~1% rate). Trait value is independent of mount quality — a Common mount can roll a max-value trait. No mount equipped is always worse than any mount, even with mismatch.
+
+**Breeding:** Both parents always consumed. Never mix temperaments when targeting a specific trait pool. 75% damage reduction is the likely cap across all sources combined — stop stacking reduction near this point.
+
+### Adornments
+Unlocked via Animal Research (Bloodline Stability). One adornment per mount, in either offensive or defensive form for that troop type — never both at once.
+
+**Forms by troop type:**
+| Troop | Offensive form | Defensive form |
+|---|---|---|
+| Swordsmen | Swift Blade (atk/health/hero skill dmg) | Mystic Mirror (def/health/troop dmg taken reduction) |
+| Pikemen | Guiding Star (atk/health/hero skill dmg) | Stalwart Shield (def/health/troop dmg taken reduction) |
+| Cavalry | Unyielding Iron (atk/health/hero skill dmg) | Sacred Lily (def/health/troop dmg taken reduction) |
+| Archers | Perfect Piercing Arrow (atk/health/hero skill dmg) | Eagle's Blessing (def/health/troop dmg taken reduction) |
+
+Both forms of a troop type share the same special-effect pool — form choice only changes base stats.
+
+**Form selection rule:** damage-dealing heroes take offensive (hero skill dmg base stat benefits them). Support heroes take defensive. **Exception — Archers always take defensive (Eagle's Blessing)** regardless of role, since archers already have the highest attack in the game and lack inherent damage reduction.
+
+**Crafting/upgrade:** craft = 10 Meteorite Steel | dismantle returns 5 (50%) | first special-effect re-roll after crafting is free, always use it before spending Chalcedony | upgrade lv1-20 uses Raw Iron, lv21-60 uses Refined Iron *[exact breakpoint verify in-game]*
+**Level bonus thresholds:** lv1-20 = attack/defence bonus 1%+ | lv20-40 = health bonus 0.5%+ | lv40-60 = skill damage increase/reduction 0.5%+
+
+**Special effect rarity tiers:** Common -> Uncommon -> Rare -> Epic -> Legendary -> Mythical. First tier-up is guaranteed; higher tiers risk failure AND downgrade (a roll can fall back a tier on failure). At Mythical, values are substantially higher than base.
+
+**Ranking principle:** consistent unconditional effects beat conditional/one-time effects. Resistance (battle-start, reduces first 3 instances of skill dmg taken + troop dmg taken for 18s, halves after) and Natural Selection (every 9s, 75% chance to both reduce dmg taken and increase dmg dealt) rate highest across nearly every troop type — equip these by default unless a hero has a clearly superior niche pick.
+
+**75% damage reduction cap likely applies here too** *[unverified exact threshold]* — once a march's combined reduction from rings+traits+adornments+skills approaches this, switch slot allocation to damage-increase effects instead.
 
 ### Town Centre Milestones
 TC12: 2nd hero per march | TC15: Smithy | TC17: 3rd hero per march
 TC18: Rings | TC21: Glorious Age + T6 | TC27+ end game
 
 ### MGE Save Rules
-Day I: stamina on tribes | Day II: Legendary gear crafts + Legendary medals
+Day I: stamina on tribes | Day II: Legendary gear crafts + Legendary medals + ring crafting
 Day III: Advent Wheel spins (1,000 pts each) | Day IV: building/research speedups
 Day V: fresh troop training only — never promote | Day VI: power gain
 Never promote during MGE/MEE — zero points from promotion
