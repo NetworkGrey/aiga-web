@@ -899,26 +899,25 @@ function hasProfile(){
   try{return !!localStorage.getItem(STORE_KEY);}catch(e){return false;}
 }
 
-// Season-aware hero dropdown. Groups by season, respecting the player's
-// selected server season (cumulative — S3 sees S1+S2+S3). Epic heroes always
-// render in their own group at the end, since they're roster filler rather
-// than meta picks and shouldn't compete visually with Legendaries.
+// Hero dropdown, grouped by season. Season is currently a soft signal only —
+// selecting a Server Season does NOT hide any heroes (release-season tags
+// don't reliably predict per-server availability). Epic heroes always render
+// in their own group at the end, since they're roster filler rather than
+// meta picks. All heroes within each group are sorted alphabetically.
 function heroOptions(selected){
-  const selectedSeason = STATE.account.serverSeason || "";
   let html='<option value="">Select hero...</option>';
 
   const seasons={};
   const epicGroup=[];
 
   HERO_META.forEach(h=>{
-    if(!heroVisibleForSeason(h, selectedSeason)) return;
     if(h.rarity === "Epic"){ epicGroup.push(h); return; }
     const s=h.season;if(!seasons[s])seasons[s]=[];seasons[s].push(h);
   });
 
   Object.keys(seasons).forEach(s=>{
     html+=`<optgroup label="${s}">`;
-    seasons[s].forEach(h=>{
+    seasons[s].slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(h=>{
       html+=`<option value="${h.name}"${h.name===selected?" selected":""}>${h.name} [${h.type}]</option>`;
     });
     html+="</optgroup>";
@@ -926,7 +925,7 @@ function heroOptions(selected){
 
   if(epicGroup.length){
     html+=`<optgroup label="Epic (always available)">`;
-    epicGroup.forEach(h=>{
+    epicGroup.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(h=>{
       html+=`<option value="${h.name}"${h.name===selected?" selected":""}>${h.name} [${h.type}]</option>`;
     });
     html+="</optgroup>";
@@ -939,7 +938,7 @@ function skillOptions(heroName,selected){
   const h=HERO_BY_NAME[heroName];
   if(!h||!h.skills.length)return'<option value="">Select skill...</option>';
   let html='<option value="">Select skill...</option>';
-  h.skills.forEach(s=>{html+=`<option value="${s}"${s===selected?" selected":""}>${s}</option>`;});
+  h.skills.slice().sort((a,b)=>a.localeCompare(b)).forEach(s=>{html+=`<option value="${s}"${s===selected?" selected":""}>${s}</option>`;});
   return html;
 }
 
@@ -955,7 +954,7 @@ function gearOptions(troopType,slot,curVal){
   const tt=troopType||"Sword";
   const items=(GEAR_META[tt]&&GEAR_META[tt][slot])||GEAR_META.Sword[slot];
   let html='<option value="">Select...</option>';
-  items.forEach(g=>{
+  items.slice().sort((a,b)=>a.n.localeCompare(b.n)).forEach(g=>{
     const label=`${g.n} (${g.r})`;
     html+=`<option value="${label}"${curVal===label?" selected":""}>${label}</option>`;
   });
@@ -968,7 +967,7 @@ function gearDefault(troopType,slot){
 }
 function ringOptions(curVal,metaRing){
   let html='<option value="">Select ring...</option>';
-  RINGS.forEach(r=>{
+  RINGS.slice().sort((a,b)=>a.localeCompare(b)).forEach(r=>{
     const sel=curVal===r?" selected":((!curVal&&r===metaRing)?" selected":"");
     html+=`<option value="${r}"${sel}>${r}</option>`;
   });
@@ -998,7 +997,7 @@ function traitMismatchClass(trait,temperament){
 
 function adornOptions(curVal){
   let html='<option value="">Select adornment...</option>';
-  ADORNMENTS.forEach(a=>{html+=`<option value="${a}"${curVal===a?" selected":""}>${a}</option>`;});
+  ADORNMENTS.slice().sort((a,b)=>a.localeCompare(b)).forEach(a=>{html+=`<option value="${a}"${curVal===a?" selected":""}>${a}</option>`;});
   if(curVal&&!ADORNMENTS.includes(curVal))
     html+=`<option value="${curVal}" selected>${curVal} (custom)</option>`;
   return html;
