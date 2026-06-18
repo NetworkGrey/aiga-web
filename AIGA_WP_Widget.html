@@ -1,4 +1,4 @@
-<!-- AIGA Chat + Profile Widget v1.0 | Network Grey | Paste into WordPress Custom HTML block -->
+<!-- AIGA Chat + Profile Widget v1.3 | Network Grey | Paste into WordPress Custom HTML block -->
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
@@ -264,12 +264,7 @@
   cursor:pointer;white-space:nowrap;flex-shrink:0;
 }
 
-@media(max-width:540px){
-  #aiga-widget{height:640px;border-radius:0;}
-  #aiga-widget .aw-hdr-sub{display:none;}
-  #aiga-widget .aw-mount-grid{grid-template-columns:1fr;}
-}
-@media(prefers-reduced-motion:reduce){#aiga-widget .aw-dot{animation:none;opacity:.5;}}
+/* Image upload */
 #aiga-widget .aw-upload-btn{
   background:transparent;border:1px solid var(--aw-border);
   border-radius:var(--aw-radius);color:var(--aw-muted);
@@ -315,6 +310,13 @@
 #aiga-widget select.aw-off-meta,#aiga-widget input.aw-off-meta{
   border-color:#cc8844!important;background-color:rgba(204,136,68,.06)!important;}
 #aiga-widget .aw-off-meta-label::after{content:" ⚠";color:#cc8844;font-size:9px;}
+
+@media(max-width:540px){
+  #aiga-widget{height:640px;border-radius:0;}
+  #aiga-widget .aw-hdr-sub{display:none;}
+  #aiga-widget .aw-mount-grid{grid-template-columns:1fr;}
+}
+@media(prefers-reduced-motion:reduce){#aiga-widget .aw-dot{animation:none;opacity:.5;}}
 </style>
 
 <div id="aiga-widget">
@@ -343,7 +345,7 @@
         <input type="file" id="aw-file-input" accept="image/*" style="display:none">
         <button class="aw-upload-btn" id="aw-upload-btn" title="Upload screenshot">&#128247;</button>
         <div class="aw-wrap">
-          <textarea id="aw-input" placeholder="Ask me about AoEM — I'll do my best." maxlength="2000" rows="1"></textarea>
+          <textarea id="aw-input" placeholder="Ask me about AoEM — heroes, marches, gear, events." maxlength="2000" rows="1"></textarea>
         </div>
         <button class="aw-send" id="aw-send" disabled>Send</button>
       </div>
@@ -358,13 +360,23 @@
   <!-- PROFILE PANEL -->
   <div class="aw-panel hidden" id="aw-prof-panel">
     <div class="aw-prof-scroll" id="aw-prof-scroll">
-      <!-- Account strip -->
       <div class="aw-account">
         <div class="aw-account-title">Account</div>
         <div class="aw-account-row">
           <div class="aw-field"><label>TC Level</label><input type="number" id="p-tc" min="1" max="40" placeholder="29"></div>
           <div class="aw-field"><label>VIP</label><input type="number" id="p-vip" min="0" max="20" placeholder="6"></div>
           <div class="aw-field"><label>Hero Cap</label><input type="number" id="p-herocap" min="100" max="140" placeholder="105"></div>
+          <div class="aw-field">
+            <label>Server Season</label>
+            <select id="p-season">
+              <option value="">Select...</option>
+              <option value="S1">Season 1</option>
+              <option value="S2">Season 2</option>
+              <option value="S3">Season 3</option>
+              <option value="S4">Season 4</option>
+              <option value="S5">Season 5</option>
+            </select>
+          </div>
           <div class="aw-field">
             <label>Civilization</label>
             <select id="p-civ">
@@ -376,9 +388,7 @@
           </div>
         </div>
       </div>
-      <!-- Marches -->
       <div class="aw-march-list" id="aw-march-list"></div>
-      <!-- Hero Pool -->
       <div class="aw-pool-section">
         <div class="aw-pool-title">Hero Pool</div>
         <div class="aw-pool-list" id="aw-pool-list"></div>
@@ -403,76 +413,116 @@ const sessionId = typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUU
 marked.setOptions({breaks:true,gfm:true});
 function md(t){return DOMPurify.sanitize(marked.parse(t));}
 
-// ── HERO META ──────────────────────────────────────────────────────────────
+// ── HERO META — v7 roster, 76 heroes ────────────────────────────────────────
 const HERO_META = [
-  {name:"Hua Mulan",type:"ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"Flying Swallow",skill2:"Starchaser",skills:["Armor Piercer","Infuriation","Act of Mercy","Double Attack","Furious Charge","Weak Spot Attack"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Weak Spot Attack",skill4_rec:"Double Attack"},
-  {name:"Attila the Hun",type:"CAV/ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"Nomadic Strength",skill2:"Annihilator",skills:["Armor Piercer","Infuriation","Act of Mercy","Weak Spot Attack","Warrior's Hymn","Critical Insight"],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Weak Spot Attack",skill4_rec:"Act of Mercy"},
-  {name:"Josephine",type:"ARC/SW",rarity:"Legendary",season:"S1 Wheel",skill1:"Steel Rose",skill2:"Warcry",skills:["Sunder","Infuriation","Siege Breaker","Double Attack","Protracted Battle","Weak Spot Attack"],ring:"Ring of Tulip",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Weak Spot Attack",skill4_rec:"Double Attack"},
-  {name:"Tribhuwana",type:"SW/CAV",rarity:"Legendary",season:"S1 Wheel",skill1:"Ode to Java",skill2:"Ode to Java",skills:["Shield Slam","Crashing Boulder","Peerless Strike","Earth Crush","High Spirit","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Valor",skill3_rec:"High Spirit",skill4_rec:"Furious Charge"},
-  {name:"Yi Sun-Shin",type:"ARC",rarity:"Legendary",season:"S1 Wheel",skill1:"",skill2:"",skills:[],ring:"Ring of Tulip",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
-  {name:"Sun Tzu",type:"SW",rarity:"Legendary",season:"S1 Wheel",skill1:"Strategy Cuts Deeper",skill2:"The Way of War",skills:["Deception","Boulder Trap","Ultimate Strategy","High Spirit","Flash of Inspiration","Strategy Master's Gift"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Flash of Inspiration",skill4_rec:"Strategy Master's Gift"},
-  {name:"Miyamoto Musashi",type:"SW",rarity:"Legendary",season:"VIP (Paid)",skill1:"Flash of Yang",skill2:"Moment of Yin",skills:["Shield Slam","Crashing Boulder","Earth Crush","Peerless Strike","High Spirit","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Earth Crush",skill4_rec:"Furious Charge"},
-  {name:"King Arthur",type:"CAV/SW",rarity:"Mythical",season:"VIP17 (Paid)",skill1:"Glory of Knight",skill2:"Sword of Radiance",skills:["Crashing Boulder","Infuriation","Spirited Pursuit","Peerless Strike","High Spirit","Furious Charge"],ring:"Skyward Knight",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"High Spirit",skill4_rec:"Furious Charge"},
-  {name:"Guan Yu",type:"CAV",rarity:"Legendary",season:"Tavern",skill1:"Dragon Blade",skill2:"Gallantry",skills:["Infuriation","Armor Piercer","Fatal Blow","Weak Spot Attack","Berserker","Critical Insight"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Critical Insight",skill4_rec:"Weak Spot Attack"},
-  {name:"Diao Chan",type:"GATH",rarity:"Legendary",season:"Tavern",skill1:"Diao Chan's Dance",skill2:"Silk Road",skills:["Efficient Harvest","Supplies Transportation"],ring:"Ring of Sunflower",mount_temp:"Protective",mount_trait:"Renewal",skill3_rec:"Efficient Harvest",skill4_rec:"Supplies Transportation"},
-  {name:"Darius the Great",type:"PIK/CAV",rarity:"Legendary",season:"Tavern",skill1:"Ironclade Blitz",skill2:"Conquest",skills:["Efficient Harvest","Sunder","Supplies Transportation","Spirited Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Violet",mount_temp:"Protective",mount_trait:"Renewal",skill3_rec:"Efficient Harvest",skill4_rec:"Supplies Transportation"},
-  {name:"Cleopatra",type:"CAV/SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Efficient Harvest","Supplies Transportation"],ring:"Ring of Violet",mount_temp:"Protective",mount_trait:"Renewal",skill3_rec:"Efficient Harvest",skill4_rec:"Supplies Transportation"},
-  {name:"Sejong the Great",type:"CAV",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Peaceful Haven","Tenacity","Protracted Battle"],ring:"Ring of Boar",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"Tenacity",skill4_rec:"Peaceful Haven"},
-  {name:"Joan of Arc",type:"PIK",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution"],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Counterattack",skill4_rec:"Vigilance"},
-  {name:"Hammurabi",type:"SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Valor",skill3_rec:"",skill4_rec:""},
-  {name:"Harald III",type:"CAV/SW",rarity:"Legendary",season:"Tavern",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Valor",skill3_rec:"",skill4_rec:""},
-  {name:"Lu Bu",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"One of a Kind General",skill2:"Unrivaled Prowess",skills:["Armor Piercer","Infuriation","Spirited Pursuit","Weak Spot Attack","Ripper Tiger","Critical Insight"],ring:"Ring of Daisy",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Weak Spot Attack",skill4_rec:"Critical Insight"},
-  {name:"Yodit",type:"SW",rarity:"Legendary",season:"S2 Wheel",skill1:"Wrath Forged Blade",skill2:"Shadow of Terror",skills:["Shield Slam","Crashing Boulder","Peerless Strike","Battle Roar","Executor","Furious Charge"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Executor",skill4_rec:"Battle Roar"},
-  {name:"Hannibal",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Surprise Victory",skill2:"Peerless",skills:["Sowing Discord","Infuriation","Tactical Pursuit","Double Attack","Crushing Impact","Weak Spot Attack"],ring:"Ring of Crow",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Crushing Impact",skill4_rec:"Double Attack"},
-  {name:"Justinian the Great",type:"CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Envoy Of Peace",skill2:"Defensive Assault",skills:["Sowing Discord","Prayer For Harvest","War Tactic","Peaceful Haven","Protracted Battle","Crushing Impact"],ring:"Ring of Falcon",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"War Tactic",skill4_rec:"Crushing Impact"},
-  {name:"Belisarius",type:"PIK/CAV",rarity:"Legendary",season:"S2 Wheel",skill1:"Eternal Eagle Flag",skill2:"The Last Romans",skills:["Sowing Discord","Suppression","Crushing Impact","Tactical Pursuit","Conquering Iron Hoof","Double Attack"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Battlemaster",skill3_rec:"Conquering Iron Hoof",skill4_rec:"Double Attack"},
-  {name:"Bellevue",type:"ARC",rarity:"Legendary",season:"S2 Wheel",skill1:"Imminent Tempest",skill2:"Black Tide",skills:["Armor Piercer","Infuriation","Act of Mercy","Weak Spot Attack","Pay in Blood","Dark Flag"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Weak Spot Attack",skill4_rec:"Dark Flag"},
-  {name:"Theodora",type:"ARC/SW",rarity:"Legendary",season:"S2 Event",skill1:"Taking the Purple",skill2:"Dynastic Co-Rule",skills:["Suppression","Maneuver","War Tactic","Conflagration","Ultimate Strategy","Immortal Army"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"War Tactic",skill4_rec:"Conflagration"},
-  {name:"Suleiman",type:"ARC",rarity:"Legendary",season:"S2 Event",skill1:"Law of Kanus",skill2:"Magnificent Conquest",skills:["Blaze Impact","Deception","Conflagration","Ultimate Strategy","Flash of Inspiration","Strategy Master's Gift"],ring:"Everflame Wings",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Conflagration",skill4_rec:"Strategy Master's Gift"},
-  {name:"Leonidas I",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Firm Strike",skill2:"Unyielding Soul",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution","King's Blade","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Fearless Retribution",skill4_rec:"Whirlwind Sweep"},
-  {name:"Richard I",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Surmount",skill2:"Lionheart",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution","Forceful Retaliation","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Forceful Retaliation",skill4_rec:"Whirlwind Sweep"},
-  {name:"Ram Khamhaeng",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Valor of Rama",skill2:"Splendor of Sukhothai",skills:["Fortification","Prayer for Harvest","Tenacity","Peaceful Haven","Savage","War Elephant"],ring:"Ring of Steed",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"Savage",skill4_rec:"War Elephant"},
-  {name:"Octavian",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"Accumulated Power",skill2:"Might of Ruler",skills:["Formation Attack","Change of Formation","King's Blade","Triple Offensive","Coordination","Whirlwind Sweep"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"King's Blade",skill4_rec:"Whirlwind Sweep"},
-  {name:"Julius Caesar",type:"PIK/SW",rarity:"Legendary",season:"S2 Event",skill1:"Triumphant Return",skill2:"Crownless King",skills:["Formation Attack","Change of Formation","King's Blade","Savage","Whirlwind Sweep","Coordination"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Savage",skill4_rec:"King's Blade"},
-  {name:"El Cid",type:"CAV",rarity:"Legendary",season:"S2 Event",skill1:"Anthem of the Knight",skill2:"Patriotism",skills:["Armor Piercer","Infuriation","Roar of Victory","Double Attack","Furious Charge","Weak Spot Attack"],ring:"Ring of Night Wolf",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Roar of Victory",skill4_rec:"Double Attack"},
-  {name:"Robin Hood",type:"CAV",rarity:"Legendary",season:"S2 Event",skill1:"Forest Phantom",skill2:"Merry Companion",skills:["Armor Piercer","Fortification","Peaceful Haven","Pay in Blood","Protracted Battle","Righteous Judgement"],ring:"Ring of Falcon",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"Protracted Battle",skill4_rec:"Peaceful Haven"},
-  {name:"Rani Durgavati",type:"CAV/ARC",rarity:"Legendary",season:"S2 Event",skill1:"Blade of Gondwana",skill2:"Warrior Queen",skills:["Sunder","Armor Piercer","Bloodthirst","Spirited Pursuit","King's Blade","Warrior's Hymn"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Gallant",skill3_rec:"King's Blade",skill4_rec:"Warrior's Hymn"},
-  {name:"Ashoka",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Roar of Victory","Formation Attack","Change of Formation"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Roar of Victory",skill4_rec:"Formation Attack"},
-  {name:"Frederick Barbarossa",type:"PIK",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Counterattack","Vigilance","Tenacity","Fearless Retribution"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Tenacity",skill4_rec:"Fearless Retribution"},
-  {name:"Philip IV",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:["Strategy Master's Gift","High Spirit","Ultimate Strategy"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Strategy Master's Gift",skill4_rec:"High Spirit"},
-  {name:"Saladin",type:"CAV/ARC",rarity:"Legendary",season:"S3 Event",skill1:"Triple Clash",skill2:"Fury Of the Sands",skills:["Fervor","Enraged Strike","War Tactic","Tactical Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Night Wolf",mount_temp:"Fearless",mount_trait:"Army Sunder",skill3_rec:"Roar of Victory",skill4_rec:"Weak Spot Attack"},
-  {name:"Constantine",type:"SW",rarity:"Legendary",season:"S2 Event (VIP12)",skill1:"",skill2:"",skills:["Shield Slam","Crashing Boulder","Peerless Strike"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Bastion",skill3_rec:"Crashing Boulder",skill4_rec:"Peerless Strike"},
-  {name:"Tomyris",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
-  {name:"Bushra",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Boar",mount_temp:"Protective",mount_trait:"Lifesaver",skill3_rec:"",skill4_rec:""},
-  {name:"Oda Nobunaga",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
-  {name:"Toyotomi Hideyoshi",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
-  {name:"Tokugawa Ieyasu",type:"SW",rarity:"Legendary",season:"S2 Event",skill1:"",skill2:"",skills:[],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
-  {name:"Mansa Musa",type:"PIK",rarity:"Legendary",season:"S3 Wheel",skill1:"Spend a Fortune",skill2:"Devout Radiance",skills:["Vigilance","Mettle","Golden Odyssey","Fearless Retribution","Tenacity","King's Blade"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Golden Odyssey",skill4_rec:"Fearless Retribution"},
-  {name:"Charlemagne",type:"ARC/SW",rarity:"Legendary",season:"S3 Wheel",skill1:"Imperial Majesty",skill2:"Starchaser",skills:["Blaze Impact","Sowing Discord","War Tactic","Conflagration","Bloodthirst","Earth Crush"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"War Tactic",skill4_rec:"Conflagration"},
-  {name:"Boudica",type:"PIK",rarity:"Legendary",season:"S3 Wheel",skill1:"Sawtooth Pike",skill2:"Swift Reprisal",skills:["Counterattack","Vigilance","Tenacity","King's Blade","Forceful Retaliation","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"King's Blade",skill4_rec:"Forceful Retaliation"},
-  {name:"Ramesses II",type:"SW/ARC",rarity:"Legendary",season:"S3 MGE Event",skill1:"Son of Ra",skill2:"Storms of Set",skills:["Deception","Suppression","Flame of Genesis","Ultimate Strategy","High Spirit","Strategy Master's Gift"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Flame of Genesis",skill4_rec:"High Spirit"},
-  {name:"Mehmed II",type:"ARC/SW",rarity:"Legendary",season:"S3 Event",skill1:"Sultan Caesar",skill2:"Fatih",skills:["Crashing Boulder","Sunder","Owl's Lament","Peaceful Haven","Bloodthirst","King's Blade"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Valor",skill3_rec:"Owl's Lament",skill4_rec:"Peaceful Haven"},
-  {name:"Zhuge Liang",type:"SW/ARC",rarity:"Legendary",season:"S3 Event",skill1:"Stone Sentinel Maze",skill2:"Miracle of Qimen",skills:["Suppression","Sowing Discord","Conflagration","Borrowing the East Wind","War Tactic","Peaceful Haven"],ring:"Ring of Shark",mount_temp:"Alert",mount_trait:"Battlemaster",skill3_rec:"Borrowing the East Wind",skill4_rec:"War Tactic"},
-  {name:"Lagertha",type:"SW",rarity:"Legendary",season:"S4 Wheel",skill1:"Berserker's Shield Dance",skill2:"Valkyrie's Edge",skills:["Shield Slam","Crashing Boulder","Bloodthirst","Peerless Strike","Raging Bloodline","High Spirit"],ring:"Lord of Eastern Heavens",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"Raging Bloodline",skill4_rec:"High Spirit"},
-  {name:"Timur",type:"CAV/ARC",rarity:"Legendary",season:"S4 MGE Event",skill1:"Exotic Cavalry",skill2:"Annihilation Blade",skills:["Armor Piercer","Infuriation","Tempered Steel","Critical Insight","Weak Spot Attack","Spirited Pursuit"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Weak Spot Attack",skill4_rec:"Tempered Steel"},
-  {name:"Cyrus the Great",type:"PIK",rarity:"Legendary",season:"S4 Event",skill1:"Isolated Green Vine",skill2:"King of the World",skills:["Counterattack","Vigilance","Fearless Retribution","Forceful Retaliation","Child of Prophecy","Whirlwind Sweep"],ring:"Ring of Boar",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Forceful Retaliation",skill4_rec:"Child of Prophecy"},
-  {name:"Elizabeth I",type:"PIK",rarity:"Legendary",season:"S4 Event",skill1:"The Glorious Queen",skill2:"Golden Age",skills:["Sowing Discord","Suppression","Tudor Rose","Ultimate Strategy","Crushing Impact","Triple Offensive"],ring:"Skyward Knight",mount_temp:"Alert",mount_trait:"Spiritbond",skill3_rec:"Tudor Rose",skill4_rec:"Crushing Impact"},
-  {name:"Vlad the Impaler",type:"PIK/CAV",rarity:"Legendary",season:"S4 Event",skill1:"King's Edict",skill2:"Dragon's Vigor",skills:["Counterattack","Vigilance","Deadly Dragonthron","Battle Roar","Whirlwind Sweep","Forceful Retaliation"],ring:"Ring of Steed",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"Deadly Dragonthron",skill4_rec:"Whirlwind Sweep"},
-  {name:"Otto",type:"CAV/PIK",rarity:"Legendary",season:"S5 Event",skill1:"Sacred Coronation",skill2:"Imperial Privilege",skills:["Formation Attack","Change of Formation","Holy Roman Empire","Savage","War Elephant","Furious Charge"],ring:"Ring of Steed",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"Holy Roman Empire",skill4_rec:"Furious Charge"},
-  {name:"Gao Meng",type:"SW",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
-  {name:"Wu Wei",type:"PIK",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"",skill4_rec:""},
-  {name:"Kaso",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
-  {name:"Yuan Xia",type:"ARC",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
-  {name:"Axel",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
-  {name:"Narses",type:"CAV",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
-  {name:"Nino",type:"SW",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Fierce",skill3_rec:"",skill4_rec:""},
-  {name:"Luki",type:"ARC",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Warbred",mount_trait:"Overpower",skill3_rec:"",skill4_rec:""},
-  {name:"Leo",type:"PIK",rarity:"Epic",season:"Available",skill1:"",skill2:"",skills:[],ring:"Ring of Clover",mount_temp:"Fearless",mount_trait:"Tidebreaker",skill3_rec:"",skill4_rec:""}
+  {name:"Hua Mulan",type:"ARC",rarity:"Legendary",season:"S1 Wheel",role:"W.ARC Lead",skill1:"Flying Swallow",skill2:"Starchaser",skills:["Armor Piercer","Infuriation","Act of Mercy","Double Attack","Furious Charge","Weak Spot Attack"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Gallant",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Attila the Hun",type:"CAV/ARC",rarity:"Legendary",season:"S1 Wheel",role:"Slot 3 Support",skill1:"Nomadic Strength",skill2:"Annihilator",skills:["Armor Piercer","Infuriation","Act of Mercy","Weak Spot Attack","Warrior's Hymn","Critical Insight"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Josephine",type:"ARC/SW",rarity:"Legendary",season:"S1 Wheel",role:"W.ARC F2P / Siege Lead",skill1:"Steel Rose",skill2:"Warcry",skills:["Sunder","Infuriation","Siege Breaker","Double Attack","Protracted Battle","Weak Spot Attack"],ring:"Ring of Tulip",ring_path:"",mount_temp:"Warbred",mount_trait:"Gallant",mount_trait2:"Lifesaver",skill3_rec:"",skill4_rec:""},
+  {name:"Tribhuwana",type:"SW/CAV",rarity:"Legendary",season:"S1 Wheel",role:"W.SW 2IC - NEVER lead",skill1:"Ode to Java",skill2:"Ode to Java",skills:["Crashing Boulder","Peerless Strike","Fortification"],ring:"Ring of Steed",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Yi Sun-Shin",type:"ARC",rarity:"Legendary",season:"S1 Wheel",role:"T.ARC (early) / Gathering (later)",skill1:"",skill2:"",skills:["Efficient Harvest","War Tactic","Strategy Master's Gift","Blaze Impact","Conflagration","Organized Retreat"],ring:"",ring_path:"Daisy -> Falcon -> Tranquil Water",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Sun Tzu",type:"SW",rarity:"Legendary",season:"S1 Wheel",role:"T.SW Lead",skill1:"Strategy Cuts Deeper",skill2:"The Way of War",skills:["Deception","Boulder Trap","Ultimate Strategy","High Spirit","Flash of Inspiration","Strategy Master's Gift"],ring:"Ring of Shark",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Miyamoto Musashi",type:"SW",rarity:"Legendary",season:"VIP (Paid)",role:"W.SW Lead",skill1:"Flash of Yang",skill2:"Moment of Yin",skills:["Shield Slam","Crashing Boulder","Earth Crush","Peerless Strike","High Spirit","Furious Charge"],ring:"",ring_path:"Daisy -> Night Wolf -> Lofty Mountain",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"King Arthur",type:"CAV/SW",rarity:"Mythical",season:"VIP17 (Paid)",role:"W.SW / W.CAV Lead",skill1:"Glory of Knight",skill2:"Sword of Radiance",skills:["Crashing Boulder","Infuriation","Spirited Pursuit","Peerless Strike","High Spirit","Furious Charge"],ring:"Skyward Knight",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Guan Yu",type:"CAV",rarity:"Legendary",season:"Tavern",role:"W.CAV 2IC",skill1:"Dragon Blade",skill2:"Gallantry",skills:["Infuriation","Armor Piercer","Fatal Blow","Weak Spot Attack","Berserker","Critical Insight"],ring:"",ring_path:"Tulip -> Bear -> Scorching Flame",mount_temp:"Warbred",mount_trait:"Gallant",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Diao Chan",type:"GATH",rarity:"Legendary",season:"Tavern",role:"Gathering Lead ONLY",skill1:"Diao Chan's Dance",skill2:"Silk Road",skills:["Efficient Harvest","Windfall","Tenacity","Peaceful Haven","Rapid Gathering","Supplies Transportation"],ring:"",ring_path:"Violet -> Steed -> (no T2 gathering ring)",mount_temp:"Spirited->Docile (process)",mount_trait:"Swift + Abundance",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Darius the Great",type:"PIK/CAV",rarity:"Legendary",season:"Tavern",role:"M5 Gathering Sub",skill1:"Ironclade Blitz",skill2:"Conquest",skills:["Efficient Harvest","Roar of Victory","Weak Spot Attack","Sunder","Spirited Pursuit"],ring:"",ring_path:"Laurel -> Steed* -> (no T2 gathering ring)",mount_temp:"Spirited->Docile (process)",mount_trait:"Swift + Abundance",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Cleopatra",type:"CAV/SW",rarity:"Legendary",season:"Tavern",role:"Gathering Sub / Early T.CAV support",skill1:"",skill2:"",skills:["Efficient Harvest","Sowing Discord","Windfall","War Tactic","Double Attack","Crushing Impact"],ring:"",ring_path:"Sunflower -> Steed* -> (no T2 gathering ring)",mount_temp:"Spirited->Docile (process)",mount_trait:"Swift + Abundance",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Sejong the Great",type:"CAV",rarity:"Legendary",season:"Tavern",role:"M.CAV Tank",skill1:"",skill2:"",skills:["Fortification","Tenacity","Peaceful Haven","Prayer For Harvest","Protracted Battle","Entrenchment"],ring:"Ring of Boar",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Joan of Arc",type:"PIK",rarity:"Legendary",season:"Tavern",role:"Early Placeholder",skill1:"",skill2:"",skills:["King's Blade","Mettle","Tenacity","Vigilance","Fearless Retribution","Righteous Judgement"],ring:"",ring_path:"Clover -> Falcon -> Tranquil Water",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Hammurabi",type:"SW",rarity:"Legendary",season:"Tavern",role:"Siege March 2IC",skill1:"",skill2:"",skills:["Crashing Boulder","High Spirit","Earth Crush","Sunder","Fatal Blow","Siege and Plunder"],ring:"",ring_path:"Clover -> Lion -> Tranquil Water",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Harald III",type:"CAV/SW",rarity:"Legendary",season:"Tavern",role:"D - Avoid",skill1:"",skill2:"",skills:["Infuriation","High Spirit","Armor Piercer","Darkness Strike","Righteous Judgement","Fatal Blow"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Lu Bu",type:"CAV",rarity:"Legendary",season:"S2 Wheel",role:"W.CAV Lead",skill1:"One of a Kind General",skill2:"Unrivaled Prowess",skills:["Armor Piercer","Infuriation","Spirited Pursuit","Weak Spot Attack","Ripper Tiger","Critical Insight"],ring:"",ring_path:"Daisy -> Night Wolf -> Radiant Guardian",mount_temp:"Fearless",mount_trait:"Thunderbolt",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Yodit",type:"SW",rarity:"Legendary",season:"S2 Wheel",role:"W.SW Lead (F2P)",skill1:"Wrath Forged Blade",skill2:"Shadow of Terror",skills:["Shield Slam","Crashing Boulder","Peerless Strike","Furious Charge","Executor","Battle Roar"],ring:"",ring_path:"Clover -> Falcon -> Skyward Knight",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Hannibal",type:"CAV",rarity:"Legendary",season:"S2 Wheel",role:"T.CAV Lead / M.CAV sub",skill1:"Surprise Victory",skill2:"Peerless",skills:["Infuriation","Sowing Discord","Double Attack","Crushing Impact","Weak Spot Attack","Tactical Pursuit"],ring:"Ring of Crow",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Justinian the Great",type:"CAV",rarity:"Legendary",season:"S2 Wheel",role:"CAV Healer / Support",skill1:"Envoy Of Peace",skill2:"Defensive Assault",skills:["Sowing Discord","War Tactic","Crushing Impact","Peaceful Haven","Prayer For Harvest","Protracted Battle"],ring:"Ring of Falcon",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Belisarius",type:"PIK/CAV",rarity:"Legendary",season:"S2 Wheel",role:"T.PIK Lead",skill1:"Eternal Eagle Flag",skill2:"The Last Romans",skills:["Sowing Discord","Double Attack","Crushing Impact","Tactical Pursuit","Suppression","Conquering Iron Hoof"],ring:"Ring of Shark",ring_path:"",mount_temp:"Alert",mount_trait:"Battlemaster",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Bellevue",type:"ARC",rarity:"Legendary",season:"S2 Wheel",role:"W.ARC Support",skill1:"Imminent Tempest",skill2:"Black Tide",skills:["Infuriation","Armor Piercer","Weak Spot Attack","Act of Mercy","Pay in Blood","Dark Flag"],ring:"",ring_path:"Clover -> Falcon -> Everflame Wings",mount_temp:"Warbred",mount_trait:"Gallant",mount_trait2:"Lifesaver",skill3_rec:"",skill4_rec:""},
+  {name:"Theodora",type:"ARC/SW",rarity:"Legendary",season:"S2 Event",role:"T.ARC and T.SW Support",skill1:"Taking the Purple",skill2:"Dynastic Co-Rule",skills:["Suppression","Maneuver","War Tactic","Conflagration","Ultimate Strategy","Immortal Army"],ring:"Skyward Knight",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Suleiman",type:"ARC",rarity:"Legendary",season:"S2 Event",role:"T.ARC Lead",skill1:"Law of Kanus",skill2:"Magnificent Conquest",skills:["Deception","Ultimate Strategy","Flash of Inspiration","Strategy Master's Gift","Blaze Impact","Conflagration"],ring:"Everflame Wings",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Leonidas I",type:"PIK",rarity:"Legendary",season:"S2 Event",role:"W.PIK Lead",skill1:"Firm Strike",skill2:"Unyielding Soul",skills:["King's Blade","Whirlwind Sweep","Tenacity","Counterattack","Vigilance","Fearless Retribution"],ring:"Ring of Boar",ring_path:"",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Richard I",type:"PIK",rarity:"Legendary",season:"S2 Event",role:"PIK Sub",skill1:"Surmount",skill2:"Lionheart",skills:["Whirlwind Sweep","Tenacity","Counterattack","Vigilance","Fearless Retribution","Forceful Retaliation"],ring:"Ring of Boar",ring_path:"",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Ram Khamhaeng",type:"PIK",rarity:"Legendary",season:"S2 Event",role:"M.PIK Support Lead",skill1:"Valor of Rama",skill2:"Splendor of Sukhothai",skills:["Savage","Fortification","Tenacity","Peaceful Haven","Prayer For Harvest","War Elephant"],ring:"Ring of Steed",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Octavian",type:"PIK",rarity:"Legendary",season:"S2 Event",role:"M.PIK Sub",skill1:"Accumulated Power",skill2:"Might of Ruler",skills:["Formation Attack","Change of Formation","King's Blade","Whirlwind Sweep","Coordination","Triple Offensive"],ring:"Ring of Steed",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Julius Caesar",type:"PIK/SW",rarity:"Legendary",season:"S2 Event",role:"M.PIK Lead",skill1:"Triumphant Return",skill2:"Crownless King",skills:["Formation Attack","Change of Formation","King's Blade","Savage","Whirlwind Sweep","Coordination"],ring:"Ring of Steed",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"El Cid",type:"CAV",rarity:"Legendary",season:"S2 Event",role:"M.CAV Lead",skill1:"Anthem of the Knight",skill2:"Patriotism",skills:["Infuriation","Furious Charge","Double Attack","Armor Piercer","Roar of Victory","Weak Spot Attack"],ring:"Ring of Night Wolf",ring_path:"",mount_temp:"Warbred",mount_trait:"Gallant",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Robin Hood",type:"CAV",rarity:"Legendary",season:"S2 Event",role:"M.CAV Support",skill1:"Forest Phantom",skill2:"Merry Companion",skills:["Armor Piercer","Fortification","Peaceful Haven","Righteous Judgement","Protracted Battle","Pay in Blood"],ring:"Ring of Falcon",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Rani Durgavati",type:"ARC/CAV",rarity:"Legendary",season:"S2 Event",role:"W.ARC / W.CAV Support",skill1:"Blade of Gondwana",skill2:"Warrior Queen",skills:["King's Blade","Spirited Pursuit","Armor Piercer","Bloodthirst","Sunder","Warrior's Hymn"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Gallant",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Ashoka",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",role:"Universal Secondary Strike Support",skill1:"",skill2:"",skills:["Infuriation","Roar of Victory","Weak Spot Attack","Act of Mercy","Tactical Pursuit","Sunder"],ring:"Ring of Steed",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Frederick Barbarossa",type:"PIK",rarity:"Legendary",season:"S2 Event",role:"W.PIK Tank",skill1:"",skill2:"",skills:["King's Blade","Tenacity","Peaceful Haven","Sunder","War Drums","Righteous Judgement"],ring:"Ring of Boar",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Philip IV",type:"SW",rarity:"Legendary",season:"S2 Event",role:"T.SW Placeholder",skill1:"",skill2:"",skills:["High Spirit","War Tactic","Boulder Trap","Strategy Master's Gift","Conflagration","Suppression"],ring:"Ring of Shark",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Saladin",type:"CAV/ARC",rarity:"Legendary",season:"S3 Event",role:"M.CAV Support 2nd/3rd slot - CANNOT lead",skill1:"Triple Clash",skill2:"Fury Of the Sands",skills:["Fervor","Enraged Strike","War Tactic","Tactical Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Night Wolf",ring_path:"",mount_temp:"Fearless",mount_trait:"Army Sunder",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Constantine",type:"SW",rarity:"Legendary",season:"S2 Event (VIP12)",role:"W.SW Damage Reduction",skill1:"",skill2:"",skills:["Crashing Boulder","High Spirit","Fortification","Tenacity","Peaceful Haven","Bloodthirst"],ring:"Ring of Steed",ring_path:"",mount_temp:"Fearless",mount_trait:"Bastion",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Tomyris",type:"SW/CAV",rarity:"Legendary",season:"S2 Event",role:"M.SW/M.CAV sub",skill1:"",skill2:"",skills:["Infuriation","Armor Piercer","Roar of Victory","Tenacity","Peaceful Haven","Rending Covenant"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Bushra",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",role:"M.PIK Tank",skill1:"",skill2:"",skills:["King's Blade","Mettle","Fortification","Tenacity","Darkness Strike","Peaceful Haven"],ring:"Ring of Boar",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Oda Nobunaga",type:"SW",rarity:"Legendary",season:"S2 Event",role:"M.SW Sub",skill1:"",skill2:"",skills:["Formation Attack","Change of Formation","King's Blade","Savage","Whirlwind Sweep","Bloodthirst"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Phalanx Breaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Toyotomi Hideyoshi",type:"SW",rarity:"Legendary",season:"S2 Event",role:"M.SW Lead",skill1:"",skill2:"",skills:["Crashing Boulder","Peerless Strike","High Spirit","Furious Charge","Bloodthirst","Shield Slam"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Tokugawa Ieyasu",type:"SW",rarity:"Legendary",season:"S2 Event",role:"M.SW Sub",skill1:"",skill2:"",skills:["King's Blade","Mettle","Fortification","Peaceful Haven","Protracted Battle","Entrenchment"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Mansa Musa",type:"PIK",rarity:"Legendary",season:"S3 Wheel",role:"W.PIK Support",skill1:"Spend a Fortune",skill2:"Devout Radiance",skills:["Vigilance","Mettle","Golden Odyssey","Fearless Retribution","Tenacity","King's Blade"],ring:"Ring of Boar",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Charlemagne",type:"ARC/SW",rarity:"Legendary",season:"S3 Wheel",role:"T.SW / T.ARC Support",skill1:"Imperial Majesty",skill2:"Starchaser",skills:["Blaze Impact","Sowing Discord","War Tactic","Conflagration","Bloodthirst","Earth Crush"],ring:"Ring of Shark",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Boudica",type:"PIK",rarity:"Legendary",season:"S3 Wheel",role:"W.PIK Sub",skill1:"Sawtooth Pike",skill2:"Swift Reprisal",skills:["Counterattack","Vigilance","Tenacity","King's Blade","Forceful Retaliation","Whirlwind Sweep"],ring:"",ring_path:"Tulip -> Bear -> Everflame Wings",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Ramesses II",type:"SW/ARC",rarity:"Legendary",season:"S3 MGE Event",role:"T.SW Open Field ONLY - NEVER Rally",skill1:"Son of Ra",skill2:"Storms of Set",skills:["Deception","Suppression","Flame of Genesis","Ultimate Strategy","High Spirit","Strategy Master's Gift"],ring:"Skyward Knight",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Mehmed II",type:"ARC/SW",rarity:"Legendary",season:"S3 Event",role:"W.ARC/W.SW 2nd slot",skill1:"Sultan Caesar",skill2:"Fatih",skills:["Crashing Boulder","Sunder","Owl's Lament","Peaceful Haven","Bloodthirst","King's Blade"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Zhuge Liang",type:"SW/ARC",rarity:"Legendary",season:"S3 Event",role:"T.SW and T.ARC Support",skill1:"Stone Sentinel Maze",skill2:"Miracle of Qimen",skills:["Suppression","Sowing Discord","Conflagration","Borrowing the East Wind","War Tactic","Peaceful Haven"],ring:"Ring of Shark",ring_path:"",mount_temp:"Alert",mount_trait:"Battlemaster",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Lagertha",type:"SW",rarity:"Legendary",season:"S4 Wheel",role:"W.SW 3rd Slot",skill1:"Berserker's Shield Dance",skill2:"Valkyrie's Edge",skills:["Crashing Boulder","Peerless Strike","High Spirit","Bloodthirst","Shield Slam","Raging Bloodline"],ring:"",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Timur",type:"CAV/ARC",rarity:"Legendary",season:"S4 MGE Event",role:"W.CAV 2IC",skill1:"Exotic Cavalry",skill2:"Annihilation Blade",skills:["Armor Piercer","Infuriation","Tempered Steel","Critical Insight","Weak Spot Attack","Spirited Pursuit"],ring:"",ring_path:"Lily -> Deer -> Azure Moon",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Cyrus the Great",type:"PIK",rarity:"Legendary",season:"S4 Event",role:"W.PIK Lead",skill1:"Isolated Green Vine",skill2:"King of the World",skills:["Counterattack","Vigilance","Fearless Retribution","Forceful Retaliation","Child of Prophecy","Whirlwind Sweep"],ring:"",ring_path:"Tulip -> Boar -> Messenger of Destruction",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Elizabeth I",type:"PIK",rarity:"Legendary",season:"S4 Event",role:"T.PIK Support",skill1:"The Glorious Queen",skill2:"Golden Age",skills:["Sowing Discord","Suppression","Ultimate Strategy","Crushing Impact","Triple Offensive"],ring:"Skyward Knight",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Vlad the Impaler",type:"CAV/PIK",rarity:"Legendary",season:"S4 Event",role:"T.PIK Sub - requires Cyrus",skill1:"King's Edict",skill2:"Dragon's Vigor",skills:["Counterattack","Vigilance","Deadly Dragonthron","Battle Roar","Whirlwind Sweep","Forceful Retaliation"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Otto",type:"CAV/PIK",rarity:"Legendary",season:"S5 Event",role:"M.PIK DPS",skill1:"Sacred Coronation",skill2:"Imperial Privilege",skills:["Formation Attack","Change of Formation","Holy Roman Empire","Savage","War Elephant","Furious Charge"],ring:"Ring of Steed",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Gao Meng",type:"SW",rarity:"Epic",season:"Available",role:"Epic SW placeholder",skill1:"",skill2:"",skills:["Crashing Boulder","Mettle","Shield Slam","Prayer For Harvest","Mighty Strike","Double Strike"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Wu Wei",type:"PIK",rarity:"Epic",season:"Available",role:"Epic PIK sub",skill1:"",skill2:"",skills:["Mettle","Counterattack","Vigilance","War Drums","Mighty Strike","Double Strike"],ring:"Ring of Clover",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Kaso",type:"CAV",rarity:"Epic",season:"Available",role:"Epic CAV sub",skill1:"",skill2:"",skills:["Armor Piercer","Sunder","Prayer For Harvest","Double Strike","Rapid Gathering","Prudent Handling"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Yuan Xia",type:"ARC",rarity:"Epic",season:"Available",role:"Epic ARC placeholder",skill1:"",skill2:"",skills:["Maneuver","Suppression","Rapid Gathering","Surprise Attack","Focused Mind","Load Boost"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Axel",type:"CAV",rarity:"Epic",season:"Available",role:"Epic CAV placeholder",skill1:"",skill2:"",skills:["Infuriation","Armor Piercer","Sunder","Double Strike","Critical Blade","Pacifying Strike"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Narses",type:"CAV",rarity:"Epic",season:"Available",role:"Epic CAV placeholder",skill1:"",skill2:"",skills:["Infuriation","Armor Piercer","Double Strike","Rapid Gathering","Pacifying Strike","Fast Retreat"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Nino",type:"SW",rarity:"Epic",season:"Available",role:"Epic SW placeholder",skill1:"",skill2:"",skills:["Deception","Maneuver","Prayer For Harvest","Rapid Gathering","Surprise Attack","Calm in Peril"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Luki",type:"ARC",rarity:"Epic",season:"Available",role:"Epic ARC placeholder",skill1:"",skill2:"",skills:["Crashing Boulder","Armor Piercer","Mettle","Sunder","Mighty Strike","Double Strike"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Leo",type:"PIK",rarity:"Epic",season:"Available",role:"Epic PIK placeholder",skill1:"",skill2:"",skills:["Mettle","Fortification","Prayer For Harvest","Rapid Gathering","Rest and Recover","Prudent Handling"],ring:"Ring of Clover",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"King Derrick",type:"ARC/SW",rarity:"Legendary",season:"Tavern (Giants Roar)",role:"Siege march / gathering",skill1:"Defensive Slungshot",skill2:"Grace and Blessings",skills:["Efficient Harvest","Windfall","Earth Crush","Sunder","Righteous Judgement","Fearless Frontrunner"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Queen Dido",type:"SW",rarity:"Legendary",season:"S2 Event",role:"SW sub",skill1:"Exile's Blessing",skill2:"Current of Abundance",skills:["King's Blade","Efficient Harvest","Fortification","Peaceful Haven","Protracted Battle","Supplies Transportation"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Queen Seondeok",type:"ARC",rarity:"Legendary",season:"S2 Event",role:"T.ARC silence (low priority)",skill1:"Fight Fire with Fire",skill2:"Halo of Hwangnyong",skills:["War Tactic","Ultimate Strategy","Blaze Impact","Conflagration","Maneuver","Immortal Army"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Yi Seong-Gye",type:"CAV",rarity:"Legendary",season:"S2 Event",role:"M.CAV (low priority)",skill1:"Wild Shot",skill2:"Unequaled Valor",skills:["Crashing Boulder","Peerless Strike","Bloodthirst","Shield Slam","Earth Crush","Battle Roar"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Tariq",type:"CAV",rarity:"Legendary",season:"S2 Event",role:"M.CAV secondary booster",skill1:"Sword of Sage",skill2:"Desert Iron Riders",skills:["Infuriation","Spirited Pursuit","Armor Piercer","Roar of Victory","Weak Spot Attack","Act of Mercy"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Isabella",type:"SW/ARC",rarity:"Legendary",season:"Unconfirmed season",role:"Dual: M.SW support / Gathering support",skill1:"Reclamation Decree",skill2:"Twin Monarch's Aegis",skills:["Efficient Harvest","Windfall","Organized Retreat","Fortification","Tenacity","Peaceful Haven"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Baldassi",type:"SW",rarity:"Epic",season:"Available",role:"Epic SW placeholder",skill1:"",skill2:"",skills:["Boulder Trap","Maneuver","Rapid Gathering","Prudent Handling","Surprise Attack","Focused Mind"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Li Daoxuan",type:"SW",rarity:"Epic",season:"Available",role:"Epic SW placeholder",skill1:"",skill2:"",skills:["Formation Attack","Change of Formation","Crashing Boulder","War Drums","Mighty Strike","Double Strike"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Gatos",type:"PIK",rarity:"Epic",season:"Available",role:"Epic PIK placeholder",skill1:"",skill2:"",skills:["Sowing Discord","Deception","Suppression","Prayer For Harvest","Mighty Strike","Double Strike"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Thanius",type:"PIK",rarity:"Epic",season:"Available",role:"Epic PIK placeholder",skill1:"",skill2:"",skills:["Formation Attack","Change of Formation","War Drums","Mighty Strike","Rapid Gathering","Load Boost"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Clyde",type:"CAV",rarity:"Epic",season:"Available",role:"Epic CAV placeholder",skill1:"",skill2:"",skills:["Sowing Discord","Deception","Suppression","Prayer For Harvest","Rest and Recover","Surprise Attack"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Cui Ruyi",type:"ARC",rarity:"Epic",season:"Available",role:"Epic ARC placeholder",skill1:"",skill2:"",skills:["Infuriation","Armor Piercer","Sunder","Prayer For Harvest","Mighty Strike","Double Strike"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Leon",type:"ARC",rarity:"Epic",season:"Available",role:"Epic ARC placeholder",skill1:"",skill2:"",skills:["Blaze Impact","Suppression","Rapid Gathering","Rest and Recover","Prudent Handling","Fervor"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""}
 ];
 const HERO_BY_NAME = {};
 HERO_META.forEach(h => { HERO_BY_NAME[h.name] = h; });
 
-// ── GEAR META ─────────────────────────────────────────────────────────────
+// ── SEASON FILTER ────────────────────────────────────────────────────────────
+// Cumulative filtering: a player on S3 sees S1+S2+S3 heroes (heroes carry
+// forward, they don't disappear when a new season starts).
+const SEASON_ORDER = ["S1","S2","S3","S4","S5"];
+
+// Maps a hero's season text to a filter bucket. VIP, Tavern, and Epic/Available
+// heroes are always visible — they aren't season-gated the way Wheel/Event heroes are.
+function heroSeasonBucket(seasonText){
+  if(!seasonText) return "ALWAYS";
+  const t = seasonText.toUpperCase();
+  if(t.includes("VIP") || t.includes("TAVERN") || t.includes("AVAILABLE") || t.includes("UNCONFIRMED")) return "ALWAYS";
+  for(const s of SEASON_ORDER){ if(t.startsWith(s)) return s; }
+  return "ALWAYS"; // never hide a hero we can't classify
+}
+
+// True if a hero should be shown given the player's selected server season.
+// No season selected = show everything (useful before the player sets it).
+function heroVisibleForSeason(hero, selectedSeason){
+  if(!selectedSeason) return true;
+  const bucket = heroSeasonBucket(hero.season);
+  if(bucket === "ALWAYS") return true;
+  const selIdx = SEASON_ORDER.indexOf(selectedSeason);
+  const heroIdx = SEASON_ORDER.indexOf(bucket);
+  if(selIdx === -1 || heroIdx === -1) return true;
+  return heroIdx <= selIdx;
+}
+
+// ── GEAR META ──────────────────────────────────────────────────────────────
 const GEAR_META = {
   Sword:{
     Head:[{n:"Blazing Heart",r:"L"},{n:"Laurel Crown",r:"E"},{n:"Linen Kerchief",r:"R"}],
@@ -505,41 +555,53 @@ const GEAR_META = {
     Legs:[{n:"Dawnbreak Boots",r:"L"},{n:"Night Owl Boots",r:"E"},{n:"Hare Boots",r:"R"}]
   }
 };
-// ── REFERENCE DATA ──────────────────────────────────────────────────────
+
+// ── REFERENCE DATA ──────────────────────────────────────────────────────────
+// Corrected: 33 canonical rings (Mamba removed — confirmed not in-game)
 const RINGS = [
-  // Tier 0
   "Ring of Clover","Ring of Tulip","Ring of Violet","Ring of Daisy","Ring of Iris",
   "Ring of Rose","Ring of Hyacinth","Ring of Lily","Ring of Laurel","Ring of Sunflower",
-  // Tier 1
   "Ring of Bear","Ring of Rhino","Ring of Steed","Ring of Crow","Ring of Seahorse",
   "Ring of Shark","Ring of Badger","Ring of Elephant","Ring of Lion","Ring of Serpent",
   "Ring of Deer","Ring of Falcon","Ring of Night Wolf","Ring of Boar",
-  // Tier 2
   "Tranquil Water","Lofty Mountain","Scorching Flame","Effulgent Sun","Azure Moon",
-  "Everflame Wings","Radiant Guardian","Lord of Eastern Heavens","Messenger of Destruction",
-  "Sacred Sage","Skyward Knight"
+  "Everflame Wings","Radiant Guardian","Lord of Eastern Heavens","Skyward Knight",
+  "Messenger of Destruction"
 ];
-const TRAITS_BY_TEMP = {
-  Warbred:["Overpower","Gallant","Valor","Phalanx Breaker","Fierce"],
-  Alert:["Spiritbond","Stratagem","Cunning","Battlemaster"],
-  Fearless:["Thunderbolt","Army Sunder","Dustbane","Tidebreaker","Bastion","Peacemaker","Bedrock","Iron Ridge"],
-  Protective:["Lifesaver","Renewal","Healing Armor","Iron Ridge"],
-  Docile:["Legacy","Bloodline","Purity"],
-  Spirited:["Volatile","Surge"],
-  Mischievous:[]
+
+// All 30 confirmed mount traits — shown regardless of selected temperament.
+// Trait selection is unrestricted; correctness is flagged via TRAIT_HOME_TEMP.
+const ALL_TRAITS = [
+  "Abundance","Army Sunder","Bastion","Battlemaster","Bedrock","Blade Sever",
+  "Cunning","Dustbane","Entrenchment","Fearless","Fierce","Full Stores",
+  "Gallant","Healing Armor","Iron Ridge","Lifesaver","Overpower","Peacemaker",
+  "Perseverance","Phalanx Breaker","Renewal","Siege","Spiritbond","Stalwart",
+  "Stratagem","Swift","Tactician","Thunderbolt","Tidebreaker","Valor"
+];
+
+// Each trait's correct home temperament/pool — used only to flag mismatches,
+// never to filter the dropdown options.
+const TRAIT_HOME_TEMP = {
+  "Overpower":"Warbred","Gallant":"Warbred","Valor":"Warbred","Phalanx Breaker":"Warbred","Fierce":"Warbred",
+  "Spiritbond":"Alert","Stratagem":"Alert","Cunning":"Alert","Battlemaster":"Alert",
+  "Thunderbolt":"Fearless","Army Sunder":"Fearless","Dustbane":"Fearless","Tidebreaker":"Fearless",
+  "Fearless":"Fearless","Bastion":"Fearless","Iron Ridge":"Fearless","Tactician":"Fearless",
+  "Bedrock":"Fearless","Peacemaker":"Fearless","Blade Sever":"Fearless","Entrenchment":"Fearless",
+  "Stalwart":"Fearless","Perseverance":"Fearless","Siege":"Fearless",
+  "Lifesaver":"Protective","Renewal":"Protective","Healing Armor":"Protective",
+  "Swift":"Gathering","Abundance":"Gathering","Full Stores":"Gathering"
 };
+
 const ADORNMENTS = [
-  // Attack
   "Thunder","Wavebreaker","Blood Debt","Lightning Strike","Chain Slayer","Boiling Blood",
   "War Prep","Swift Blade","Piercing Arrow","Ablaze Spirit","Rampant Blade","Iron Fang",
   "Unyielding Iron","Primal Force","Storm Slash",
-  // Defence / Support
   "Guiding Star","Unyielding Armor","Mystic Mirror","Sacred Lily","Stalwart Shield",
   "Steadfast Guard","Mountain Root","Granite Wall","Iron Ridge","Shining Vow"
 ];
 
-// ── STATE ────────────────────────────────────────────────────────────────
-const MARCH_IDS = ["M1","M2","M3","M4","M5"];
+// ── STATE ────────────────────────────────────────────────────────────────────
+const MARCH_IDS   = ["M1","M2","M3","M4","M5"];
 const TROOP_TYPES = ["Sword","Pike","Cavalry","Archer","Gathering"];
 const MOUNT_TEMPS = ["Warbred","Alert","Fearless","Protective","Docile","Spirited","Mischievous"];
 const MOUNT_RARITIES = ["Courser","Destrier","Skywing","Celestial Charger"];
@@ -558,20 +620,18 @@ function emptyMarch(){
   return {troopType:"",heroes:[emptyHero(),emptyHero(),emptyHero()]};
 }
 function defaultState(){
-  const s={account:{tc:"",vip:"",herocap:"",civ:""},marches:{},pool:[]};
+  const s={account:{tc:"",vip:"",herocap:"",civ:"",serverSeason:""},marches:{},pool:[]};
   MARCH_IDS.forEach(id=>s.marches[id]=emptyMarch());
   return s;
 }
 
-let STATE = defaultState();
+let STATE     = defaultState();
 let SAVE_TIMER = null;
-let nudgeSent = false;
+let nudgeSent  = false;
+let openMarch  = null;
 
 function loadState(){
-  try{
-    const raw=localStorage.getItem(STORE_KEY);
-    if(raw){STATE=JSON.parse(raw);setSaveStatus("Loaded");}
-  }catch(e){}
+  try{const raw=localStorage.getItem(STORE_KEY);if(raw){STATE=JSON.parse(raw);setSaveStatus("Loaded");}}catch(e){}
 }
 function saveState(){
   STATE.lastUpdated=new Date().toISOString();
@@ -588,17 +648,17 @@ function setSaveStatus(txt){
   if(el)el.textContent=txt;
 }
 
-// ── DOM REFS ──────────────────────────────────────────────────────────────
-const feed=document.getElementById("aw-feed");
-const inputEl=document.getElementById("aw-input");
-const sendBtn=document.getElementById("aw-send");
-const notice=document.getElementById("aw-notice");
-const remaining=document.getElementById("aw-remaining");
-const chatPanel=document.getElementById("aw-chat-panel");
-const profPanel=document.getElementById("aw-prof-panel");
-const profToggle=document.getElementById("aw-prof-toggle");
+// ── DOM REFS ──────────────────────────────────────────────────────────────────
+const feed      = document.getElementById("aw-feed");
+const inputEl   = document.getElementById("aw-input");
+const sendBtn   = document.getElementById("aw-send");
+const notice    = document.getElementById("aw-notice");
+const remaining = document.getElementById("aw-remaining");
+const chatPanel = document.getElementById("aw-chat-panel");
+const profPanel = document.getElementById("aw-prof-panel");
+const profToggle= document.getElementById("aw-prof-toggle");
 
-// ── CHAT ──────────────────────────────────────────────────────────────────
+// ── CHAT ──────────────────────────────────────────────────────────────────────
 function scroll(){feed.scrollTo({top:feed.scrollHeight,behavior:"smooth"});}
 
 function addMsg(role,text){
@@ -608,7 +668,6 @@ function addMsg(role,text){
   const bbl=document.createElement("div");bbl.className="aw-bbl";
   if(role==="aiga"||role==="error"){bbl.innerHTML=md(text);}
   else{bbl.textContent=text;}
-  // Profile nudge for first AIGA message when no profile
   if(role==="aiga"&&!nudgeSent&&!hasProfile()){
     const nudge=document.createElement("div");nudge.className="aw-profile-nudge";
     nudge.innerHTML='<span>Complete your profile for account-specific advice</span>';
@@ -630,7 +689,7 @@ function showTyping(){
   d.appendChild(lbl);d.appendChild(dots);feed.appendChild(d);scroll();
 }
 function hideTyping(){const el=document.getElementById("aw-typing");if(el)el.remove();}
-function setDisabled(s){inputEl.disabled=s;sendBtn.disabled=s||!inputEl.value.trim();}
+function setDisabled(s){inputEl.disabled=s;sendBtn.disabled=s||(!inputEl.value.trim()&&!stagedImage);}
 function updateRemaining(n){
   if(n<=5){remaining.textContent=n+" question"+(n===1?"":"s")+" left today";if(n<=2)remaining.style.color="#cc8844";}
   if(n===0){notice.textContent="Daily limit reached.";notice.className="aw-notice show";setDisabled(true);}
@@ -656,162 +715,147 @@ async function sendChatMessage(text){
     hideTyping();addMsg("error","Could not reach AIGA. Check your connection and try again.");
   }finally{
     setDisabled(false);
-    sendBtn.disabled=!inputEl.value.trim();
+    sendBtn.disabled=!inputEl.value.trim()&&!stagedImage;
     try{inputEl.focus();}catch(_){}
     scroll();
   }
 }
 
-// ── IMAGE UPLOAD ─────────────────────────────────────────────────────────
-const MAX_UPLOADS    = 3;
-const MAX_IMG_PX     = 1024;
-let   uploadCount    = 0;
-let   stagedImage    = null;   // {base64, type, name}
+// ── IMAGE UPLOAD ──────────────────────────────────────────────────────────────
+const MAX_UPLOADS  = 3;
+const MAX_IMG_PX   = 1024;
+let   uploadCount  = 0;
+let   stagedImage  = null;
 
-const fileInput    = document.getElementById("aw-file-input");
-const uploadBtn    = document.getElementById("aw-upload-btn");
-const previewBar   = document.getElementById("aw-preview-bar");
-const previewImg   = document.getElementById("aw-preview-img");
-const previewInfo  = document.getElementById("aw-preview-info");
-const previewClear = document.getElementById("aw-preview-clear");
-const uploadCount_el = document.getElementById("aw-upload-count");
+const fileInput     = document.getElementById("aw-file-input");
+const uploadBtn     = document.getElementById("aw-upload-btn");
+const previewBar    = document.getElementById("aw-preview-bar");
+const previewImg    = document.getElementById("aw-preview-img");
+const previewInfo   = document.getElementById("aw-preview-info");
+const previewClear  = document.getElementById("aw-preview-clear");
+const uploadCount_el= document.getElementById("aw-upload-count");
 
 function updateUploadUI(){
-  if(uploadCount >= MAX_UPLOADS){
-    uploadBtn.disabled = true;
-    uploadBtn.title = "Upload limit reached ("+MAX_UPLOADS+"/"+MAX_UPLOADS+")";
-    uploadCount_el.textContent = MAX_UPLOADS+"/"+MAX_UPLOADS+" uploads used";
-  } else if(uploadCount > 0){
-    uploadCount_el.textContent = uploadCount+"/"+MAX_UPLOADS+" uploads used";
+  if(uploadCount>=MAX_UPLOADS){
+    uploadBtn.disabled=true;
+    uploadBtn.title="Upload limit reached ("+MAX_UPLOADS+"/"+MAX_UPLOADS+")";
+    uploadCount_el.textContent=MAX_UPLOADS+"/"+MAX_UPLOADS+" uploads used";
+  } else if(uploadCount>0){
+    uploadCount_el.textContent=uploadCount+"/"+MAX_UPLOADS+" uploads used";
   } else {
-    uploadCount_el.textContent = "";
+    uploadCount_el.textContent="";
   }
 }
 
 function showUpgradeCTA(){
-  const d = document.createElement("div");
-  d.className = "aw-msg aiga";
-  const lbl = document.createElement("div");
-  lbl.className = "aw-lbl"; lbl.textContent = "AIGA";
-  const bbl = document.createElement("div");
-  bbl.className = "aw-bbl aw-cta-bubble";
-  bbl.innerHTML = `<strong>You've used all ${MAX_UPLOADS} free image uploads.</strong><br><br>`
-    + `Upgrade to <strong>Commander tier</strong> for unlimited screenshots, `
-    + `full account analysis, march optimisation and priority access.<br>`
-    + `<a class="aw-cta-btn" href="https://networkgrey.co.za/commander" target="_blank">`
-    + `Upgrade to Commander →</a>`;
-  d.appendChild(lbl); d.appendChild(bbl);
-  feed.appendChild(d); scroll();
+  const d=document.createElement("div");d.className="aw-msg aiga";
+  const lbl=document.createElement("div");lbl.className="aw-lbl";lbl.textContent="AIGA";
+  const bbl=document.createElement("div");bbl.className="aw-bbl aw-cta-bubble";
+  bbl.innerHTML=`<strong>You've used all ${MAX_UPLOADS} free image uploads.</strong><br><br>`
+    +`Upgrade to <strong>Commander tier</strong> for unlimited screenshots, `
+    +`full account analysis, march optimisation and priority access.<br>`
+    +`<a class="aw-cta-btn" href="https://networkgrey.co.za/commander" target="_blank">`
+    +`Upgrade to Commander &#8594;</a>`;
+  d.appendChild(lbl);d.appendChild(bbl);
+  feed.appendChild(d);scroll();
 }
 
 function clearStaged(){
-  stagedImage = null;
-  previewBar.style.display = "none";
-  previewImg.src = "";
+  stagedImage=null;
+  previewBar.style.display="none";
+  previewImg.src="";
   uploadBtn.classList.remove("has-image");
-  fileInput.value = "";
+  fileInput.value="";
+  sendBtn.disabled=!inputEl.value.trim();
 }
 
 async function resizeToBase64(file){
-  return new Promise((resolve, reject)=>{
-    if(!file.type.startsWith("image/")){
-      reject(new Error("Not an image file")); return;
-    }
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = ()=>{
-        const canvas = document.createElement("canvas");
-        let w = img.width, h = img.height;
-        if(w > MAX_IMG_PX || h > MAX_IMG_PX){
-          const r = Math.min(MAX_IMG_PX/w, MAX_IMG_PX/h);
-          w = Math.round(w*r); h = Math.round(h*r);
-        }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
-        resolve(dataUrl.split(",")[1]);   // base64 only
+  return new Promise((resolve,reject)=>{
+    if(!file.type.startsWith("image/")){reject(new Error("Not an image file"));return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement("canvas");
+        let w=img.width,h=img.height;
+        if(w>MAX_IMG_PX||h>MAX_IMG_PX){const r=Math.min(MAX_IMG_PX/w,MAX_IMG_PX/h);w=Math.round(w*r);h=Math.round(h*r);}
+        canvas.width=w;canvas.height=h;
+        canvas.getContext("2d").drawImage(img,0,0,w,h);
+        const dataUrl=canvas.toDataURL("image/jpeg",0.85);
+        resolve(dataUrl.split(",")[1]);
       };
-      img.onerror = reject;
-      img.src = e.target.result;
+      img.onerror=reject;
+      img.src=e.target.result;
     };
-    reader.onerror = reject;
+    reader.onerror=reject;
     reader.readAsDataURL(file);
   });
 }
 
-uploadBtn.addEventListener("click", ()=> fileInput.click());
+uploadBtn.addEventListener("click",()=>fileInput.click());
 
-fileInput.addEventListener("change", async ()=>{
-  const file = fileInput.files[0];
-  if(!file) return;
-  if(uploadCount >= MAX_UPLOADS){
-    addMsg("error","Upload limit reached ("+MAX_UPLOADS+" max per session)."); return;
-  }
+fileInput.addEventListener("change",async()=>{
+  const file=fileInput.files[0];
+  if(!file)return;
+  if(uploadCount>=MAX_UPLOADS){addMsg("error","Upload limit reached ("+MAX_UPLOADS+" max per session).");return;}
   try{
-    const b64 = await resizeToBase64(file);
-    stagedImage = { base64: b64, type: "image/jpeg", name: file.name };
-    previewImg.src = "data:image/jpeg;base64," + b64;
-    const kb = Math.round(b64.length * 0.75 / 1024);
-    previewInfo.textContent = file.name + " — ready to send";
-    previewBar.style.display = "flex";
+    const b64=await resizeToBase64(file);
+    stagedImage={base64:b64,type:"image/jpeg",name:file.name};
+    previewImg.src="data:image/jpeg;base64,"+b64;
+    previewInfo.textContent=file.name+" — ready to send";
+    previewBar.style.display="flex";
     uploadBtn.classList.add("has-image");
-    sendBtn.disabled = false;
+    sendBtn.disabled=false;
   }catch(err){
     addMsg("error","Could not load image: "+err.message);
   }
 });
 
-previewClear.addEventListener("click", clearStaged);
+previewClear.addEventListener("click",clearStaged);
 
 async function send(){
   const text=inputEl.value.trim();
-  if(!text && !stagedImage) return;
-  const msgText = text || "Please analyse this screenshot.";
-  inputEl.value=""; inputEl.style.height="auto";
+  if(!text&&!stagedImage)return;
+  const msgText=text||"Please analyse this screenshot.";
+  inputEl.value="";inputEl.style.height="auto";
 
   if(stagedImage){
-    // Show image + text in user bubble
-    const d=document.createElement("div"); d.className="aw-msg user";
-    const lbl=document.createElement("div"); lbl.className="aw-lbl"; lbl.textContent="You";
-    const bbl=document.createElement("div"); bbl.className="aw-bbl";
+    const d=document.createElement("div");d.className="aw-msg user";
+    const lbl=document.createElement("div");lbl.className="aw-lbl";lbl.textContent="You";
+    const bbl=document.createElement("div");bbl.className="aw-bbl";
     const imgEl=document.createElement("img");
     imgEl.src="data:image/jpeg;base64,"+stagedImage.base64;
     imgEl.className="aw-msg-img";
     bbl.appendChild(imgEl);
-    if(text){ const p=document.createElement("div"); p.textContent=text; bbl.appendChild(p); }
-    d.appendChild(lbl); d.appendChild(bbl);
-    feed.appendChild(d); scroll();
+    if(text){const p=document.createElement("div");p.textContent=text;bbl.appendChild(p);}
+    d.appendChild(lbl);d.appendChild(bbl);
+    feed.appendChild(d);scroll();
 
-    const imgData = stagedImage.base64;
-    const imgType = stagedImage.type;
+    const imgData=stagedImage.base64;
+    const imgType=stagedImage.type;
     clearStaged();
     uploadCount++;
     updateUploadUI();
 
-    // Send to API with image
-    setDisabled(true); showTyping();
+    setDisabled(true);showTyping();
     try{
-      const res = await fetch(API,{
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({message:msgText, session_id:sessionId, image:imgData, image_type:imgType})
+      const res=await fetch(API,{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({message:msgText,session_id:sessionId,image:imgData,image_type:imgType})
       });
       hideTyping();
-      const rawText = await res.text();
+      const rawText=await res.text();
       if(!res.ok){
         let e="Server error "+res.status;
         try{e=JSON.parse(rawText).error||e;}catch(_){}
-        addMsg("error",e); setDisabled(false); return;
+        addMsg("error",e);setDisabled(false);return;
       }
-      const data = JSON.parse(rawText);
-      addMsg("aiga", data.response||"No response.");
-      if(typeof data.remaining==="number") updateRemaining(data.remaining);
-      // Show upgrade CTA after final free upload
-      if(uploadCount >= MAX_UPLOADS){
-        setTimeout(showUpgradeCTA, 800);
-      }
+      const data=JSON.parse(rawText);
+      addMsg("aiga",data.response||"No response.");
+      if(typeof data.remaining==="number")updateRemaining(data.remaining);
+      if(uploadCount>=MAX_UPLOADS){setTimeout(showUpgradeCTA,800);}
     }catch(e){
-      hideTyping(); addMsg("error","Upload failed: "+e.message);
+      hideTyping();addMsg("error","Upload failed: "+e.message);
     }finally{
       setDisabled(false);
       sendBtn.disabled=!inputEl.value.trim()&&!stagedImage;
@@ -832,7 +876,7 @@ inputEl.addEventListener("keydown",function(e){
 });
 sendBtn.addEventListener("click",send);
 
-// ── PROFILE TOGGLE ────────────────────────────────────────────────────────
+// ── PROFILE TOGGLE ────────────────────────────────────────────────────────────
 function openProfile(){
   chatPanel.classList.add("hidden");
   profPanel.classList.remove("hidden");
@@ -850,26 +894,44 @@ profToggle.addEventListener("click",()=>{
   profPanel.classList.contains("hidden")?openProfile():closeProfile();
 });
 
-// ── PROFILE BUILDER ───────────────────────────────────────────────────────
+// ── PROFILE BUILDER ───────────────────────────────────────────────────────────
 function hasProfile(){
   try{return !!localStorage.getItem(STORE_KEY);}catch(e){return false;}
 }
 
+// Season-aware hero dropdown. Groups by season, respecting the player's
+// selected server season (cumulative — S3 sees S1+S2+S3). Epic heroes always
+// render in their own group at the end, since they're roster filler rather
+// than meta picks and shouldn't compete visually with Legendaries.
 function heroOptions(selected){
+  const selectedSeason = STATE.account.serverSeason || "";
   let html='<option value="">Select hero...</option>';
-  // Group by season
+
   const seasons={};
+  const epicGroup=[];
+
   HERO_META.forEach(h=>{
+    if(!heroVisibleForSeason(h, selectedSeason)) return;
+    if(h.rarity === "Epic"){ epicGroup.push(h); return; }
     const s=h.season;if(!seasons[s])seasons[s]=[];seasons[s].push(h);
   });
+
   Object.keys(seasons).forEach(s=>{
     html+=`<optgroup label="${s}">`;
     seasons[s].forEach(h=>{
-      const sel=h.name===selected?" selected":"";
-      html+=`<option value="${h.name}"${sel}>${h.name} [${h.type}]</option>`;
+      html+=`<option value="${h.name}"${h.name===selected?" selected":""}>${h.name} [${h.type}]</option>`;
     });
     html+="</optgroup>";
   });
+
+  if(epicGroup.length){
+    html+=`<optgroup label="Epic (always available)">`;
+    epicGroup.forEach(h=>{
+      html+=`<option value="${h.name}"${h.name===selected?" selected":""}>${h.name} [${h.type}]</option>`;
+    });
+    html+="</optgroup>";
+  }
+
   return html;
 }
 
@@ -877,18 +939,14 @@ function skillOptions(heroName,selected){
   const h=HERO_BY_NAME[heroName];
   if(!h||!h.skills.length)return'<option value="">Select skill...</option>';
   let html='<option value="">Select skill...</option>';
-  h.skills.forEach(s=>{
-    const sel=s===selected?" selected":"";
-    html+=`<option value="${s}"${sel}>${s}</option>`;
-  });
+  h.skills.forEach(s=>{html+=`<option value="${s}"${s===selected?" selected":""}>${s}</option>`;});
   return html;
 }
 
 function gemsDots(marchId,slotIdx,slot,count){
   let html='';
   for(let i=1;i<=3;i++){
-    const on=i<=count?" on":"";
-    html+=`<div class="aw-gem${on}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-gem="${i}"></div>`;
+    html+=`<div class="aw-gem${i<=count?" on":""}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-gem="${i}"></div>`;
   }
   return html;
 }
@@ -899,8 +957,7 @@ function gearOptions(troopType,slot,curVal){
   let html='<option value="">Select...</option>';
   items.forEach(g=>{
     const label=`${g.n} (${g.r})`;
-    const sel=curVal===label?" selected":"";
-    html+=`<option value="${label}"${sel}>${label}</option>`;
+    html+=`<option value="${label}"${curVal===label?" selected":""}>${label}</option>`;
   });
   return html;
 }
@@ -917,22 +974,31 @@ function ringOptions(curVal,metaRing){
   });
   return html;
 }
+
+// Always lists all 30 traits regardless of temperament — selection is
+// unrestricted. Mismatch with the hero's temperament is flagged separately
+// via traitMismatchClass(), not by hiding options here.
 function traitOptions(temp,curVal){
-  const list=TRAITS_BY_TEMP[temp]||[];
   let html='<option value="">Select trait...</option>';
-  list.forEach(t=>{
-    const sel=curVal===t?" selected":"";
-    html+=`<option value="${t}"${sel}>${t}</option>`;
+  ALL_TRAITS.forEach(t=>{
+    html+=`<option value="${t}"${curVal===t?" selected":""}>${t}</option>`;
   });
   return html;
 }
+
+// Flags a trait as off-meta if its home pool doesn't match the hero's
+// currently selected temperament. Gathering traits will always mismatch
+// against any combat temperament, which is correct — they don't belong there.
+function traitMismatchClass(trait,temperament){
+  if(!trait||!temperament)return "";
+  const home=TRAIT_HOME_TEMP[trait];
+  if(!home)return "";
+  return home!==temperament?" aw-off-meta":"";
+}
+
 function adornOptions(curVal){
   let html='<option value="">Select adornment...</option>';
-  ADORNMENTS.forEach(a=>{
-    const sel=curVal===a?" selected":"";
-    html+=`<option value="${a}"${sel}>${a}</option>`;
-  });
-  // If current value not in list, add it
+  ADORNMENTS.forEach(a=>{html+=`<option value="${a}"${curVal===a?" selected":""}>${a}</option>`;});
   if(curVal&&!ADORNMENTS.includes(curVal))
     html+=`<option value="${curVal}" selected>${curVal} (custom)</option>`;
   return html;
@@ -942,23 +1008,17 @@ function offMetaClass(val,meta){return meta&&val&&val!==meta?" aw-off-meta":"";}
 function renderHeroSlot(marchId,slotIdx,h,troopType){
   const label=["Lead","Support 1","Support 2"][slotIdx];
   const meta=HERO_BY_NAME[h.name]||{};
-  const s3def=meta.skill3_rec||"";const s4def=meta.skill4_rec||"";
+  const s3def=meta.skill3_rec||"";
+  const s4def=meta.skill4_rec||"";
   const ringDef=meta.ring||"";
-  const tempDef=meta.mount_temp||"";const traitDef=meta.mount_trait||"";
-
-  // Current skill3/4 values (default to rec if empty)
+  const tempDef=meta.mount_temp||"";
+  const traitDef=meta.mount_trait||"";
   const s3val=h.skill3.name||(s3def);
   const s4val=h.skill4.name||(s4def);
   const ringVal=h.ring.name||(ringDef);
   const tempVal=h.mount.temperament||(tempDef);
   const tr1Val=h.mount.trait1||(traitDef);
   const tr2Val=h.mount.trait2||"";
-
-  const s3off=offMetaClass(h.skill3.name,s3def);
-  const s4off=offMetaClass(h.skill4.name,s4def);
-  const ringOff=offMetaClass(h.ring.name,ringDef);
-  const tempOff=offMetaClass(h.mount.temperament,tempDef);
-  const tr1Off=offMetaClass(h.mount.trait1,traitDef);
 
   return `<div class="aw-hero-slot" id="slot-${marchId}-${slotIdx}">
     <div class="aw-slot-label">${label}</div>
@@ -974,21 +1034,21 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
     <div class="aw-skill-row">
       <span class="aw-skill-num">1</span>
       <input type="text" placeholder="Commander skill" value="${h.skill1.name||""}"
-        data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1name" class="aw-s1name">
+        data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1name">
       <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
         value="${h.skill1.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1level">
     </div>
     <div class="aw-skill-row">
       <span class="aw-skill-num">2</span>
       <input type="text" placeholder="Signature skill" value="${h.skill2.name||""}"
-        data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2name" class="aw-s2name">
+        data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2name">
       <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
         value="${h.skill2.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2level">
     </div>
     <div class="aw-skill-row">
       <span class="aw-skill-num">3</span>
       <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3name"
-        class="aw-s3sel${s3off}" data-meta="${s3def}">${skillOptions(h.name,s3val)}</select>
+        class="${offMetaClass(h.skill3.name,s3def)}" data-meta="${s3def}">${skillOptions(h.name,s3val)}</select>
       <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
         value="${h.skill3.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3level">
       <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
@@ -997,7 +1057,7 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
     <div class="aw-skill-row">
       <span class="aw-skill-num">4</span>
       <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4name"
-        class="aw-s4sel${s4off}" data-meta="${s4def}">${skillOptions(h.name,s4val)}</select>
+        class="${offMetaClass(h.skill4.name,s4def)}" data-meta="${s4def}">${skillOptions(h.name,s4val)}</select>
       <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
         value="${h.skill4.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4level">
       <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
@@ -1017,28 +1077,30 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
     <div class="aw-sec">Ring</div>
     <div class="aw-ring-row">
       <select data-march="${marchId}" data-slot="${slotIdx}" data-field="ringname"
-        class="${ringOff}" data-meta="${ringDef}">${ringOptions(ringVal,ringDef)}</select>
+        class="${offMetaClass(h.ring.name,ringDef)}" data-meta="${ringDef}">${ringOptions(ringVal,ringDef)}</select>
       <input type="number" class="aw-rlv" placeholder="Lv" min="1" max="50"
         value="${h.ring.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="ringlevel">
     </div>
     <div class="aw-sec">Mount</div>
     <div class="aw-mount-grid">
       <div class="aw-field">
-        <label class="${tempOff?'aw-off-meta-label':''}">Temperament</label>
+        <label class="${offMetaClass(h.mount.temperament,tempDef)?'aw-off-meta-label':''}">Temperament</label>
         <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttemp"
-          class="${tempOff}" data-meta="${tempDef}">
+          class="${offMetaClass(h.mount.temperament,tempDef)}" data-meta="${tempDef}">
           <option value="">Select...</option>
           ${MOUNT_TEMPS.map(t=>`<option value="${t}"${tempVal===t?" selected":""}>${t}</option>`).join("")}
         </select>
       </div>
       <div class="aw-field">
-        <label class="${tr1Off?'aw-off-meta-label':''}">Trait 1</label>
+        <label>Trait 1</label>
         <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttrait1"
-          class="${tr1Off}" data-meta="${traitDef}" id="trait1-${marchId}-${slotIdx}">${traitOptions(tempVal,tr1Val)}</select>
+          class="${traitMismatchClass(h.mount.trait1,tempVal)}"
+          id="trait1-${marchId}-${slotIdx}">${traitOptions(tempVal,tr1Val)}</select>
       </div>
       <div class="aw-field">
         <label>Trait 2 (optional)</label>
         <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttrait2"
+          class="${traitMismatchClass(h.mount.trait2,tempVal)}"
           id="trait2-${marchId}-${slotIdx}">${traitOptions(tempVal,tr2Val)}</select>
       </div>
       <div class="aw-field">
@@ -1049,7 +1111,7 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
         </select>
       </div>
     </div>
-    <div class="aw-mount-adorn" style="margin-top:6px;display:flex;gap:6px;align-items:flex-end;">
+    <div style="margin-top:6px;display:flex;gap:6px;align-items:flex-end;">
       <div class="aw-field" style="flex:1;">
         <label>Adornment</label>
         <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadorn">${adornOptions(h.mount.adornment||"")}</select>
@@ -1062,6 +1124,55 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
       </div>
     </div>
   </div>`;
+}
+
+// ── RENDER PROFILE ─────────────────────────────────────────────────────────────
+function renderProfile(){
+  const a=STATE.account;
+  const tcEl=document.getElementById("p-tc");
+  const vipEl=document.getElementById("p-vip");
+  const hcEl=document.getElementById("p-herocap");
+  const civEl=document.getElementById("p-civ");
+  const seasonEl=document.getElementById("p-season");
+  if(tcEl)tcEl.value=a.tc||"";
+  if(vipEl)vipEl.value=a.vip||"";
+  if(hcEl)hcEl.value=a.herocap||"";
+  if(civEl)civEl.value=a.civ||"";
+  if(seasonEl)seasonEl.value=a.serverSeason||"";
+
+  const marchList=document.getElementById("aw-march-list");
+  if(!marchList)return;
+
+  let html="";
+  MARCH_IDS.forEach(id=>{
+    const m=STATE.marches[id];
+    const isOpen=openMarch===id;
+    const leadName=m.heroes[0]&&m.heroes[0].name?m.heroes[0].name:"Empty";
+    const summary=m.troopType?`${m.troopType} · ${leadName}`:leadName;
+    html+=`
+      <div class="aw-march" id="march-${id}">
+        <div class="aw-march-hdr${isOpen?" open":""}" data-march="${id}">
+          <span class="aw-march-id">${id}</span>
+          <span class="aw-march-summary">${summary}</span>
+          <span class="aw-chevron">&#9660;</span>
+        </div>
+        <div class="aw-march-body${isOpen?" open":""}">
+          <div class="aw-troop-row">
+            <label>Troop type</label>
+            <select class="aw-troop-sel" data-march="${id}">
+              <option value="">Select...</option>
+              ${TROOP_TYPES.map(t=>`<option value="${t}"${m.troopType===t?" selected":""}>${t}</option>`).join("")}
+            </select>
+          </div>
+          <div class="aw-hero-slots">
+            ${m.heroes.map((h,idx)=>renderHeroSlot(id,idx,h,m.troopType)).join("")}
+          </div>
+        </div>
+      </div>`;
+  });
+  marchList.innerHTML=html;
+  renderPool();
+  bindProfileEvents();
 }
 
 function renderPool(){
@@ -1077,137 +1188,98 @@ function renderPool(){
         <option value="">R</option>${[1,2,3,4,5,6].map(r=>`<option value="${r}"${p.rank==r?" selected":""}>${r}</option>`).join("")}
       </select>
       <span class="aw-pool-type">${type}</span>
-      <button class="aw-pool-del" data-pool="${i}" style="background:none;border:none;color:var(--aw-faint);cursor:pointer;font-size:14px;">×</button>`;
+      <button class="aw-pool-del" data-pool="${i}" style="background:none;border:none;color:var(--aw-faint);cursor:pointer;font-size:14px;">&#215;</button>`;
     pl.appendChild(div);
   });
 }
 
 function bindProfileEvents(){
-  // Account
-  ["p-tc","p-vip","p-herocap","p-civ"].forEach(id=>{
-    const el=document.getElementById(id);
-    if(!el)return;
+  ["p-tc","p-vip","p-herocap","p-civ","p-season"].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
     el.oninput=el.onchange=()=>{
-      const key=id==="p-tc"?"tc":id==="p-vip"?"vip":id==="p-herocap"?"herocap":"civ";
-      STATE.account[key]=el.value;queueSave();
+      const key=id==="p-tc"?"tc":id==="p-vip"?"vip":id==="p-herocap"?"herocap":id==="p-civ"?"civ":"serverSeason";
+      STATE.account[key]=el.value;
+      queueSave();
+      // Server Season changing affects which heroes are visible in every
+      // march's hero dropdown — re-render the whole profile to refresh them.
+      if(id==="p-season"){renderProfile();}
     };
   });
 
-  // March accordion
   document.querySelectorAll("#aiga-widget .aw-march-hdr").forEach(hdr=>{
     hdr.onclick=()=>{
       const id=hdr.dataset.march;
-      openMarch=openMarch===id?"":id;
+      openMarch=openMarch===id?null:id;
       renderProfile();
     };
   });
 
-  // Troop type
   document.querySelectorAll("#aiga-widget .aw-troop-sel").forEach(sel=>{
     sel.onchange=()=>{
-      const id=sel.dataset.march;
-      STATE.marches[id].troopType=sel.value;
-      queueSave();
-      // Update gear placeholders for all heroes
-      renderProfile();
+      STATE.marches[sel.dataset.march].troopType=sel.value;
+      queueSave();renderProfile();
     };
   });
 
-  // Hero select — auto-populate
   document.querySelectorAll("#aiga-widget .aw-hero-sel").forEach(sel=>{
     sel.onchange=()=>{
       const {march:mId,slot:si}=sel.dataset;
       const idx=parseInt(si);
-      const heroName=sel.value;
       const h=STATE.marches[mId].heroes[idx];
-      h.name=heroName;
-      const meta=HERO_BY_NAME[heroName];
+      h.name=sel.value;
+      const meta=HERO_BY_NAME[sel.value];
       if(meta){
         if(!h.skill1.name)h.skill1.name=meta.skill1||"";
         if(!h.skill2.name)h.skill2.name=meta.skill2||"";
         if(!h.ring.name)h.ring.name=meta.ring||"";
         if(!h.mount.temperament)h.mount.temperament=meta.mount_temp||"";
-        if(!h.mount.trait)h.mount.trait=meta.mount_trait||"";
+        if(!h.mount.trait1)h.mount.trait1=meta.mount_trait||"";
       }
-      // Auto-populate gear from troop type
-      const tt=STATE.marches[mId].troopType;
-      if(tt&&GEAR_META[tt]){
-        const g=GEAR_META[tt];
-        ["Head","Hands","Body","Legs"].forEach(slot=>{
-          if(!h.gear[slot].name)h.gear[slot].name="";
-        });
-      }
-      queueSave();
-      // Re-render this march to update skill dropdowns and placeholders
-      openMarch=mId;renderProfile();
+      queueSave();openMarch=mId;renderProfile();
     };
   });
 
-  // Skills 1+2 text inputs
   document.querySelectorAll("[data-field='skill1name'],[data-field='skill2name']").forEach(inp=>{
     inp.oninput=()=>{
       const {march:mId,slot:si,field}=inp.dataset;
-      const idx=parseInt(si);
-      const sk=field==="skill1name"?"skill1":"skill2";
-      STATE.marches[mId].heroes[idx][sk].name=inp.value;queueSave();
+      STATE.marches[mId].heroes[parseInt(si)][field==="skill1name"?"skill1":"skill2"].name=inp.value;queueSave();
     };
   });
   document.querySelectorAll("[data-field='skill1level'],[data-field='skill2level']").forEach(inp=>{
     inp.oninput=()=>{
       const {march:mId,slot:si,field}=inp.dataset;
-      const idx=parseInt(si);
-      const sk=field==="skill1level"?"skill1":"skill2";
-      STATE.marches[mId].heroes[idx][sk].level=inp.value;queueSave();
+      STATE.marches[mId].heroes[parseInt(si)][field==="skill1level"?"skill1":"skill2"].level=inp.value;queueSave();
     };
   });
-
-  // Skills 3+4 dropdowns
   document.querySelectorAll("[data-field='skill3name'],[data-field='skill4name']").forEach(sel=>{
     sel.onchange=()=>{
       const {march:mId,slot:si,field}=sel.dataset;
-      const idx=parseInt(si);
-      const sk=field==="skill3name"?"skill3":"skill4";
-      STATE.marches[mId].heroes[idx][sk].name=sel.value;queueSave();
+      STATE.marches[mId].heroes[parseInt(si)][field==="skill3name"?"skill3":"skill4"].name=sel.value;queueSave();
     };
   });
-  document.querySelectorAll("[data-field='skill3level'],[data-field='skill4level']").forEach(inp=>{
+  document.querySelectorAll("[data-field='skill3level'],[data-field='skill4level'],[data-field='skill3stars'],[data-field='skill4stars']").forEach(inp=>{
     inp.oninput=()=>{
       const {march:mId,slot:si,field}=inp.dataset;
-      const idx=parseInt(si);
-      const sk=field==="skill3level"?"skill3":"skill4";
-      STATE.marches[mId].heroes[idx][sk].level=inp.value;queueSave();
+      const sk=field.startsWith("skill3")?"skill3":"skill4";
+      const attr=field.endsWith("level")?"level":"stars";
+      STATE.marches[mId].heroes[parseInt(si)][sk][attr]=inp.value;queueSave();
     };
   });
-  document.querySelectorAll("[data-field='skill3stars'],[data-field='skill4stars']").forEach(inp=>{
-    inp.oninput=()=>{
-      const {march:mId,slot:si,field}=inp.dataset;
-      const idx=parseInt(si);
-      const sk=field==="skill3stars"?"skill3":"skill4";
-      STATE.marches[mId].heroes[idx][sk].stars=inp.value;queueSave();
-    };
-  });
-
-  // Hero level + rank
   document.querySelectorAll("[data-field='level']").forEach(inp=>{
     if(!inp.dataset.march)return;
-    inp.oninput=()=>{
-      const {march:mId,slot:si}=inp.dataset;
-      STATE.marches[mId].heroes[parseInt(si)].level=inp.value;queueSave();
-    };
+    inp.oninput=()=>{STATE.marches[inp.dataset.march].heroes[parseInt(inp.dataset.slot)].level=inp.value;queueSave();};
   });
   document.querySelectorAll("[data-field='rank']").forEach(sel=>{
     if(!sel.dataset.march)return;
-    sel.onchange=()=>{
-      const {march:mId,slot:si}=sel.dataset;
-      STATE.marches[mId].heroes[parseInt(si)].rank=sel.value;queueSave();
-    };
+    sel.onchange=()=>{STATE.marches[sel.dataset.march].heroes[parseInt(sel.dataset.slot)].rank=sel.value;queueSave();};
   });
-
-  // Gear name + level
-  document.querySelectorAll("[data-field='gearname']").forEach(inp=>{
-    inp.oninput=()=>{
-      const {march:mId,slot:si,gslot}=inp.dataset;
-      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].name=inp.value;queueSave();
+  document.querySelectorAll("[data-field='gearname']").forEach(sel=>{
+    sel.onchange=()=>{
+      const {march:mId,slot:si,gslot}=sel.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].name=sel.value;
+      const meta=sel.getAttribute("data-meta");
+      if(meta)sel.classList.toggle("aw-off-meta",!!sel.value&&sel.value!==meta);
+      queueSave();
     };
   });
   document.querySelectorAll("[data-field='gearlevel']").forEach(inp=>{
@@ -1216,8 +1288,6 @@ function bindProfileEvents(){
       STATE.marches[mId].heroes[parseInt(si)].gear[gslot].level=inp.value;queueSave();
     };
   });
-
-  // Gems toggle
   document.querySelectorAll("#aiga-widget .aw-gem").forEach(gem=>{
     gem.onclick=()=>{
       const {march:mId,slot:si,gslot,gem:gn}=gem.dataset;
@@ -1226,93 +1296,62 @@ function bindProfileEvents(){
       const cur=h.gear[gslot].gems||0;
       h.gear[gslot].gems=cur===gIdx?gIdx-1:gIdx;
       queueSave();
-      // Update visual
-      const slot=gem.parentElement;
-      slot.querySelectorAll(".aw-gem").forEach((g,i)=>{
+      gem.parentElement.querySelectorAll(".aw-gem").forEach((g,i)=>{
         g.classList.toggle("on",i<h.gear[gslot].gems);
       });
     };
   });
-
-  // Ring
-  document.querySelectorAll("[data-field='ringname']").forEach(inp=>{
-    inp.oninput=()=>{
-      const {march:mId,slot:si}=inp.dataset;
-      STATE.marches[mId].heroes[parseInt(si)].ring.name=inp.value;queueSave();
+  document.querySelectorAll("[data-field='ringname']").forEach(sel=>{
+    sel.onchange=()=>{
+      const {march:mId,slot:si}=sel.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].ring.name=sel.value;
+      const meta=sel.getAttribute("data-meta");
+      if(meta)sel.classList.toggle("aw-off-meta",!!sel.value&&sel.value!==meta);
+      queueSave();
     };
   });
   document.querySelectorAll("[data-field='ringlevel']").forEach(inp=>{
-    inp.oninput=()=>{
-      const {march:mId,slot:si}=inp.dataset;
-      STATE.marches[mId].heroes[parseInt(si)].ring.level=inp.value;queueSave();
-    };
+    inp.oninput=()=>{STATE.marches[inp.dataset.march].heroes[parseInt(inp.dataset.slot)].ring.level=inp.value;queueSave();};
   });
 
-  // Mount fields
+  // Mount fields — temperament, trait1, trait2, rarity, adornment, adornment level
   const mountFields={mounttemp:"temperament",mounttrait1:"trait1",mounttrait2:"trait2",mountrarity:"rarity",mountadorn:"adornment",mountadornlv:"adornment_level"};
   Object.keys(mountFields).forEach(field=>{
     document.querySelectorAll(`[data-field='${field}']`).forEach(el=>{
       const ev=el.tagName==="SELECT"?"change":"input";
       el.addEventListener(ev,()=>{
         const {march:mId,slot:si}=el.dataset;
-        STATE.marches[mId].heroes[parseInt(si)].mount[mountFields[field]]=el.value;
-        // If temperament changes, refresh trait dropdowns
+        const idx=parseInt(si);
+        const h=STATE.marches[mId].heroes[idx];
+        h.mount[mountFields[field]]=el.value;
+
         if(field==="mounttemp"){
-          const idx=parseInt(si);
+          // Temperament changed — repopulate both trait dropdowns (full list,
+          // unrestricted) and re-flag any now-mismatched trait selections.
           const t1=document.getElementById(`trait1-${mId}-${idx}`);
           const t2=document.getElementById(`trait2-${mId}-${idx}`);
-          if(t1){t1.innerHTML=traitOptions(el.value,STATE.marches[mId].heroes[idx].mount.trait1||"");}
-          if(t2){t2.innerHTML=traitOptions(el.value,STATE.marches[mId].heroes[idx].mount.trait2||"");}
+          if(t1){
+            t1.innerHTML=traitOptions(el.value,h.mount.trait1||"");
+            t1.classList.toggle("aw-off-meta", !!traitMismatchClass(h.mount.trait1, el.value));
+          }
+          if(t2){
+            t2.innerHTML=traitOptions(el.value,h.mount.trait2||"");
+            t2.classList.toggle("aw-off-meta", !!traitMismatchClass(h.mount.trait2, el.value));
+          }
+        } else if(field==="mounttrait1" || field==="mounttrait2"){
+          // Trait changed directly — flag against the hero's current temperament.
+          const currentTemp = h.mount.temperament;
+          el.classList.toggle("aw-off-meta", !!traitMismatchClass(el.value, currentTemp));
+        } else {
+          const meta=el.getAttribute("data-meta");
+          if(meta)el.classList.toggle("aw-off-meta",!!el.value&&el.value!==meta);
         }
-        // Off-meta check
-        const meta=el.getAttribute("data-meta");
-        if(meta)el.classList.toggle("aw-off-meta",!!el.value&&el.value!==meta);
         queueSave();
       });
     });
   });
-  // Off-meta check for ring + skill dropdowns on change
-  document.querySelectorAll("#aiga-widget [data-meta]").forEach(el=>{
-    if(el.tagName==="SELECT"&&!el.dataset.field?.startsWith("mount")){
-      el.addEventListener("change",()=>{
-        const meta=el.getAttribute("data-meta");
-        if(meta)el.classList.toggle("aw-off-meta",!!el.value&&el.value!==meta);
-      });
-    }
-  });
-  // Gear dropdown off-meta check
-  document.querySelectorAll("[data-field='gearname']").forEach(sel=>{
-    sel.addEventListener("change",()=>{
-      const {march:mId,slot:si,gslot}=sel.dataset;
-      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].name=sel.value;
-      const meta=sel.getAttribute("data-meta");
-      if(meta)sel.classList.toggle("aw-off-meta",!!sel.value&&sel.value!==meta);
-      queueSave();
-    });
-  });
 
-  // Hero pool events
-  document.querySelectorAll("#aiga-widget .aw-pool-hero-sel").forEach(sel=>{
-    sel.onchange=()=>{
-      const i=parseInt(sel.dataset.pool);
-      STATE.pool[i].name=sel.value;
-      // Update type display
-      const type=sel.value&&HERO_BY_NAME[sel.value]?HERO_BY_NAME[sel.value].type:"";
-      sel.parentElement.querySelector(".aw-pool-type").textContent=type;
-      queueSave();
-    };
-  });
-  document.querySelectorAll("#aiga-widget .aw-pool-lv").forEach(inp=>{
-    inp.oninput=()=>{STATE.pool[parseInt(inp.dataset.pool)].level=inp.value;queueSave();};
-  });
-  document.querySelectorAll(".aw-pool-del").forEach(btn=>{
-    btn.onclick=()=>{STATE.pool.splice(parseInt(btn.dataset.pool),1);queueSave();renderPool();bindPoolEvents();};
-  });
-
-  // Pool rank selects
-  document.querySelectorAll("#aw-pool-list .aw-rank-sel").forEach(sel=>{
-    sel.onchange=()=>{STATE.pool[parseInt(sel.dataset.pool)].rank=sel.value;queueSave();};
-  });
+  bindPoolEvents();
 }
 
 function bindPoolEvents(){
@@ -1334,87 +1373,18 @@ function bindPoolEvents(){
     sel.onchange=()=>{STATE.pool[parseInt(sel.dataset.pool)].rank=sel.value;queueSave();};
   });
 }
-// ============================================================================
-// WIDGET PATCH — inject this block into AIGA_WP_Widget.html
-//
-// WHERE TO INSERT:
-//   Find the line:  document.getElementById("aw-pool-add").onclick=()=>{
-//   Insert THIS ENTIRE BLOCK immediately above that line.
-//
-// WHY:
-//   openMarch was used but never declared (ReferenceError on profile open).
-//   renderProfile() was called in openProfile() and bindProfileEvents()
-//   but never defined — march accordion renders nothing without it.
-// ============================================================================
 
-// ── OPEN MARCH TRACKER ────────────────────────────────────────────────────────
-// Tracks which march accordion is currently expanded. null = all closed.
-let openMarch = null;
-
-// ── RENDER PROFILE ────────────────────────────────────────────────────────────
-function renderProfile() {
-  // Restore account field values from STATE
-  const a = STATE.account;
-  const tcEl  = document.getElementById("p-tc");
-  const vipEl = document.getElementById("p-vip");
-  const hcEl  = document.getElementById("p-herocap");
-  const civEl = document.getElementById("p-civ");
-  if (tcEl)  tcEl.value  = a.tc      || "";
-  if (vipEl) vipEl.value = a.vip     || "";
-  if (hcEl)  hcEl.value  = a.herocap || "";
-  if (civEl) civEl.value = a.civ     || "";
-
-  // Render march accordions
-  const marchList = document.getElementById("aw-march-list");
-  if (!marchList) return;
-
-  let html = "";
-  MARCH_IDS.forEach(id => {
-    const m = STATE.marches[id];
-    const isOpen = openMarch === id;
-    const leadName = m.heroes[0] && m.heroes[0].name ? m.heroes[0].name : "Empty";
-    const summary  = m.troopType ? `${m.troopType} · ${leadName}` : leadName;
-
-    html += `
-      <div class="aw-march" id="march-${id}">
-        <div class="aw-march-hdr${isOpen ? " open" : ""}" data-march="${id}">
-          <span class="aw-march-id">${id}</span>
-          <span class="aw-march-summary">${summary}</span>
-          <span class="aw-chevron">▾</span>
-        </div>
-        <div class="aw-march-body${isOpen ? " open" : ""}">
-          <div class="aw-troop-row">
-            <label>Troop type</label>
-            <select class="aw-troop-sel" data-march="${id}">
-              <option value="">Select...</option>
-              ${TROOP_TYPES.map(t =>
-                `<option value="${t}"${m.troopType === t ? " selected" : ""}>${t}</option>`
-              ).join("")}
-            </select>
-          </div>
-          <div class="aw-hero-slots">
-            ${m.heroes.map((h, idx) => renderHeroSlot(id, idx, h, m.troopType)).join("")}
-          </div>
-        </div>
-      </div>`;
-  });
-
-  marchList.innerHTML = html;
-  renderPool();
-  bindProfileEvents();
-}
 document.getElementById("aw-pool-add").onclick=()=>{
   if(!STATE.pool)STATE.pool=[];
   STATE.pool.push({name:"",level:"",rank:""});
   queueSave();renderPool();bindPoolEvents();
 };
 
-// ── PROFILE MARKDOWN ──────────────────────────────────────────────────────
+// ── PROFILE MARKDOWN ───────────────────────────────────────────────────────────
 function buildMarkdown(){
   const a=STATE.account;
   const lines=["# AIGA Player Profile",`*Submitted ${new Date().toLocaleString()}*`,""];
-  lines.push(`**Account:** TC ${a.tc||"?"} · VIP ${a.vip||"?"} · Hero cap ${a.herocap||"?"} · ${a.civ||"?"}`,"");
-
+  lines.push(`**Account:** TC ${a.tc||"?"} · VIP ${a.vip||"?"} · Hero cap ${a.herocap||"?"} · Season ${a.serverSeason||"?"} · ${a.civ||"?"}`,"");
   MARCH_IDS.forEach(id=>{
     const m=STATE.marches[id];
     if(!m.heroes.some(h=>h.name))return;
@@ -1429,8 +1399,7 @@ function buildMarkdown(){
       const s4=h.skill4.name?`${h.skill4.name} lv${h.skill4.level||"?"}${h.skill4.stars?" ★"+h.skill4.stars:""}`:"—";
       lines.push(`  - Skills: ${s1} | ${s2} | ${s3} | ${s4}`);
       const gear=["Head","Hands","Body","Legs"].map(sl=>{
-        const g=h.gear[sl];
-        return g.name?`${sl}: ${g.name} lv${g.level||"?"} ◆${g.gems||0}`:`${sl}: —`;
+        const g=h.gear[sl];return g.name?`${sl}: ${g.name} lv${g.level||"?"} ◆${g.gems||0}`:`${sl}: —`;
       }).join(" | ");
       lines.push(`  - Gear: ${gear}`);
       lines.push(`  - Ring: ${h.ring.name||"—"}${h.ring.level?" lv"+h.ring.level:""}`);
@@ -1440,7 +1409,6 @@ function buildMarkdown(){
     });
     lines.push("");
   });
-
   if(STATE.pool&&STATE.pool.length){
     lines.push("## Hero Pool");
     STATE.pool.forEach(p=>{
@@ -1449,19 +1417,16 @@ function buildMarkdown(){
       lines.push(`- **${p.name}** (Lv ${p.level||"?"} · R${p.rank||"?"} · ${type})`);
     });
   }
-  return lines.join("
-");
+  return lines.join("\n");
 }
 
-// ── SUBMIT PROFILE ────────────────────────────────────────────────────────
+// ── SUBMIT PROFILE ─────────────────────────────────────────────────────────────
 document.getElementById("aw-submit-btn").onclick=async()=>{
   saveState();
   const summary=buildMarkdown();
   closeProfile();
   nudgeSent=true;
-  // Show brief message in chat — don't dump raw markdown
   addMsg("user","Profile submitted — please analyse my account.");
-  // Send full profile + instruction to API without re-adding user bubble
   const prompt="Please analyse the following player profile. Give a concise account overview and flag the top 3-5 issues or improvements. Do not repeat the profile back to me.\n\n"+summary;
   await sendProfileToAPI(prompt);
 };
@@ -1473,29 +1438,21 @@ async function sendProfileToAPI(text){
       body:JSON.stringify({message:text,session_id:sessionId})});
     hideTyping();
     const rawText=await res.text();
-    console.log("[AIGA] profile response status:",res.status,"body:",rawText.slice(0,300));
     if(!res.ok){
       let errMsg="Server error "+res.status;
       try{const err=JSON.parse(rawText);errMsg=err.error||errMsg;}catch(e){}
-      addMsg("error",errMsg+" — see browser console for details.");
-      setDisabled(false);return;
+      addMsg("error",errMsg);setDisabled(false);return;
     }
     let data;
     try{data=JSON.parse(rawText);}
-    catch(e){
-      console.error("[AIGA] JSON parse failed:",rawText.slice(0,500));
-      addMsg("error","Response parse error (status "+res.status+"). See browser console.");
-      setDisabled(false);return;
-    }
+    catch(e){addMsg("error","Response parse error (status "+res.status+").");setDisabled(false);return;}
     addMsg("aiga",data.response);
     if(typeof data.remaining==="number")updateRemaining(data.remaining);
   }catch(e){
-    hideTyping();
-    console.error("[AIGA] Fetch error:",e);
-    addMsg("error","Fetch failed: "+e.message);
+    hideTyping();addMsg("error","Fetch failed: "+e.message);
   }finally{
     setDisabled(false);
-    sendBtn.disabled=!inputEl.value.trim();
+    sendBtn.disabled=!inputEl.value.trim()&&!stagedImage;
     try{inputEl.focus();}catch(_){}
     scroll();
   }
@@ -1508,16 +1465,10 @@ document.getElementById("aw-reset-btn").onclick=()=>{
   renderProfile();setSaveStatus("Reset");
 };
 
-// ── INIT ──────────────────────────────────────────────────────────────────
+// ── INIT ───────────────────────────────────────────────────────────────────────
 marked.setOptions({breaks:true,gfm:true});
 loadState();
-
-// Welcome
-addMsg("aiga","**Welcome to AIGA** — your Age of Empires Mobile advisor.
-
-Ask me about heroes, marches, gear, events, troops or base progression.
-
-Ask me about AoEM — I\'ll do my best.");
+addMsg("aiga","**Welcome to AIGA** — your Age of Empires Mobile advisor.\n\nAsk me about heroes, marches, gear, events, troops or base progression.\n\nTip: tap **⚙ Profile** to set up your account for personalised advice. Setting your **Server Season** helps narrow the hero list to what's actually available to you.");
 inputEl.focus();
 
 })();
