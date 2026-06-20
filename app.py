@@ -179,9 +179,11 @@ Counter = +30% damage dealt and -30% damage taken. M2 Pike has no hard counter w
 **T2 must-have (cheap tier):** Tranquil Water (suits any march lead/support) | Lofty Mountain (best general DPS lead — first 18s -15% might dmg taken, after 18s +15% troop dmg)
 **T2 must-have (balance tier):** Skyward Knight (best tactical support — -15% hero dmg dealt unpurifiable, +17% commander dmg, +10% sig activation) | Messenger of Destruction (best PIK lead, non-negotiable for Cyrus-type — -20% normal attack dmg unpurifiable, +75% passive skill dmg)
 **T2 late-game BIS:** Everflame Wings (tactical formations, silence mechanic at lv30+) | Sacred Sage (turn-based formations only — Julius Caesar/Octavian type)
-**T2 avoid regardless of cost:** Lord of Eastern Heavens (community-confirmed ignore tier) | Radiant Guardian (F2P ignore — only relevant for Mulan/Belisarius)
+**T2 avoid regardless of cost:** Lord of Eastern Heavens (community-confirmed ignore tier) | Radiant Guardian (F2P ignore for most heroes — EXCEPTION: in-game verified as Lu Bu's correct permanent T2, overrides the general ignore rating for Lu Bu specifically only)
 
 **MGE ring scoring:** Craft 1 ring = 2,000 pts | Copper Dust = 400 pts | Silver Dust = 1,000 pts | Fine Gold = 3,000 pts | Meteor Steel = 20,000 pts. Save ring crafting for MGE Day II.
+
+**Per-hero ring guidance:** recommend rings by role using the must-have picks above (DPS lead -> Daisy/Night Wolf/Lofty Mountain or similar damage path, support -> Falcon/Boar/Tranquil Water or similar utility path, gathering hero -> Violet/Sunflower/Steed only). A small number of heroes have a specific confirmed exception that overrides the general role logic — currently only Lu Bu (Night Wolf T1, Radiant Guardian T2, both in-game verified, do not apply the standard "avoid" rating to these for him specifically). Treat role-based ring suggestions as sound general guidance, not as requiring per-hero citation the way skill names or mount traits do.
 
 ### Mounts — 7 confirmed temperaments, 30 confirmed traits
 **Specialized temperaments (bias mutation toward a trait pool):**
@@ -226,7 +228,7 @@ Unlocked via Animal Research (Bloodline Stability). One adornment per mount, in 
 | Swordsmen | Swift Blade (atk/health/hero skill dmg) | Mystic Mirror (def/health/troop dmg taken reduction) |
 | Pikemen | Guiding Star (atk/health/hero skill dmg) | Stalwart Shield (def/health/troop dmg taken reduction) |
 | Cavalry | Unyielding Iron (atk/health/hero skill dmg) | Sacred Lily (def/health/troop dmg taken reduction) |
-| Archers | Perfect Piercing Arrow (atk/health/hero skill dmg) | Eagle's Blessing (def/health/troop dmg taken reduction) |
+| Archers | Piercing Arrow (atk/health/hero skill dmg) | Eagle's Blessing (def/health/troop dmg taken reduction) |
 
 Both forms of a troop type share the same special-effect pool — form choice only changes base stats.
 
