@@ -7,7 +7,7 @@
 #aiga-widget {
   --aw-bg:#1a1a1a; --aw-card:#242424; --aw-header:#1e1e1e; --aw-input:#2a2a2a;
   --aw-user:#2e2e2e; --aw-border:#333; --aw-border-lt:#2a2a2a;
-  --aw-text:#fff; --aw-muted:#999; --aw-faint:#555;
+  --aw-text:#fff; --aw-muted:#b0b0b0; --aw-faint:#8a8a8a;
   --aw-gold:#c9a84c; --aw-gold-dim:#8a7035; --aw-error:#cc4444;
   --aw-radius:8px;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
@@ -190,16 +190,18 @@
 #aiga-widget .aw-skill-num{font-size:9px;color:var(--aw-faint);width:14px;flex-shrink:0;}
 
 /* Gear */
-#aiga-widget .aw-gear-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;}
+#aiga-widget .aw-gear-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap;}
 #aiga-widget .aw-gear-row .aw-slot-tag{font-size:9px;color:var(--aw-faint);width:34px;flex-shrink:0;}
 #aiga-widget .aw-gear-row input[type=text]{flex:1;min-width:0;font-size:12px;}
 #aiga-widget .aw-gear-row .aw-glv{width:46px;flex-shrink:0;}
+#aiga-widget .aw-gear-row .aw-gstar{width:40px;flex-shrink:0;}
 #aiga-widget .aw-gems{display:flex;gap:3px;align-items:center;flex-shrink:0;}
-#aiga-widget .aw-gem{
-  width:13px;height:13px;border-radius:2px;border:1px solid var(--aw-border);
-  background:var(--aw-input);cursor:pointer;transition:background .1s;
+#aiga-widget .aw-gem-sel{
+  width:28px;height:22px;padding:0 2px;font-size:0;border-radius:3px;
+  border:1px solid var(--aw-border);cursor:pointer;background-color:var(--aw-input);
+  background-image:none;
 }
-#aiga-widget .aw-gem.on{background:var(--aw-gold-dim);border-color:var(--aw-gold);}
+#aiga-widget .aw-gem-sel option{font-size:12px;color:#fff;}
 
 /* Ring + Mount */
 #aiga-widget .aw-ring-row{display:flex;gap:6px;align-items:center;margin-bottom:9px;}
@@ -450,25 +452,26 @@ const HERO_META = [
   {name:"Ashoka",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",role:"Universal Secondary Strike Support",skill1:"",skill2:"",skills:["Infuriation","Roar of Victory","Weak Spot Attack","Act of Mercy","Tactical Pursuit","Sunder"],ring:"Ring of Steed",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Frederick Barbarossa",type:"PIK",rarity:"Legendary",season:"S2 Event",role:"W.PIK Tank",skill1:"",skill2:"",skills:["King's Blade","Tenacity","Peaceful Haven","Sunder","War Drums","Righteous Judgement"],ring:"Ring of Boar",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Philip IV",type:"SW",rarity:"Legendary",season:"S2 Event",role:"T.SW Placeholder",skill1:"",skill2:"",skills:["High Spirit","War Tactic","Boulder Trap","Strategy Master's Gift","Conflagration","Suppression"],ring:"Ring of Shark",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Saladin",type:"CAV/ARC",rarity:"Legendary",season:"S3 Event",role:"M.CAV Support 2nd/3rd slot - CANNOT lead",skill1:"Triple Clash",skill2:"Fury Of the Sands",skills:["Fervor","Enraged Strike","War Tactic","Tactical Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Night Wolf",ring_path:"",mount_temp:"Fearless",mount_trait:"Army Sunder",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Saladin",type:"CAV/ARC",rarity:"Legendary",season:"S3 Event",role:"M.CAV Support 2nd/3rd slot - CANNOT lead",skill1:"Triple Clash",skill2:"Fury Of the Sands",skills:["Fervor","Enraged Strike","War Tactic","Tactical Pursuit","Roar of Victory","Weak Spot Attack"],ring:"Ring of Night Wolf",ring_path:"",mount_temp:"Fearless",mount_trait:"Army Sunder",mount_trait2:"",skill3_rec:"Roar of Victory",skill4_rec:"Weak Spot Attack"},
   {name:"Constantine",type:"SW",rarity:"Legendary",season:"S2 Event (VIP12)",role:"W.SW Damage Reduction",skill1:"",skill2:"",skills:["Crashing Boulder","High Spirit","Fortification","Tenacity","Peaceful Haven","Bloodthirst"],ring:"Ring of Steed",ring_path:"",mount_temp:"Fearless",mount_trait:"Bastion",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Tomyris",type:"SW/CAV",rarity:"Legendary",season:"S2 Event",role:"M.SW/M.CAV sub",skill1:"",skill2:"",skills:["Infuriation","Armor Piercer","Roar of Victory","Tenacity","Peaceful Haven","Rending Covenant"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Bushra",type:"PIK/CAV",rarity:"Legendary",season:"S2 Event",role:"M.PIK Tank",skill1:"",skill2:"",skills:["King's Blade","Mettle","Fortification","Tenacity","Darkness Strike","Peaceful Haven"],ring:"Ring of Boar",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Oda Nobunaga",type:"SW",rarity:"Legendary",season:"S2 Event",role:"M.SW Sub",skill1:"",skill2:"",skills:["Formation Attack","Change of Formation","King's Blade","Savage","Whirlwind Sweep","Bloodthirst"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Phalanx Breaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Toyotomi Hideyoshi",type:"SW",rarity:"Legendary",season:"S2 Event",role:"M.SW Lead",skill1:"",skill2:"",skills:["Crashing Boulder","Peerless Strike","High Spirit","Furious Charge","Bloodthirst","Shield Slam"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Tokugawa Ieyasu",type:"SW",rarity:"Legendary",season:"S2 Event",role:"M.SW Sub",skill1:"",skill2:"",skills:["King's Blade","Mettle","Fortification","Peaceful Haven","Protracted Battle","Entrenchment"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Mansa Musa",type:"PIK",rarity:"Legendary",season:"S3 Wheel",role:"W.PIK Support",skill1:"Spend a Fortune",skill2:"Devout Radiance",skills:["Vigilance","Mettle","Golden Odyssey","Fearless Retribution","Tenacity","King's Blade"],ring:"Ring of Boar",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Mansa Musa",type:"PIK",rarity:"Legendary",season:"S3 Wheel",role:"W.PIK Support",skill1:"Spend a Fortune",skill2:"Devout Radiance",skills:["Vigilance","Mettle","Golden Odyssey","Fearless Retribution","Tenacity","King's Blade"],ring:"Ring of Boar",ring_path:"",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"Golden Odyssey",skill4_rec:"Fearless Retribution"},
   {name:"Charlemagne",type:"ARC/SW",rarity:"Legendary",season:"S3 Wheel",role:"T.SW / T.ARC Support",skill1:"Imperial Majesty",skill2:"Starchaser",skills:["Blaze Impact","Sowing Discord","War Tactic","Conflagration","Bloodthirst","Earth Crush"],ring:"Ring of Shark",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Boudica",type:"PIK",rarity:"Legendary",season:"S3 Wheel",role:"W.PIK Sub",skill1:"Sawtooth Pike",skill2:"Swift Reprisal",skills:["Counterattack","Vigilance","Tenacity","King's Blade","Forceful Retaliation","Whirlwind Sweep"],ring:"",ring_path:"Tulip -> Bear -> Everflame Wings",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Ramesses II",type:"SW/ARC",rarity:"Legendary",season:"S3 MGE Event",role:"T.SW Open Field ONLY - NEVER Rally",skill1:"Son of Ra",skill2:"Storms of Set",skills:["Deception","Suppression","Flame of Genesis","Ultimate Strategy","High Spirit","Strategy Master's Gift"],ring:"Skyward Knight",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Mehmed II",type:"ARC/SW",rarity:"Legendary",season:"S3 Event",role:"W.ARC/W.SW 2nd slot",skill1:"Sultan Caesar",skill2:"Fatih",skills:["Crashing Boulder","Sunder","Owl's Lament","Peaceful Haven","Bloodthirst","King's Blade"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Zhuge Liang",type:"SW/ARC",rarity:"Legendary",season:"S3 Event",role:"T.SW and T.ARC Support",skill1:"Stone Sentinel Maze",skill2:"Miracle of Qimen",skills:["Suppression","Sowing Discord","Conflagration","Borrowing the East Wind","War Tactic","Peaceful Haven"],ring:"Ring of Shark",ring_path:"",mount_temp:"Alert",mount_trait:"Battlemaster",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Lagertha",type:"SW",rarity:"Legendary",season:"S4 Wheel",role:"W.SW 3rd Slot",skill1:"Berserker's Shield Dance",skill2:"Valkyrie's Edge",skills:["Crashing Boulder","Peerless Strike","High Spirit","Bloodthirst","Shield Slam","Raging Bloodline"],ring:"",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Timur",type:"CAV/ARC",rarity:"Legendary",season:"S4 MGE Event",role:"W.CAV 2IC",skill1:"Exotic Cavalry",skill2:"Annihilation Blade",skills:["Armor Piercer","Infuriation","Tempered Steel","Critical Insight","Weak Spot Attack","Spirited Pursuit"],ring:"",ring_path:"Lily -> Deer -> Azure Moon",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Cyrus the Great",type:"PIK",rarity:"Legendary",season:"S4 Event",role:"W.PIK Lead",skill1:"Isolated Green Vine",skill2:"King of the World",skills:["Counterattack","Vigilance","Fearless Retribution","Forceful Retaliation","Child of Prophecy","Whirlwind Sweep"],ring:"",ring_path:"Tulip -> Boar -> Messenger of Destruction",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Ramesses II",type:"SW/ARC",rarity:"Legendary",season:"S3 MGE Event",role:"T.SW Open Field ONLY - NEVER Rally",skill1:"Son of Ra",skill2:"Storms of Set",skills:["Deception","Suppression","Flame of Genesis","Ultimate Strategy","High Spirit","Strategy Master's Gift"],ring:"Skyward Knight",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"Flame of Genesis",skill4_rec:"High Spirit"},
+  {name:"Mehmed II",type:"ARC/SW",rarity:"Legendary",season:"S3 Event",role:"W.ARC/W.SW 2nd slot",skill1:"Sultan Caesar",skill2:"Fatih",skills:["Crashing Boulder","Sunder","Owl's Lament","Peaceful Haven","Bloodthirst","King's Blade"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"Owl's Lament",skill4_rec:"Peaceful Haven"},
+  {name:"Zhuge Liang",type:"SW/ARC",rarity:"Legendary",season:"S3 Event",role:"T.SW and T.ARC Support",skill1:"Stone Sentinel Maze",skill2:"Miracle of Qimen",skills:["Suppression","Sowing Discord","Conflagration","Borrowing the East Wind","War Tactic","Peaceful Haven"],ring:"Ring of Shark",ring_path:"",mount_temp:"Alert",mount_trait:"Battlemaster",mount_trait2:"",skill3_rec:"Borrowing the East Wind",skill4_rec:"War Tactic"},
+  {name:"Lagertha",type:"SW",rarity:"Legendary",season:"S4 Wheel",role:"W.SW 3rd Slot",skill1:"Berserker's Shield Dance",skill2:"Valkyrie's Edge",skills:["Crashing Boulder","Peerless Strike","High Spirit","Bloodthirst","Shield Slam","Raging Bloodline"],ring:"",ring_path:"Daisy -> Night Wolf (if available) -> Tranquil Water",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Timur",type:"CAV/ARC",rarity:"Legendary",season:"S4 MGE Event",role:"W.CAV 2IC",skill1:"Exotic Cavalry",skill2:"Annihilation Blade",skills:["Armor Piercer","Infuriation","Tempered Steel","Critical Insight","Weak Spot Attack","Spirited Pursuit"],ring:"",ring_path:"Lily -> Deer -> Azure Moon",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"Weak Spot Attack",skill4_rec:"Tempered Steel"},
+  {name:"Cyrus the Great",type:"PIK",rarity:"Legendary",season:"S4 Event",role:"W.PIK Lead",skill1:"Isolated Green Vine",skill2:"King of the World",skills:["Counterattack","Vigilance","Fearless Retribution","Forceful Retaliation","Child of Prophecy","Whirlwind Sweep"],ring:"",ring_path:"Tulip -> Boar -> Messenger of Destruction",mount_temp:"Warbred",mount_trait:"Valor",mount_trait2:"",skill3_rec:"Forceful Retaliation",skill4_rec:"Child of Prophecy"},
   {name:"Elizabeth I",type:"PIK",rarity:"Legendary",season:"S4 Event",role:"T.PIK Support",skill1:"The Glorious Queen",skill2:"Golden Age",skills:["Sowing Discord","Suppression","Ultimate Strategy","Crushing Impact","Triple Offensive"],ring:"Skyward Knight",ring_path:"",mount_temp:"Alert",mount_trait:"Spiritbond",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Vlad the Impaler",type:"CAV/PIK",rarity:"Legendary",season:"S4 Event",role:"T.PIK Sub - requires Cyrus",skill1:"King's Edict",skill2:"Dragon's Vigor",skills:["Counterattack","Vigilance","Deadly Dragonthron","Battle Roar","Whirlwind Sweep","Forceful Retaliation"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Otto",type:"CAV/PIK",rarity:"Legendary",season:"S5 Event",role:"M.PIK DPS",skill1:"Sacred Coronation",skill2:"Imperial Privilege",skills:["Formation Attack","Change of Formation","Holy Roman Empire","Savage","War Elephant","Furious Charge"],ring:"Ring of Steed",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Henry V",type:"ARC",rarity:"Legendary",season:"Unconfirmed season",role:"ARC Support",skill1:"",skill2:"",skills:[],ring:"",ring_path:"Iris -> Badger -> Skyward Knight",mount_temp:"Protective",mount_trait:"Lifesaver",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"Vlad the Impaler",type:"CAV/PIK",rarity:"Legendary",season:"S4 Event",role:"T.PIK Sub - requires Cyrus",skill1:"King's Edict",skill2:"Dragon's Vigor",skills:["Counterattack","Vigilance","Deadly Dragonthron","Battle Roar","Whirlwind Sweep","Forceful Retaliation"],ring:"Ring of Steed",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"Deadly Dragonthron",skill4_rec:"Whirlwind Sweep"},
+  {name:"Otto",type:"CAV/PIK",rarity:"Legendary",season:"S5 Event",role:"M.PIK DPS",skill1:"Sacred Coronation",skill2:"Imperial Privilege",skills:["Formation Attack","Change of Formation","Holy Roman Empire","Savage","War Elephant","Furious Charge"],ring:"Ring of Steed",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"Holy Roman Empire",skill4_rec:"Furious Charge"},
   {name:"Gao Meng",type:"SW",rarity:"Epic",season:"Available",role:"Epic SW placeholder",skill1:"",skill2:"",skills:["Crashing Boulder","Mettle","Shield Slam","Prayer For Harvest","Mighty Strike","Double Strike"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Wu Wei",type:"PIK",rarity:"Epic",season:"Available",role:"Epic PIK sub",skill1:"",skill2:"",skills:["Mettle","Counterattack","Vigilance","War Drums","Mighty Strike","Double Strike"],ring:"Ring of Clover",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Kaso",type:"CAV",rarity:"Epic",season:"Available",role:"Epic CAV sub",skill1:"",skill2:"",skills:["Armor Piercer","Sunder","Prayer For Harvest","Double Strike","Rapid Gathering","Prudent Handling"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
@@ -478,12 +481,12 @@ const HERO_META = [
   {name:"Nino",type:"SW",rarity:"Epic",season:"Available",role:"Epic SW placeholder",skill1:"",skill2:"",skills:["Deception","Maneuver","Prayer For Harvest","Rapid Gathering","Surprise Attack","Calm in Peril"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Fierce",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Luki",type:"ARC",rarity:"Epic",season:"Available",role:"Epic ARC placeholder",skill1:"",skill2:"",skills:["Crashing Boulder","Armor Piercer","Mettle","Sunder","Mighty Strike","Double Strike"],ring:"Ring of Clover",ring_path:"",mount_temp:"Warbred",mount_trait:"Overpower",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Leo",type:"PIK",rarity:"Epic",season:"Available",role:"Epic PIK placeholder",skill1:"",skill2:"",skills:["Mettle","Fortification","Prayer For Harvest","Rapid Gathering","Rest and Recover","Prudent Handling"],ring:"Ring of Clover",ring_path:"",mount_temp:"Fearless",mount_trait:"Tidebreaker",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"King Derrick",type:"ARC/SW",rarity:"Legendary",season:"Tavern (Giants Roar)",role:"Siege march / gathering",skill1:"Defensive Slungshot",skill2:"Grace and Blessings",skills:["Efficient Harvest","Windfall","Earth Crush","Sunder","Righteous Judgement","Fearless Frontrunner"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Queen Dido",type:"SW",rarity:"Legendary",season:"S2 Event",role:"SW sub",skill1:"Exile's Blessing",skill2:"Current of Abundance",skills:["King's Blade","Efficient Harvest","Fortification","Peaceful Haven","Protracted Battle","Supplies Transportation"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Queen Seondeok",type:"ARC",rarity:"Legendary",season:"S2 Event",role:"T.ARC silence (low priority)",skill1:"Fight Fire with Fire",skill2:"Halo of Hwangnyong",skills:["War Tactic","Ultimate Strategy","Blaze Impact","Conflagration","Maneuver","Immortal Army"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Yi Seong-Gye",type:"CAV",rarity:"Legendary",season:"S2 Event",role:"M.CAV (low priority)",skill1:"Wild Shot",skill2:"Unequaled Valor",skills:["Crashing Boulder","Peerless Strike","Bloodthirst","Shield Slam","Earth Crush","Battle Roar"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Tariq",type:"CAV",rarity:"Legendary",season:"S2 Event",role:"M.CAV secondary booster",skill1:"Sword of Sage",skill2:"Desert Iron Riders",skills:["Infuriation","Spirited Pursuit","Armor Piercer","Roar of Victory","Weak Spot Attack","Act of Mercy"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
-  {name:"Isabella",type:"SW/ARC",rarity:"Legendary",season:"Unconfirmed season",role:"Dual: M.SW support / Gathering support",skill1:"Reclamation Decree",skill2:"Twin Monarch's Aegis",skills:["Efficient Harvest","Windfall","Organized Retreat","Fortification","Tenacity","Peaceful Haven"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
+  {name:"King Derrick",type:"ARC/SW",rarity:"Legendary",season:"Tavern (Giants Roar)",role:"Siege march / gathering",skill1:"Defensive Slungshot",skill2:"Grace and Blessings",skills:["Efficient Harvest","Windfall","Earth Crush","Sunder","Righteous Judgement","Fearless Frontrunner"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"Earth Crush",skill4_rec:"Righteous Judgement"},
+  {name:"Queen Dido",type:"SW",rarity:"Legendary",season:"S2 Event",role:"SW sub",skill1:"Exile's Blessing",skill2:"Current of Abundance",skills:["King's Blade","Efficient Harvest","Fortification","Peaceful Haven","Protracted Battle","Supplies Transportation"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"King's Blade",skill4_rec:"Peaceful Haven"},
+  {name:"Queen Seondeok",type:"ARC",rarity:"Legendary",season:"S2 Event",role:"T.ARC silence (low priority)",skill1:"Fight Fire with Fire",skill2:"Halo of Hwangnyong",skills:["War Tactic","Ultimate Strategy","Blaze Impact","Conflagration","Maneuver","Immortal Army"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"Conflagration",skill4_rec:"War Tactic"},
+  {name:"Yi Seong-Gye",type:"CAV",rarity:"Legendary",season:"S2 Event",role:"M.CAV (low priority)",skill1:"Wild Shot",skill2:"Unequaled Valor",skills:["Crashing Boulder","Peerless Strike","Bloodthirst","Shield Slam","Earth Crush","Battle Roar"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"Bloodthirst",skill4_rec:"Battle Roar"},
+  {name:"Tariq",type:"CAV",rarity:"Legendary",season:"S2 Event",role:"M.CAV secondary booster",skill1:"Sword of Sage",skill2:"Desert Iron Riders",skills:["Infuriation","Spirited Pursuit","Armor Piercer","Roar of Victory","Weak Spot Attack","Act of Mercy"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"Spirited Pursuit",skill4_rec:"Roar of Victory"},
+  {name:"Isabella",type:"SW/ARC",rarity:"Legendary",season:"Unconfirmed season",role:"Dual: M.SW support / Gathering support",skill1:"Reclamation Decree",skill2:"Twin Monarch's Aegis",skills:["Efficient Harvest","Windfall","Organized Retreat","Fortification","Tenacity","Peaceful Haven"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"Peaceful Haven",skill4_rec:"Tenacity"},
   {name:"Baldassi",type:"SW",rarity:"Epic",season:"Available",role:"Epic SW placeholder",skill1:"",skill2:"",skills:["Boulder Trap","Maneuver","Rapid Gathering","Prudent Handling","Surprise Attack","Focused Mind"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Li Daoxuan",type:"SW",rarity:"Epic",season:"Available",role:"Epic SW placeholder",skill1:"",skill2:"",skills:["Formation Attack","Change of Formation","Crashing Boulder","War Drums","Mighty Strike","Double Strike"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
   {name:"Gatos",type:"PIK",rarity:"Epic",season:"Available",role:"Epic PIK placeholder",skill1:"",skill2:"",skills:["Sowing Discord","Deception","Suppression","Prayer For Harvest","Mighty Strike","Double Strike"],ring:"",ring_path:"",mount_temp:"",mount_trait:"",mount_trait2:"",skill3_rec:"",skill4_rec:""},
@@ -592,13 +595,29 @@ const TRAIT_HOME_TEMP = {
   "Swift":"Gathering","Abundance":"Gathering","Full Stores":"Gathering"
 };
 
-const ADORNMENTS = [
-  "Thunder","Wavebreaker","Blood Debt","Lightning Strike","Chain Slayer","Boiling Blood",
-  "War Prep","Swift Blade","Piercing Arrow","Ablaze Spirit","Rampant Blade","Iron Fang",
-  "Unyielding Iron","Primal Force","Storm Slash",
-  "Guiding Star","Unyielding Armor","Mystic Mirror","Sacred Lily","Stalwart Shield",
-  "Steadfast Guard","Mountain Root","Granite Wall","Iron Ridge","Shining Vow"
-];
+// ── ADORNMENTS — corrected 3-field data model ──────────────────────────────
+// Troop Type / Form / Special Effect are three separate fields, not one merged
+// list. Form determines base stats and Attack/Defense orientation (locked to
+// the form name). Special Effect is a separately-rolled bonus drawn from a
+// shared pool per troop type. A single dropdown mixing form names with effect
+// names (the old ADORNMENTS array) was structurally wrong and silently hid
+// options like Resistance whenever it wasn't in that merged list.
+const ADORNMENT_FORMS = {
+  Sword:   { attack: "Swift Blade",     defense: "Mystic Mirror" },
+  Pike:    { attack: "Guiding Star",    defense: "Stalwart Shield" },
+  Cavalry: { attack: "Unyielding Iron", defense: "Sacred Lily" },
+  Archer:  { attack: "Piercing Arrow",  defense: "Eagle's Blessing" }
+};
+
+// Special effects shared pool per troop type. Universal effects (Resistance,
+// Natural Selection) apply regardless of troop type and are always included.
+const ADORNMENT_EFFECTS = {
+  Universal: ["Resistance", "Natural Selection"],
+  Sword: ["Wavebreaker", "Calculation", "Blazing Edge", "Starlink", "Radiance", "Mutual Aid", "Charge"],
+  Pike: ["Resourcefulness", "Secondary Strike", "Insight", "Stacked Armor", "Gambit", "Blood Debt", "Guard Formation"],
+  Cavalry: ["Boiling Blood", "Rally", "Chain Slayer", "Lone Valor", "Cloud Piercer", "Shadow Chaser", "Intimidation"],
+  Archer: ["Lightning Strike", "Power Accumulation", "Eye of the Storm", "Slaughter", "Strike Soul", "Strike Weakness", "Deceptive Words", "Blood Rage", "Risk Aversion"]
+};
 
 // ── STATE ────────────────────────────────────────────────────────────────────
 const MARCH_IDS   = ["M1","M2","M3","M4","M5"];
@@ -611,9 +630,9 @@ function emptyHero(){
     name:"",level:"",rank:"",
     skill1:{name:"",level:""},skill2:{name:"",level:""},
     skill3:{name:"",level:"",stars:""},skill4:{name:"",level:"",stars:""},
-    gear:{Head:{name:"",level:"",gems:0},Hands:{name:"",level:"",gems:0},Body:{name:"",level:"",gems:0},Legs:{name:"",level:"",gems:0}},
+    gear:{Head:{name:"",level:"",stars:"",gems:["","",""]},Hands:{name:"",level:"",stars:"",gems:["","",""]},Body:{name:"",level:"",stars:"",gems:["","",""]},Legs:{name:"",level:"",stars:"",gems:["","",""]}},
     ring:{name:"",level:""},
-    mount:{temperament:"",trait1:"",trait2:"",rarity:"",adornment:"",adornment_level:""}
+    mount:{temperament:"",trait1:"",trait2:"",rarity:"",adornment_form:"",adornment_effect:"",adornment_level:""}
   };
 }
 function emptyMarch(){
@@ -942,10 +961,42 @@ function skillOptions(heroName,selected){
   return html;
 }
 
-function gemsDots(marchId,slotIdx,slot,count){
+// Skill 1 (Commander) and Skill 2 (Signature) are fixed per-hero values, not a
+// pool to pick from — but the builder still renders them as dropdowns for UI
+// consistency with skill 3/4. The dropdown simply offers the hero's one
+// confirmed value, pre-selected, so the field always shows correct data.
+function fixedSkillOptions(skillName,selected){
+  if(!skillName)return'<option value="">KNOWLEDGE GAP - not sourced</option>';
+  const sel=selected||skillName;
+  return `<option value="${skillName}"${sel===skillName?" selected":""}>${skillName}</option>`;
+}
+
+// Gem colors — 5 confirmed colors. Data on what each color does is deferred
+// (Gustav: "we'll get to data of gems later") — this is schema/UI only for now.
+const GEM_COLORS = [
+  {name:"Gold",   hex:"#d8b85a"},
+  {name:"Purple", hex:"#9b59d0"},
+  {name:"Blue",   hex:"#4a90d9"},
+  {name:"Green",  hex:"#5cb85c"},
+  {name:"Grey",   hex:"#9a9a9a"}
+];
+
+// 3 gem slots per gear piece, each an independent color dropdown. Options show
+// the actual color (inline-styled background) rather than the color's name text.
+function gemSlotOptions(curVal){
+  let html=`<option value="" style="background:#2a2a2a;color:#999;">—</option>`;
+  GEM_COLORS.forEach(c=>{
+    html+=`<option value="${c.name}" style="background:${c.hex};color:${c.hex};"${curVal===c.name?" selected":""}>${c.name}</option>`;
+  });
+  return html;
+}
+
+function gemSlotsRow(marchId,slotIdx,slot,gems){
+  const g = gems||["","",""];
   let html='';
-  for(let i=1;i<=3;i++){
-    html+=`<div class="aw-gem${i<=count?" on":""}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-gem="${i}"></div>`;
+  for(let i=0;i<3;i++){
+    html+=`<select class="aw-gem-sel" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-gemslot="${i}"
+      style="background-color:${g[i]?GEM_COLORS.find(c=>c.name===g[i])?.hex:'var(--aw-input)'};">${gemSlotOptions(g[i]||"")}</select>`;
   }
   return html;
 }
@@ -965,11 +1016,30 @@ function gearDefault(troopType,slot){
   const items=(GEAR_META[tt]&&GEAR_META[tt][slot])||GEAR_META.Sword[slot];
   return items[0]?`${items[0].n} (${items[0].r})`:"";
 }
-function ringOptions(curVal,metaRing){
+// Scans every hero across every march (and the hero pool) for currently
+// assigned rings, excluding the hero slot currently being rendered. Used to
+// enforce "one ring per roster" — a ring assigned to one hero should not be
+// selectable on another hero at the same time.
+function ringsAssignedElsewhere(excludeMarchId,excludeSlotIdx){
+  const assigned=new Set();
+  MARCH_IDS.forEach(mId=>{
+    STATE.marches[mId].heroes.forEach((h,idx)=>{
+      if(mId===excludeMarchId&&idx===excludeSlotIdx)return;
+      if(h.ring&&h.ring.name)assigned.add(h.ring.name);
+    });
+  });
+  return assigned;
+}
+
+function ringOptions(curVal,metaRing,marchId,slotIdx){
+  const taken=marchId!==undefined?ringsAssignedElsewhere(marchId,slotIdx):new Set();
   let html='<option value="">Select ring...</option>';
   RINGS.slice().sort((a,b)=>a.localeCompare(b)).forEach(r=>{
     const sel=curVal===r?" selected":((!curVal&&r===metaRing)?" selected":"");
-    html+=`<option value="${r}"${sel}>${r}</option>`;
+    const isTaken=taken.has(r)&&r!==curVal;
+    const disabled=isTaken?" disabled":"";
+    const label=isTaken?`${r} (assigned elsewhere)`:r;
+    html+=`<option value="${r}"${sel}${disabled}>${label}</option>`;
   });
   return html;
 }
@@ -995,11 +1065,26 @@ function traitMismatchClass(trait,temperament){
   return home!==temperament?" aw-off-meta":"";
 }
 
-function adornOptions(curVal){
-  let html='<option value="">Select adornment...</option>';
-  ADORNMENTS.slice().sort((a,b)=>a.localeCompare(b)).forEach(a=>{html+=`<option value="${a}"${curVal===a?" selected":""}>${a}</option>`;});
-  if(curVal&&!ADORNMENTS.includes(curVal))
-    html+=`<option value="${curVal}" selected>${curVal} (custom)</option>`;
+// Form options are locked to the hero's current troop type — Attack/Defense
+// orientation is a fixed property of the form name itself, not a separate toggle.
+function adornFormOptions(troopType, curVal) {
+  const tt = troopType || "Sword";
+  const forms = ADORNMENT_FORMS[tt] || ADORNMENT_FORMS.Sword;
+  let html = '<option value="">Select form...</option>';
+  html += `<option value="${forms.attack}"${curVal===forms.attack?" selected":""}>${forms.attack} (Attack)</option>`;
+  html += `<option value="${forms.defense}"${curVal===forms.defense?" selected":""}>${forms.defense} (Defense)</option>`;
+  return html;
+}
+// Special Effect pool is shared between the Attack and Defense form of the
+// same troop type — it does not depend on which form is selected, only on
+// troop type. Universal effects (Resistance, Natural Selection) always included.
+function adornEffectOptions(troopType, curVal) {
+  const tt = troopType || "Sword";
+  const pool = [...ADORNMENT_EFFECTS.Universal, ...(ADORNMENT_EFFECTS[tt] || [])];
+  let html = '<option value="">Select special effect...</option>';
+  pool.slice().sort((a,b)=>a.localeCompare(b)).forEach(e=>{
+    html += `<option value="${e}"${curVal===e?" selected":""}>${e}</option>`;
+  });
   return html;
 }
 function offMetaClass(val,meta){return meta&&val&&val!==meta?" aw-off-meta":"";}
@@ -1018,6 +1103,8 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
   const tempVal=h.mount.temperament||(tempDef);
   const tr1Val=h.mount.trait1||(traitDef);
   const tr2Val=h.mount.trait2||"";
+  const s1val=h.skill1.name||meta.skill1||"";
+  const s2val=h.skill2.name||meta.skill2||"";
 
   return `<div class="aw-hero-slot" id="slot-${marchId}-${slotIdx}">
     <div class="aw-slot-label">${label}</div>
@@ -1029,39 +1116,6 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
         <option value="">R</option>${[1,2,3,4,5,6].map(r=>`<option value="${r}"${h.rank==r?" selected":""}>${r}</option>`).join("")}
       </select>
     </div>
-    <div class="aw-sec">Skills</div>
-    <div class="aw-skill-row">
-      <span class="aw-skill-num">1</span>
-      <input type="text" placeholder="Commander skill" value="${h.skill1.name||""}"
-        data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1name">
-      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill1.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1level">
-    </div>
-    <div class="aw-skill-row">
-      <span class="aw-skill-num">2</span>
-      <input type="text" placeholder="Signature skill" value="${h.skill2.name||""}"
-        data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2name">
-      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill2.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2level">
-    </div>
-    <div class="aw-skill-row">
-      <span class="aw-skill-num">3</span>
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3name"
-        class="${offMetaClass(h.skill3.name,s3def)}" data-meta="${s3def}">${skillOptions(h.name,s3val)}</select>
-      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill3.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3level">
-      <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
-        value="${h.skill3.stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3stars">
-    </div>
-    <div class="aw-skill-row">
-      <span class="aw-skill-num">4</span>
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4name"
-        class="${offMetaClass(h.skill4.name,s4def)}" data-meta="${s4def}">${skillOptions(h.name,s4val)}</select>
-      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill4.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4level">
-      <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
-        value="${h.skill4.stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4stars">
-    </div>
     <div class="aw-sec">Gear</div>
     ${["Head","Hands","Body","Legs"].map(slot=>`
     <div class="aw-gear-row">
@@ -1071,12 +1125,15 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
         class="${offMetaClass(h.gear[slot].name,gearDefault(troopType,slot))}">${gearOptions(troopType,slot,h.gear[slot].name)}</select>
       <input type="number" class="aw-glv" placeholder="Lv" min="1" max="80"
         value="${h.gear[slot].level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearlevel">
-      <div class="aw-gems">${gemsDots(marchId,slotIdx,slot,h.gear[slot].gems||0)}</div>
+      <input type="number" class="aw-gstar" placeholder="★" min="0" max="5"
+        value="${h.gear[slot].stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearstars"
+        style="width:40px;flex-shrink:0;">
+      <div class="aw-gems">${gemSlotsRow(marchId,slotIdx,slot,h.gear[slot].gems)}</div>
     </div>`).join("")}
     <div class="aw-sec">Ring</div>
     <div class="aw-ring-row">
       <select data-march="${marchId}" data-slot="${slotIdx}" data-field="ringname"
-        class="${offMetaClass(h.ring.name,ringDef)}" data-meta="${ringDef}">${ringOptions(ringVal,ringDef)}</select>
+        class="${offMetaClass(h.ring.name,ringDef)}" data-meta="${ringDef}">${ringOptions(ringVal,ringDef,marchId,slotIdx)}</select>
       <input type="number" class="aw-rlv" placeholder="Lv" min="1" max="50"
         value="${h.ring.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="ringlevel">
     </div>
@@ -1112,8 +1169,12 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
     </div>
     <div style="margin-top:6px;display:flex;gap:6px;align-items:flex-end;">
       <div class="aw-field" style="flex:1;">
-        <label>Adornment</label>
-        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadorn">${adornOptions(h.mount.adornment||"")}</select>
+        <label>Adornment Form</label>
+        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadornform">${adornFormOptions(troopType,h.mount.adornment_form||"")}</select>
+      </div>
+      <div class="aw-field" style="flex:1;">
+        <label>Special Effect</label>
+        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadorneffect">${adornEffectOptions(troopType,h.mount.adornment_effect||"")}</select>
       </div>
       <div class="aw-field">
         <label>Level</label>
@@ -1121,6 +1182,37 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
           value="${h.mount.adornment_level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadornlv"
           style="width:56px;">
       </div>
+    </div>
+    <div class="aw-sec">Skills</div>
+    <div class="aw-skill-row">
+      <span class="aw-skill-num">1</span>
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1name">${fixedSkillOptions(meta.skill1,s1val)}</select>
+      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
+        value="${h.skill1.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1level">
+    </div>
+    <div class="aw-skill-row">
+      <span class="aw-skill-num">2</span>
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2name">${fixedSkillOptions(meta.skill2,s2val)}</select>
+      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
+        value="${h.skill2.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2level">
+    </div>
+    <div class="aw-skill-row">
+      <span class="aw-skill-num">3</span>
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3name"
+        class="${offMetaClass(h.skill3.name,s3def)}" data-meta="${s3def}">${skillOptions(h.name,s3val)}</select>
+      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
+        value="${h.skill3.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3level">
+      <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
+        value="${h.skill3.stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3stars">
+    </div>
+    <div class="aw-skill-row">
+      <span class="aw-skill-num">4</span>
+      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4name"
+        class="${offMetaClass(h.skill4.name,s4def)}" data-meta="${s4def}">${skillOptions(h.name,s4val)}</select>
+      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
+        value="${h.skill4.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4level">
+      <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
+        value="${h.skill4.stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4stars">
     </div>
   </div>`;
 }
@@ -1238,10 +1330,10 @@ function bindProfileEvents(){
     };
   });
 
-  document.querySelectorAll("[data-field='skill1name'],[data-field='skill2name']").forEach(inp=>{
-    inp.oninput=()=>{
-      const {march:mId,slot:si,field}=inp.dataset;
-      STATE.marches[mId].heroes[parseInt(si)][field==="skill1name"?"skill1":"skill2"].name=inp.value;queueSave();
+  document.querySelectorAll("[data-field='skill1name'],[data-field='skill2name']").forEach(sel=>{
+    sel.onchange=()=>{
+      const {march:mId,slot:si,field}=sel.dataset;
+      STATE.marches[mId].heroes[parseInt(si)][field==="skill1name"?"skill1":"skill2"].name=sel.value;queueSave();
     };
   });
   document.querySelectorAll("[data-field='skill1level'],[data-field='skill2level']").forEach(inp=>{
@@ -1287,26 +1379,33 @@ function bindProfileEvents(){
       STATE.marches[mId].heroes[parseInt(si)].gear[gslot].level=inp.value;queueSave();
     };
   });
-  document.querySelectorAll("#aiga-widget .aw-gem").forEach(gem=>{
-    gem.onclick=()=>{
-      const {march:mId,slot:si,gslot,gem:gn}=gem.dataset;
-      const idx=parseInt(si);const gIdx=parseInt(gn);
+  document.querySelectorAll("[data-field='gearstars']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si,gslot}=inp.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].stars=inp.value;queueSave();
+    };
+  });
+  document.querySelectorAll("#aiga-widget .aw-gem-sel").forEach(sel=>{
+    sel.onchange=()=>{
+      const {march:mId,slot:si,gslot,gemslot}=sel.dataset;
+      const idx=parseInt(si);const gi=parseInt(gemslot);
       const h=STATE.marches[mId].heroes[idx];
-      const cur=h.gear[gslot].gems||0;
-      h.gear[gslot].gems=cur===gIdx?gIdx-1:gIdx;
+      if(!h.gear[gslot].gems)h.gear[gslot].gems=["","",""];
+      h.gear[gslot].gems[gi]=sel.value;
+      const chosen=GEM_COLORS.find(c=>c.name===sel.value);
+      sel.style.backgroundColor=chosen?chosen.hex:"var(--aw-input)";
       queueSave();
-      gem.parentElement.querySelectorAll(".aw-gem").forEach((g,i)=>{
-        g.classList.toggle("on",i<h.gear[gslot].gems);
-      });
     };
   });
   document.querySelectorAll("[data-field='ringname']").forEach(sel=>{
     sel.onchange=()=>{
       const {march:mId,slot:si}=sel.dataset;
       STATE.marches[mId].heroes[parseInt(si)].ring.name=sel.value;
-      const meta=sel.getAttribute("data-meta");
-      if(meta)sel.classList.toggle("aw-off-meta",!!sel.value&&sel.value!==meta);
       queueSave();
+      // A ring assignment here affects which rings are selectable on every
+      // other hero in the roster — re-render so all ring dropdowns refresh
+      // their disabled/available state.
+      renderProfile();
     };
   });
   document.querySelectorAll("[data-field='ringlevel']").forEach(inp=>{
@@ -1314,7 +1413,7 @@ function bindProfileEvents(){
   });
 
   // Mount fields — temperament, trait1, trait2, rarity, adornment, adornment level
-  const mountFields={mounttemp:"temperament",mounttrait1:"trait1",mounttrait2:"trait2",mountrarity:"rarity",mountadorn:"adornment",mountadornlv:"adornment_level"};
+  const mountFields={mounttemp:"temperament",mounttrait1:"trait1",mounttrait2:"trait2",mountrarity:"rarity",mountadornform:"adornment_form",mountadorneffect:"adornment_effect",mountadornlv:"adornment_level"};
   Object.keys(mountFields).forEach(field=>{
     document.querySelectorAll(`[data-field='${field}']`).forEach(el=>{
       const ev=el.tagName==="SELECT"?"change":"input";
@@ -1398,13 +1497,20 @@ function buildMarkdown(){
       const s4=h.skill4.name?`${h.skill4.name} lv${h.skill4.level||"?"}${h.skill4.stars?" ★"+h.skill4.stars:""}`:"—";
       lines.push(`  - Skills: ${s1} | ${s2} | ${s3} | ${s4}`);
       const gear=["Head","Hands","Body","Legs"].map(sl=>{
-        const g=h.gear[sl];return g.name?`${sl}: ${g.name} lv${g.level||"?"} ◆${g.gems||0}`:`${sl}: —`;
+        const g=h.gear[sl];
+        if(!g.name)return `${sl}: —`;
+        const gems=(g.gems||["","",""]).filter(Boolean).join("/");
+        return `${sl}: ${g.name} lv${g.level||"?"}${g.stars?" ★"+g.stars:""}${gems?" gems:"+gems:""}`;
       }).join(" | ");
       lines.push(`  - Gear: ${gear}`);
       lines.push(`  - Ring: ${h.ring.name||"—"}${h.ring.level?" lv"+h.ring.level:""}`);
       const mt=h.mount;
       const traits=[mt.trait1,mt.trait2].filter(Boolean).join(" + ")||"—";
-      lines.push(`  - Mount: ${mt.temperament||"—"} / ${traits} / ${mt.rarity||"—"}${mt.adornment?" | Adorn: "+mt.adornment+(mt.adornment_level?" lv"+mt.adornment_level:""):""}`);
+      const adornParts = [];
+      if(mt.adornment_form) adornParts.push(mt.adornment_form);
+      if(mt.adornment_effect) adornParts.push(mt.adornment_effect);
+      const adornStr = adornParts.length ? " | Adorn: "+adornParts.join(" + ")+(mt.adornment_level?" lv"+mt.adornment_level:"") : "";
+      lines.push(`  - Mount: ${mt.temperament||"—"} / ${traits} / ${mt.rarity||"—"}${adornStr}`);
     });
     lines.push("");
   });
