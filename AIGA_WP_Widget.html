@@ -499,22 +499,16 @@ const HERO_BY_NAME = {};
 HERO_META.forEach(h => { HERO_BY_NAME[h.name] = h; });
 
 // ── SEASON FILTER ────────────────────────────────────────────────────────────
-// Cumulative filtering: a player on S3 sees S1+S2+S3 heroes (heroes carry
-// forward, they don't disappear when a new season starts).
 const SEASON_ORDER = ["S1","S2","S3","S4","S5"];
 
-// Maps a hero's season text to a filter bucket. VIP, Tavern, and Epic/Available
-// heroes are always visible — they aren't season-gated the way Wheel/Event heroes are.
 function heroSeasonBucket(seasonText){
   if(!seasonText) return "ALWAYS";
   const t = seasonText.toUpperCase();
   if(t.includes("VIP") || t.includes("TAVERN") || t.includes("AVAILABLE") || t.includes("UNCONFIRMED")) return "ALWAYS";
   for(const s of SEASON_ORDER){ if(t.startsWith(s)) return s; }
-  return "ALWAYS"; // never hide a hero we can't classify
+  return "ALWAYS";
 }
 
-// True if a hero should be shown given the player's selected server season.
-// No season selected = show everything (useful before the player sets it).
 function heroVisibleForSeason(hero, selectedSeason){
   if(!selectedSeason) return true;
   const bucket = heroSeasonBucket(hero.season);
@@ -560,7 +554,6 @@ const GEAR_META = {
 };
 
 // ── REFERENCE DATA ──────────────────────────────────────────────────────────
-// Corrected: 33 canonical rings (Mamba removed — confirmed not in-game)
 const RINGS = [
   "Ring of Clover","Ring of Tulip","Ring of Violet","Ring of Daisy","Ring of Iris",
   "Ring of Rose","Ring of Hyacinth","Ring of Lily","Ring of Laurel","Ring of Sunflower",
@@ -572,8 +565,6 @@ const RINGS = [
   "Messenger of Destruction"
 ];
 
-// All 30 confirmed mount traits — shown regardless of selected temperament.
-// Trait selection is unrestricted; correctness is flagged via TRAIT_HOME_TEMP.
 const ALL_TRAITS = [
   "Abundance","Army Sunder","Bastion","Battlemaster","Bedrock","Blade Sever",
   "Cunning","Dustbane","Entrenchment","Fearless","Fierce","Full Stores",
@@ -582,8 +573,6 @@ const ALL_TRAITS = [
   "Stratagem","Swift","Tactician","Thunderbolt","Tidebreaker","Valor"
 ];
 
-// Each trait's correct home temperament/pool — used only to flag mismatches,
-// never to filter the dropdown options.
 const TRAIT_HOME_TEMP = {
   "Overpower":"Warbred","Gallant":"Warbred","Valor":"Warbred","Phalanx Breaker":"Warbred","Fierce":"Warbred",
   "Spiritbond":"Alert","Stratagem":"Alert","Cunning":"Alert","Battlemaster":"Alert",
@@ -596,12 +585,6 @@ const TRAIT_HOME_TEMP = {
 };
 
 // ── ADORNMENTS — corrected 3-field data model ──────────────────────────────
-// Troop Type / Form / Special Effect are three separate fields, not one merged
-// list. Form determines base stats and Attack/Defense orientation (locked to
-// the form name). Special Effect is a separately-rolled bonus drawn from a
-// shared pool per troop type. A single dropdown mixing form names with effect
-// names (the old ADORNMENTS array) was structurally wrong and silently hid
-// options like Resistance whenever it wasn't in that merged list.
 const ADORNMENT_FORMS = {
   Sword:   { attack: "Swift Blade",     defense: "Mystic Mirror" },
   Pike:    { attack: "Guiding Star",    defense: "Stalwart Shield" },
@@ -609,8 +592,6 @@ const ADORNMENT_FORMS = {
   Archer:  { attack: "Piercing Arrow",  defense: "Eagle's Blessing" }
 };
 
-// Special effects shared pool per troop type. Universal effects (Resistance,
-// Natural Selection) apply regardless of troop type and are always included.
 const ADORNMENT_EFFECTS = {
   Universal: ["Resistance", "Natural Selection"],
   Sword: ["Wavebreaker", "Calculation", "Blazing Edge", "Starlink", "Radiance", "Mutual Aid", "Charge"],
@@ -923,14 +904,6 @@ function hasProfile(){
   try{return !!localStorage.getItem(STORE_KEY);}catch(e){return false;}
 }
 
-// Hero dropdown, grouped by season. Season is currently a soft signal only —
-// selecting a Server Season does NOT hide any heroes (release-season tags
-// don't reliably predict per-server availability). Epic heroes always render
-// in their own group at the end, since they're roster filler rather than
-// meta picks. All heroes within each group are sorted alphabetically.
-// Maps the march's troopType (long form, e.g. "Archer") to the short code
-// used in HERO_META's type field (e.g. "ARC"). Dual-type heroes (e.g.
-// "CAV/ARC") match either of their two troop types.
 const TROOP_TYPE_CODE = {
   Sword: "SW",
   Pike: "PIK",
@@ -940,17 +913,13 @@ const TROOP_TYPE_CODE = {
 };
 
 function heroMatchesTroopType(hero, troopType){
-  if(!troopType) return true; // no march troop type set yet — don't filter
+  if(!troopType) return true;
   const code = TROOP_TYPE_CODE[troopType];
   if(!code) return true;
-  if(!hero.type) return true; // unclassified hero — don't hide, don't disable
+  if(!hero.type) return true;
   return hero.type.split("/").includes(code);
 }
 
-// Heroes are always shown in the dropdown — never hidden — so the player
-// keeps full visibility of the roster. Heroes that don't match the march's
-// current troop type are disabled rather than removed, since a player may
-// still want to see what's not eligible here.
 function heroOptions(selected, troopType){
   let html='<option value="">Select hero...</option>';
 
@@ -995,18 +964,12 @@ function skillOptions(heroName,selected){
   return html;
 }
 
-// Skill 1 (Commander) and Skill 2 (Signature) are fixed per-hero values, not a
-// pool to pick from — but the builder still renders them as dropdowns for UI
-// consistency with skill 3/4. The dropdown simply offers the hero's one
-// confirmed value, pre-selected, so the field always shows correct data.
 function fixedSkillOptions(skillName,selected){
   if(!skillName)return'<option value="">KNOWLEDGE GAP - not sourced</option>';
   const sel=selected||skillName;
   return `<option value="${skillName}"${sel===skillName?" selected":""}>${skillName}</option>`;
 }
 
-// Gem colors — 5 confirmed colors. Data on what each color does is deferred
-// (Gustav: "we'll get to data of gems later") — this is schema/UI only for now.
 const GEM_COLORS = [
   {name:"Gold",   hex:"#d8b85a"},
   {name:"Purple", hex:"#9b59d0"},
@@ -1015,8 +978,6 @@ const GEM_COLORS = [
   {name:"Grey",   hex:"#9a9a9a"}
 ];
 
-// 3 gem slots per gear piece, each an independent color dropdown. Options show
-// the actual color (inline-styled background) rather than the color's name text.
 function gemSlotOptions(curVal){
   let html=`<option value="" style="background:#2a2a2a;color:#999;">—</option>`;
   GEM_COLORS.forEach(c=>{
@@ -1050,10 +1011,6 @@ function gearDefault(troopType,slot){
   const items=(GEAR_META[tt]&&GEAR_META[tt][slot])||GEAR_META.Sword[slot];
   return items[0]?`${items[0].n} (${items[0].r})`:"";
 }
-// Scans every hero across every march (and the hero pool) for currently
-// assigned rings, excluding the hero slot currently being rendered. Used to
-// enforce "one ring per roster" — a ring assigned to one hero should not be
-// selectable on another hero at the same time.
 function ringsAssignedElsewhere(excludeMarchId,excludeSlotIdx){
   const assigned=new Set();
   MARCH_IDS.forEach(mId=>{
@@ -1078,9 +1035,6 @@ function ringOptions(curVal,metaRing,marchId,slotIdx){
   return html;
 }
 
-// Always lists all 30 traits regardless of temperament — selection is
-// unrestricted. Mismatch with the hero's temperament is flagged separately
-// via traitMismatchClass(), not by hiding options here.
 function traitOptions(temp,curVal){
   let html='<option value="">Select trait...</option>';
   ALL_TRAITS.forEach(t=>{
@@ -1089,9 +1043,6 @@ function traitOptions(temp,curVal){
   return html;
 }
 
-// Flags a trait as off-meta if its home pool doesn't match the hero's
-// currently selected temperament. Gathering traits will always mismatch
-// against any combat temperament, which is correct — they don't belong there.
 function traitMismatchClass(trait,temperament){
   if(!trait||!temperament)return "";
   const home=TRAIT_HOME_TEMP[trait];
@@ -1099,8 +1050,6 @@ function traitMismatchClass(trait,temperament){
   return home!==temperament?" aw-off-meta":"";
 }
 
-// Form options are locked to the hero's current troop type — Attack/Defense
-// orientation is a fixed property of the form name itself, not a separate toggle.
 function adornFormOptions(troopType, curVal) {
   const tt = troopType || "Sword";
   const forms = ADORNMENT_FORMS[tt] || ADORNMENT_FORMS.Sword;
@@ -1109,9 +1058,6 @@ function adornFormOptions(troopType, curVal) {
   html += `<option value="${forms.defense}"${curVal===forms.defense?" selected":""}>${forms.defense} (Defense)</option>`;
   return html;
 }
-// Special Effect pool is shared between the Attack and Defense form of the
-// same troop type — it does not depend on which form is selected, only on
-// troop type. Universal effects (Resistance, Natural Selection) always included.
 function adornEffectOptions(troopType, curVal) {
   const tt = troopType || "Sword";
   const pool = [...ADORNMENT_EFFECTS.Universal, ...(ADORNMENT_EFFECTS[tt] || [])];
@@ -1325,8 +1271,6 @@ function bindProfileEvents(){
       const key=id==="p-tc"?"tc":id==="p-vip"?"vip":id==="p-herocap"?"herocap":id==="p-civ"?"civ":"serverSeason";
       STATE.account[key]=el.value;
       queueSave();
-      // Server Season changing affects which heroes are visible in every
-      // march's hero dropdown — re-render the whole profile to refresh them.
       if(id==="p-season"){renderProfile();}
     };
   });
@@ -1338,9 +1282,6 @@ function bindProfileEvents(){
       openMarch=wasOpen?null:id;
       renderProfile();
       if(!wasOpen){
-        // Opening a march should visibly expand downward from where the
-        // player clicked, not leave the header scrolled out of view above
-        // the fold once the body renders below it.
         requestAnimationFrame(()=>{
           const newHdr=document.querySelector(`.aw-march-hdr[data-march="${id}"]`);
           if(newHdr) newHdr.scrollIntoView({behavior:"smooth", block:"start"});
@@ -1446,9 +1387,6 @@ function bindProfileEvents(){
       const {march:mId,slot:si}=sel.dataset;
       STATE.marches[mId].heroes[parseInt(si)].ring.name=sel.value;
       queueSave();
-      // A ring assignment here affects which rings are selectable on every
-      // other hero in the roster — re-render so all ring dropdowns refresh
-      // their disabled/available state.
       renderProfile();
     };
   });
@@ -1456,7 +1394,6 @@ function bindProfileEvents(){
     inp.oninput=()=>{STATE.marches[inp.dataset.march].heroes[parseInt(inp.dataset.slot)].ring.level=inp.value;queueSave();};
   });
 
-  // Mount fields — temperament, trait1, trait2, rarity, adornment, adornment level
   const mountFields={mounttemp:"temperament",mounttrait1:"trait1",mounttrait2:"trait2",mountrarity:"rarity",mountadornform:"adornment_form",mountadorneffect:"adornment_effect",mountadornlv:"adornment_level"};
   Object.keys(mountFields).forEach(field=>{
     document.querySelectorAll(`[data-field='${field}']`).forEach(el=>{
@@ -1468,8 +1405,6 @@ function bindProfileEvents(){
         h.mount[mountFields[field]]=el.value;
 
         if(field==="mounttemp"){
-          // Temperament changed — repopulate both trait dropdowns (full list,
-          // unrestricted) and re-flag any now-mismatched trait selections.
           const t1=document.getElementById(`trait1-${mId}-${idx}`);
           const t2=document.getElementById(`trait2-${mId}-${idx}`);
           if(t1){
@@ -1481,7 +1416,6 @@ function bindProfileEvents(){
             t2.classList.toggle("aw-off-meta", !!traitMismatchClass(h.mount.trait2, el.value));
           }
         } else if(field==="mounttrait1" || field==="mounttrait2"){
-          // Trait changed directly — flag against the hero's current temperament.
           const currentTemp = h.mount.temperament;
           el.classList.toggle("aw-off-meta", !!traitMismatchClass(el.value, currentTemp));
         } else {
@@ -1617,7 +1551,7 @@ document.getElementById("aw-reset-btn").onclick=()=>{
 // ── INIT ───────────────────────────────────────────────────────────────────────
 marked.setOptions({breaks:true,gfm:true});
 loadState();
-addMsg("aiga","**Welcome to AIGA** — your Age of Empires Mobile advisor.\n\nAsk me about heroes, marches, gear, events, troops or base progression.\n\nTip: tap **⚙ Profile** to set up your account for personalised advice. Setting your **Server Season** helps narrow the hero list to what's actually available to you.");
+addMsg("aiga","**Welcome to AIGA** 👋\n\n⏱️ The initial setup takes a few minutes, but the better AIGA understands your account, the better your results.\n\n📊 Set up your profile and AIGA will analyse it and make recommendations.\n\n💬 Prefer to skip the builder? Just ask AIGA a question — 10 free questions per day. Try:\n- Heroes in general\n- Marches and combinations\n\n📸 Upload a screenshot of your march or hero and AIGA will give an opinion.\n\n🔜 Coming soon: guides for events and general gameplay.");
 inputEl.focus();
 
 })();
