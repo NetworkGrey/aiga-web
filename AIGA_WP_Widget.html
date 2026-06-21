@@ -147,8 +147,8 @@
 #aiga-widget .aw-march-hdr:hover{background:#2e2e2e;}
 #aiga-widget .aw-march-hdr.open{border-bottom:1px solid var(--aw-border);}
 #aiga-widget .aw-march-id{
-  font-family:'Cinzel',serif;font-size:12px;font-weight:600;
-  color:var(--aw-gold);letter-spacing:1px;margin-right:10px;
+  font-family:'Cinzel',serif;font-size:17px;font-weight:700;
+  color:var(--aw-gold);letter-spacing:1.5px;margin-right:10px;
 }
 #aiga-widget .aw-march-summary{font-size:12px;color:var(--aw-muted);flex:1;}
 #aiga-widget .aw-chevron{color:var(--aw-faint);font-size:11px;transition:transform .2s;}
@@ -172,9 +172,9 @@
   text-transform:uppercase;margin-bottom:8px;
 }
 #aiga-widget .aw-hero-top{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;}
-#aiga-widget .aw-hero-top select{flex:1;min-width:160px;}
-#aiga-widget .aw-hero-top .aw-lv-inp{width:60px;}
-#aiga-widget .aw-hero-top .aw-rank-sel{width:60px;}
+#aiga-widget .aw-hero-top select.aw-hero-sel{flex:1;min-width:160px;font-size:15px;font-weight:600;color:var(--aw-text);padding:8px 28px 8px 10px;}
+#aiga-widget .aw-hero-top .aw-lv-inp{width:74px;padding:8px 8px;font-size:13px;}
+#aiga-widget .aw-hero-top .aw-rank-sel{width:74px;padding:8px 8px;font-size:13px;}
 
 /* Section labels inside hero */
 #aiga-widget .aw-sec{
@@ -184,8 +184,8 @@
 }
 #aiga-widget .aw-skill-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;}
 #aiga-widget .aw-skill-row input[type=text]{flex:1;min-width:0;font-size:12px;}
-#aiga-widget .aw-skill-row .aw-sk-lv{width:50px;flex-shrink:0;}
-#aiga-widget .aw-skill-row .aw-sk-star{width:46px;flex-shrink:0;}
+#aiga-widget .aw-skill-row .aw-sk-lv{width:62px;flex-shrink:0;padding:7px 8px;}
+#aiga-widget .aw-skill-row .aw-sk-star{width:56px;flex-shrink:0;padding:7px 8px;}
 #aiga-widget .aw-skill-row select{flex:1;min-width:0;font-size:12px;}
 #aiga-widget .aw-skill-num{font-size:9px;color:var(--aw-faint);width:14px;flex-shrink:0;}
 
@@ -193,8 +193,8 @@
 #aiga-widget .aw-gear-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap;}
 #aiga-widget .aw-gear-row .aw-slot-tag{font-size:9px;color:var(--aw-faint);width:34px;flex-shrink:0;}
 #aiga-widget .aw-gear-row input[type=text]{flex:1;min-width:0;font-size:12px;}
-#aiga-widget .aw-gear-row .aw-glv{width:46px;flex-shrink:0;}
-#aiga-widget .aw-gear-row .aw-gstar{width:40px;flex-shrink:0;}
+#aiga-widget .aw-gear-row .aw-glv{width:58px;flex-shrink:0;padding:7px 8px;}
+#aiga-widget .aw-gear-row .aw-gstar{width:52px;flex-shrink:0;padding:7px 8px;}
 #aiga-widget .aw-gems{display:flex;gap:3px;align-items:center;flex-shrink:0;}
 #aiga-widget .aw-gem-sel{
   width:28px;height:22px;padding:0 2px;font-size:0;border-radius:3px;
@@ -206,12 +206,12 @@
 /* Ring + Mount */
 #aiga-widget .aw-ring-row{display:flex;gap:6px;align-items:center;margin-bottom:9px;}
 #aiga-widget .aw-ring-row input[type=text]{flex:1;min-width:0;font-size:12px;}
-#aiga-widget .aw-ring-row .aw-rlv{width:50px;flex-shrink:0;}
+#aiga-widget .aw-ring-row .aw-rlv{width:62px;flex-shrink:0;padding:7px 8px;}
 #aiga-widget .aw-mount-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
 #aiga-widget .aw-mount-grid select,#aiga-widget .aw-mount-grid input{width:100%;}
 #aiga-widget .aw-mount-adorn{display:flex;gap:6px;margin-top:6px;}
 #aiga-widget .aw-mount-adorn input[type=text]{flex:1;min-width:0;font-size:12px;}
-#aiga-widget .aw-mount-adorn .aw-adlv{width:50px;flex-shrink:0;}
+#aiga-widget .aw-mount-adorn .aw-adlv{width:62px;flex-shrink:0;padding:7px 8px;}
 
 /* Hero pool */
 #aiga-widget .aw-pool-section{padding:0 18px 14px;}
@@ -310,7 +310,7 @@
 }
 #aiga-widget .aw-cta-btn:hover{background:#ddb95a;color:#111;}
 #aiga-widget select.aw-off-meta,#aiga-widget input.aw-off-meta{
-  border-color:#cc8844!important;background-color:rgba(204,136,68,.06)!important;}
+  border-width:2px!important;border-color:#cc8844!important;background-color:rgba(204,136,68,.06)!important;}
 #aiga-widget .aw-off-meta-label::after{content:" ⚠";color:#cc8844;font-size:9px;}
 
 @media(max-width:540px){
@@ -352,7 +352,7 @@
         <button class="aw-send" id="aw-send" disabled>Send</button>
       </div>
       <div class="aw-footer">
-        <span id="aw-remaining">Free tier — 20 questions per day</span>
+        <span id="aw-remaining">Free tier — 10 questions per day</span>
         <span id="aw-upload-count" class="aw-upload-count"></span>
         <span>Network Grey ⚔</span>
       </div>
@@ -383,9 +383,9 @@
             <label>Civilization</label>
             <select id="p-civ">
               <option value="">Select...</option>
-              <option>Japanese</option><option>French</option><option>Chinese</option>
-              <option>British</option><option>Byzantines</option><option>Koreans</option>
-              <option>Romans</option><option>Egyptians</option><option>Arabs</option>
+              <option>Arabs</option><option>British</option><option>Byzantines</option>
+              <option>Chinese</option><option>Egyptians</option><option>French</option>
+              <option>Japanese</option><option>Koreans</option><option>Romans</option>
             </select>
           </div>
         </div>
@@ -623,7 +623,12 @@ const ADORNMENT_EFFECTS = {
 const MARCH_IDS   = ["M1","M2","M3","M4","M5"];
 const TROOP_TYPES = ["Sword","Pike","Cavalry","Archer","Gathering"];
 const MOUNT_TEMPS = ["Warbred","Alert","Fearless","Protective","Docile","Spirited","Mischievous"];
-const MOUNT_RARITIES = ["Courser","Destrier","Skywing","Celestial Charger"];
+const MOUNT_RARITIES = [
+  {name:"Courser", tier:"Common", color:"Blue"},
+  {name:"Destrier", tier:"Epic", color:"Purple"},
+  {name:"Skywing", tier:"Legendary", color:"Gold"},
+  {name:"Celestial Charger", tier:"Mythical", color:"White"}
+];
 
 function emptyHero(){
   return {
@@ -923,7 +928,30 @@ function hasProfile(){
 // don't reliably predict per-server availability). Epic heroes always render
 // in their own group at the end, since they're roster filler rather than
 // meta picks. All heroes within each group are sorted alphabetically.
-function heroOptions(selected){
+// Maps the march's troopType (long form, e.g. "Archer") to the short code
+// used in HERO_META's type field (e.g. "ARC"). Dual-type heroes (e.g.
+// "CAV/ARC") match either of their two troop types.
+const TROOP_TYPE_CODE = {
+  Sword: "SW",
+  Pike: "PIK",
+  Cavalry: "CAV",
+  Archer: "ARC",
+  Gathering: "GATH"
+};
+
+function heroMatchesTroopType(hero, troopType){
+  if(!troopType) return true; // no march troop type set yet — don't filter
+  const code = TROOP_TYPE_CODE[troopType];
+  if(!code) return true;
+  if(!hero.type) return true; // unclassified hero — don't hide, don't disable
+  return hero.type.split("/").includes(code);
+}
+
+// Heroes are always shown in the dropdown — never hidden — so the player
+// keeps full visibility of the roster. Heroes that don't match the march's
+// current troop type are disabled rather than removed, since a player may
+// still want to see what's not eligible here.
+function heroOptions(selected, troopType){
   let html='<option value="">Select hero...</option>';
 
   const seasons={};
@@ -937,7 +965,10 @@ function heroOptions(selected){
   Object.keys(seasons).forEach(s=>{
     html+=`<optgroup label="${s}">`;
     seasons[s].slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(h=>{
-      html+=`<option value="${h.name}"${h.name===selected?" selected":""}>${h.name} [${h.type}]</option>`;
+      const matches = heroMatchesTroopType(h, troopType);
+      const disabled = matches ? "" : " disabled";
+      const label = matches ? `${h.name} [${h.type}]` : `${h.name} [${h.type}] (not ${troopType})`;
+      html+=`<option value="${h.name}"${h.name===selected?" selected":""}${disabled}>${label}</option>`;
     });
     html+="</optgroup>";
   });
@@ -945,7 +976,10 @@ function heroOptions(selected){
   if(epicGroup.length){
     html+=`<optgroup label="Epic (always available)">`;
     epicGroup.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(h=>{
-      html+=`<option value="${h.name}"${h.name===selected?" selected":""}>${h.name} [${h.type}]</option>`;
+      const matches = heroMatchesTroopType(h, troopType);
+      const disabled = matches ? "" : " disabled";
+      const label = matches ? `${h.name} [${h.type}]` : `${h.name} [${h.type}] (not ${troopType})`;
+      html+=`<option value="${h.name}"${h.name===selected?" selected":""}${disabled}>${label}</option>`;
     });
     html+="</optgroup>";
   }
@@ -1005,7 +1039,7 @@ function gearOptions(troopType,slot,curVal){
   const tt=troopType||"Sword";
   const items=(GEAR_META[tt]&&GEAR_META[tt][slot])||GEAR_META.Sword[slot];
   let html='<option value="">Select...</option>';
-  items.slice().sort((a,b)=>a.n.localeCompare(b.n)).forEach(g=>{
+  items.forEach(g=>{
     const label=`${g.n} (${g.r})`;
     html+=`<option value="${label}"${curVal===label?" selected":""}>${label}</option>`;
   });
@@ -1109,7 +1143,7 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
   return `<div class="aw-hero-slot" id="slot-${marchId}-${slotIdx}">
     <div class="aw-slot-label">${label}</div>
     <div class="aw-hero-top">
-      <select class="aw-hero-sel" data-march="${marchId}" data-slot="${slotIdx}">${heroOptions(h.name)}</select>
+      <select class="aw-hero-sel" data-march="${marchId}" data-slot="${slotIdx}">${heroOptions(h.name, troopType)}</select>
       <input type="number" class="aw-lv-inp" placeholder="Lv" min="1" max="140"
         value="${h.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="level">
       <select class="aw-rank-sel" data-march="${marchId}" data-slot="${slotIdx}" data-field="rank">
@@ -1144,7 +1178,7 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
         <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttemp"
           class="${offMetaClass(h.mount.temperament,tempDef)}" data-meta="${tempDef}">
           <option value="">Select...</option>
-          ${MOUNT_TEMPS.map(t=>`<option value="${t}"${tempVal===t?" selected":""}>${t}</option>`).join("")}
+          ${MOUNT_TEMPS.slice().sort((a,b)=>a.localeCompare(b)).map(t=>`<option value="${t}"${tempVal===t?" selected":""}>${t}</option>`).join("")}
         </select>
       </div>
       <div class="aw-field">
@@ -1163,7 +1197,7 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
         <label>Rarity</label>
         <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountrarity">
           <option value="">Select...</option>
-          ${MOUNT_RARITIES.map(r=>`<option value="${r}"${h.mount.rarity===r?" selected":""}>${r}</option>`).join("")}
+          ${MOUNT_RARITIES.map(r=>`<option value="${r.name}"${h.mount.rarity===r.name?" selected":""}>${r.name} (${r.tier}, ${r.color})</option>`).join("")}
         </select>
       </div>
     </div>
@@ -1180,7 +1214,7 @@ function renderHeroSlot(marchId,slotIdx,h,troopType){
         <label>Level</label>
         <input type="number" class="aw-adlv" placeholder="Lv" min="1" max="60"
           value="${h.mount.adornment_level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadornlv"
-          style="width:56px;">
+          style="width:68px;padding:7px 8px;">
       </div>
     </div>
     <div class="aw-sec">Skills</div>
@@ -1300,8 +1334,18 @@ function bindProfileEvents(){
   document.querySelectorAll("#aiga-widget .aw-march-hdr").forEach(hdr=>{
     hdr.onclick=()=>{
       const id=hdr.dataset.march;
-      openMarch=openMarch===id?null:id;
+      const wasOpen=openMarch===id;
+      openMarch=wasOpen?null:id;
       renderProfile();
+      if(!wasOpen){
+        // Opening a march should visibly expand downward from where the
+        // player clicked, not leave the header scrolled out of view above
+        // the fold once the body renders below it.
+        requestAnimationFrame(()=>{
+          const newHdr=document.querySelector(`.aw-march-hdr[data-march="${id}"]`);
+          if(newHdr) newHdr.scrollIntoView({behavior:"smooth", block:"start"});
+        });
+      }
     };
   });
 
@@ -1532,7 +1576,7 @@ document.getElementById("aw-submit-btn").onclick=async()=>{
   closeProfile();
   nudgeSent=true;
   addMsg("user","Profile submitted — please analyse my account.");
-  const prompt="Please analyse the following player profile. Give a concise account overview and flag the top 3-5 issues or improvements. Do not repeat the profile back to me.\n\n"+summary;
+  const prompt="Please analyse the following player profile using the PROFILE ANALYSIS RESPONSE TEMPLATE. Do not repeat the profile back to me.\n\n"+summary;
   await sendProfileToAPI(prompt);
 };
 
