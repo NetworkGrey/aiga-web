@@ -49,6 +49,7 @@ import json
 import re
 import requests
 from pathlib import Path
+from typing import Optional
 
 # ── Config ────────────────────────────────────────────────────────────────────
 BASE_ID       = os.environ.get("AIRTABLE_BASE_ID", "appD9c9ONZGNcgnq1")
@@ -89,7 +90,7 @@ def at_headers():
         sys.exit(1)
     return {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
 
-def fetch_all(table_id: str, fields: list[str] | None = None) -> list[dict]:
+def fetch_all(table_id: str, fields: Optional[list[str]] = None) -> list[dict]:
     """Fetch all records from an Airtable table, handling pagination."""
     records = []
     params = {"pageSize": 100}
