@@ -29,8 +29,8 @@ Field ID map (from list_tables_for_base output):
   Skill1           fldNXxq2FgIGJVIxT  singleLineText
   Skill2           fldTGfvzcln4lowxl  singleLineText
   Skill3 Rec       fldZxFZW6h7Efux6b  singleLineText
-  Skill4 Rec       fldRkDxVWSX5iDZ0J  singleLineText
-  Skills Pool      flddwuTH5W00qYWEw  multipleSelects
+  Skill4 Rec       fldRkDxVWSX5iDZ0J  multipleSelects
+  Skill Pool       fldIINIVqQWWEAE1M  multipleSelects
   Ring T0          fldSUhJQEB1gOBpZS  multipleRecordLinks -> Rings
   Ring T1          fld2jAIh9BShadM13  multipleRecordLinks -> Rings
   Ring T2          fld7y1eBeHlAxo60i  multipleRecordLinks -> Rings
@@ -93,7 +93,7 @@ def at_headers():
 def fetch_all(table_id: str, fields: Optional[list[str]] = None) -> list[dict]:
     """Fetch all records from an Airtable table, handling pagination."""
     records = []
-    params = {"pageSize": 100}
+    params = {"pageSize": 100, "returnFieldsByFieldId": "true"}
     if fields:
         params["fields[]"] = fields
     url = f"{API_BASE}/{BASE_ID}/{table_id}"
@@ -116,10 +116,10 @@ def fetch_all(table_id: str, fields: Optional[list[str]] = None) -> list[dict]:
 def build_ring_lookup() -> dict[str, str]:
     """Returns {record_id: ring_name} for every ring in the Rings table."""
     print("Fetching Rings table...", file=sys.stderr)
-    records = fetch_all(RINGS_TABLE, fields=["Ring Name"])
+    records = fetch_all(RINGS_TABLE, fields=["fldIi2LvUz6PybBtF"])
     lookup = {}
     for rec in records:
-        name = rec.get("fields", {}).get("Ring Name", "")
+        name = rec.get("fields", {}).get("fldIi2LvUz6PybBtF", "")
         if name:
             lookup[rec["id"]] = name
     print(f"  {len(lookup)} rings loaded.", file=sys.stderr)
@@ -141,6 +141,12 @@ def fetch_heroes(ring_lookup: dict) -> list[dict]:
     for rec in records:
         f = rec.get("fields", {})
 
+        # Skip junk rows: blank records, or template/header rows where the
+        # Name field literally contains the field's own label ("Name").
+        name_val = f.get("fldjwHFmQKzKu1s4v", "") or ""
+        if not name_val.strip() or name_val.strip() == "Name":
+            continue
+
         # Type: multipleSelects -> slash-joined string e.g. "CAV/ARC"
         type_vals = f.get("fld39hloCOq4Kw507", [])
         hero_type = "/".join(type_vals) if type_vals else ""
@@ -161,8 +167,8 @@ def fetch_heroes(ring_lookup: dict) -> list[dict]:
         status_obj = f.get("fldICAkHKI5NFroeh", {})
         status = status_obj if isinstance(status_obj, str) else status_obj.get("name", "") if status_obj else ""
 
-        # Skills Pool: multipleSelects -> list of skill name strings
-        skills_raw = f.get("flddwuTH5W00qYWEw", [])
+        # Skill Pool: multipleSelects -> list of skill name strings
+        skills_raw = f.get("fldIINIVqQWWEAE1M", [])
         # AT multipleSelects returns list of strings (option names)
         skills = [s if isinstance(s, str) else s.get("name", "") for s in skills_raw]
 
