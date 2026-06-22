@@ -168,7 +168,13 @@ def fetch_heroes(ring_lookup: dict) -> list[dict]:
         status = status_obj if isinstance(status_obj, str) else status_obj.get("name", "") if status_obj else ""
 
         # Skill Pool: multipleSelects -> list of skill name strings
-        skills_raw = f.get("fldIINIVqQWWEAE1M", [])
+        # Use `or []` instead of a .get() default: .get(key, []) only falls
+        # back when the key is missing, not when Airtable returns it present
+        # but falsy (null/"") -- which silently produced an empty skills[]
+        # for records edited shortly after this field was added.
+        skills_raw = f.get("fldIINIVqQWWEAE1M") or []
+        if isinstance(skills_raw, str):
+            skills_raw = [skills_raw]
         # AT multipleSelects returns list of strings (option names)
         skills = [s if isinstance(s, str) else s.get("name", "") for s in skills_raw]
 
