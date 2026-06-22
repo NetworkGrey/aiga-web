@@ -214,8 +214,12 @@ def fetch_heroes(ring_lookup: dict) -> list[dict]:
     return heroes
 
 # ── JS serialiser ─────────────────────────────────────────────────────────────
-def js_str(v: str) -> str:
+def js_str(v) -> str:
     """Escape a Python string for safe embedding in a JS string literal."""
+    if isinstance(v, list):
+        v = ", ".join(v)
+    elif not isinstance(v, str):
+        v = str(v)
     return v.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
 
 def hero_to_js(h: dict) -> str:
