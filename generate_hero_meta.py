@@ -18,7 +18,11 @@ Environment variables:
 
 Airtable base: AIGA Knowledge Base (appD9c9ONZGNcgnq1)
 Table: Heroes (tblBTohOcVLUKKhJ8)
-Rings table: Rings (tbllDKaFx8wh4TpM7) -- used to resolve linked ring names
+Rings table: Rings (tbllDKaFx8wh4TpM7) -- resolves linked ring names for
+HERO_META, and also exports a RING_POOL constant of pool-allocation
+suitability data. The cascade allocation logic itself runs at query time
+in app.py, not here -- this script only exports the pool, it does not
+assign rings to heroes.
 
 Field ID map (from list_tables_for_base output):
   Name             fldjwHFmQKzKu1s4v  singleLineText
@@ -41,6 +45,19 @@ Field ID map (from list_tables_for_base output):
   Pairings         fldwn0BheYYzLQgl2  singleLineText
   Data Status      fldICAkHKI5NFroeh  singleSelect
   Notes            fld7vH9oQpm5JdgBd  multilineText
+
+Rings table fields (from list_tables_for_base output):
+  Ring Name        fldIi2LvUz6PybBtF  singleLineText
+  Suits Role(s)    fldNpjqtn6OGX8wGS  multipleSelects
+  Suits Troop(s)   fldQem8XyrW9pgenW  multipleSelects
+  Priority Rank    fldsEISuRO7CDGwkv  singleLineText
+  Wrong For        flduLS40DhZ7cLft3  multilineText
+  FTP Rating       fldk2wY18WiRRsFAn  singleSelect
+  Meta Override    fldbXiKwsrqyqCDp1  checkbox
+
+  DEPRECATED -- not read by this script. The pool-based model above is
+  now authoritative for ring suitability:
+  Assigned To Hero(es)  fldgHj8BPsPyVQ8Xx  multipleRecordLinks
 """
 
 import os
@@ -112,18 +129,61 @@ def fetch_all(table_id: str, fields: Optional[list[str]] = None) -> list[dict]:
 
     return records
 
-# ── Fetch rings lookup: record ID -> ring name ────────────────────────────────
-def build_ring_lookup() -> dict[str, str]:
-    """Returns {record_id: ring_name} for every ring in the Rings table."""
+# ── Fetch rings ────────────────────────────────────────────────────────────────
+def fetch_rings() -> list[dict]:
+    """Fetches every record in the Rings table (full fields)."""
     print("Fetching Rings table...", file=sys.stderr)
-    records = fetch_all(RINGS_TABLE, fields=["fldIi2LvUz6PybBtF"])
+    records = fetch_all(RINGS_TABLE)
+    print(f"  {len(records)} ring records fetched.", file=sys.stderr)
+    return records
+
+def build_ring_lookup(ring_records: list[dict]) -> dict[str, str]:
+    """Returns {record_id: ring_name} for every ring in the Rings table."""
     lookup = {}
-    for rec in records:
+    for rec in ring_records:
         name = rec.get("fields", {}).get("fldIi2LvUz6PybBtF", "")
         if name:
             lookup[rec["id"]] = name
     print(f"  {len(lookup)} rings loaded.", file=sys.stderr)
     return lookup
+
+def multiselect_names(raw) -> list[str]:
+    """Normalizes a multipleSelects field value to a list of option-name strings."""
+    if not raw:
+        return []
+    if isinstance(raw, str):
+        raw = [raw]
+    return [s if isinstance(s, str) else s.get("name", "") for s in raw]
+
+def select_name(raw) -> str:
+    """Normalizes a singleSelect field value to its option name."""
+    if not raw:
+        return ""
+    return raw if isinstance(raw, str) else raw.get("name", "")
+
+# ── Build ring pool: suitability data for the pool-based allocation model ─────
+def build_ring_pool(ring_records: list[dict]) -> list[dict]:
+    """Returns a list of {name, suits_roles, suits_troops, priority_rank,
+    wrong_for, ftp_rating, meta_override} for every ring -- the cascade
+    allocation logic itself runs at query time in app.py, this just
+    exports the pool's raw suitability data."""
+    pool = []
+    for rec in ring_records:
+        f = rec.get("fields", {})
+        name = f.get("fldIi2LvUz6PybBtF", "") or ""
+        if not name.strip():
+            continue
+        pool.append({
+            "name":          name,
+            "suits_roles":   multiselect_names(f.get("fldNpjqtn6OGX8wGS")),
+            "suits_troops":  multiselect_names(f.get("fldQem8XyrW9pgenW")),
+            "priority_rank": f.get("fldsEISuRO7CDGwkv", "") or "",
+            "wrong_for":     f.get("flduLS40DhZ7cLft3", "") or "",
+            "ftp_rating":    select_name(f.get("fldk2wY18WiRRsFAn")),
+            "meta_override": bool(f.get("fldbXiKwsrqyqCDp1", False)),
+        })
+    print(f"  {len(pool)} rings in pool.", file=sys.stderr)
+    return pool
 
 def resolve_ring(linked_ids: list, ring_lookup: dict) -> str:
     """Resolve a list of linked record IDs to the first ring name."""
@@ -253,6 +313,28 @@ def build_hero_meta_js(heroes: list[dict]) -> str:
     lines.append("];")
     return "\n".join(lines)
 
+def ring_pool_entry_to_js(r: dict) -> str:
+    roles_js = ",".join(f'"{js_str(s)}"' for s in r["suits_roles"])
+    troops_js = ",".join(f'"{js_str(s)}"' for s in r["suits_troops"])
+    meta_override_js = "true" if r["meta_override"] else "false"
+    return (
+        f'  {{name:"{js_str(r["name"])}",suits_roles:[{roles_js}],'
+        f'suits_troops:[{troops_js}],priority_rank:"{js_str(r["priority_rank"])}",'
+        f'wrong_for:"{js_str(r["wrong_for"])}",ftp_rating:"{js_str(r["ftp_rating"])}",'
+        f'meta_override:{meta_override_js}}}'
+    )
+
+def build_ring_pool_js(pool: list[dict]) -> str:
+    lines = [f"// ── RING POOL — generated from Airtable {BASE_ID} | {len(pool)} rings ─────"]
+    lines.append("// DO NOT EDIT THIS BLOCK MANUALLY.")
+    lines.append("// Run generate_hero_meta.py to regenerate from Airtable.")
+    lines.append("// Suitability data only -- cascade allocation logic runs at query")
+    lines.append("// time in app.py, not baked into hero records here.")
+    lines.append("const RING_POOL = [")
+    lines.append(",\n".join(ring_pool_entry_to_js(r) for r in pool))
+    lines.append("];")
+    return "\n".join(lines)
+
 # ── Widget patcher ────────────────────────────────────────────────────────────
 # Matches the existing HERO_META block including the comment header lines
 HERO_META_RE = re.compile(
@@ -260,28 +342,56 @@ HERO_META_RE = re.compile(
     re.DOTALL | re.MULTILINE,
 )
 
-def patch_widget(html: str, new_js: str) -> str:
+# Matches an existing RING_POOL block including its comment header lines
+RING_POOL_RE = re.compile(
+    r"// ── RING POOL.*?^const RING_POOL = \[.*?^\];",
+    re.DOTALL | re.MULTILINE,
+)
+
+# Anchor used to insert RING_POOL on the first run, when no block exists yet.
+# Placed right after HERO_BY_NAME is built, before the season-filter section.
+HERO_BY_NAME_ANCHOR = re.compile(
+    r"(const HERO_BY_NAME = \{\};\nHERO_META\.forEach\(h => \{ HERO_BY_NAME\[h\.name\] = h; \}\);\n)",
+)
+
+def patch_widget(html: str, hero_js: str, ring_js: str) -> str:
     if not HERO_META_RE.search(html):
         raise ValueError(
             "Could not find HERO_META block in widget HTML. "
             "Expected pattern: '// ── HERO META' comment followed by 'const HERO_META = ['."
         )
-    return HERO_META_RE.sub(new_js, html, count=1)
+    html = HERO_META_RE.sub(hero_js, html, count=1)
+
+    if RING_POOL_RE.search(html):
+        html = RING_POOL_RE.sub(ring_js, html, count=1)
+    elif HERO_BY_NAME_ANCHOR.search(html):
+        html = HERO_BY_NAME_ANCHOR.sub(lambda m: m.group(1) + "\n" + ring_js + "\n", html, count=1)
+    else:
+        raise ValueError(
+            "Could not find a RING_POOL block or the HERO_BY_NAME anchor to "
+            "insert one. Inspect the widget structure manually."
+        )
+    return html
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
-    ring_lookup = build_ring_lookup()
-    heroes      = fetch_heroes(ring_lookup)
-    new_js      = build_hero_meta_js(heroes)
+    ring_records = fetch_rings()
+    ring_lookup  = build_ring_lookup(ring_records)
+    ring_pool    = build_ring_pool(ring_records)
+    heroes       = fetch_heroes(ring_lookup)
+    hero_js      = build_hero_meta_js(heroes)
+    ring_js      = build_ring_pool_js(ring_pool)
 
     print(f"\nGenerated HERO_META: {len(heroes)} heroes", file=sys.stderr)
+    print(f"Generated RING_POOL: {len(ring_pool)} rings", file=sys.stderr)
 
     if DRY_RUN:
-        print(new_js)
+        print(hero_js)
+        print(ring_js)
         return
 
     html = output_path.read_text(encoding="utf-8")
-    patched = patch_widget(html, new_js)
+    patched = patch_widget(html, hero_js, ring_js)
     output_path.write_text(patched, encoding="utf-8")
     print(f"Written to {output_path}", file=sys.stderr)
     print("Done. Commit and push via Claude Code.", file=sys.stderr)
