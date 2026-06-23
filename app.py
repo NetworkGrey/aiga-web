@@ -468,6 +468,17 @@ def chat():
             "remaining":  remaining,
         })
 
+    except anthropic.APIStatusError as e:
+        if e.status_code == 529:
+            print(f"[AIGA] Overloaded: {e}")
+            remaining = RATE_LIMIT - session["message_count"]
+            return jsonify({
+                "response":   "The war council is overrun. Try again in a moment, Commander.",
+                "session_id": session_id,
+                "remaining":  remaining,
+            }), 200
+        print(f"[AIGA] API error: {e}")
+        return jsonify({"error": "Could not reach AIGA. Please try again."}), 500
     except anthropic.APIError as e:
         print(f"[AIGA] API error: {e}")
         return jsonify({"error": "Could not reach AIGA. Please try again."}), 500
