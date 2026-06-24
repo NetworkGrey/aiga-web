@@ -48,6 +48,7 @@ Field ID map (from list_tables_for_base output):
 
 Rings table fields (from list_tables_for_base output):
   Ring Name        fldIi2LvUz6PybBtF  singleLineText
+  Tier             fldwHCQkDc4pDMa4l  singleSelect (T0/T1/T2)
   Suits Role(s)    fldNpjqtn6OGX8wGS  multipleSelects
   Suits Troop(s)   fldQem8XyrW9pgenW  multipleSelects
   Priority Rank    fldsEISuRO7CDGwkv  singleLineText
@@ -163,7 +164,7 @@ def select_name(raw) -> str:
 
 # ── Build ring pool: suitability data for the pool-based allocation model ─────
 def build_ring_pool(ring_records: list[dict]) -> list[dict]:
-    """Returns a list of {name, suits_roles, suits_troops, priority_rank,
+    """Returns a list of {name, tier, suits_roles, suits_troops, priority_rank,
     wrong_for, ftp_rating, meta_override} for every ring -- the cascade
     allocation logic itself runs at query time in app.py, this just
     exports the pool's raw suitability data."""
@@ -175,6 +176,7 @@ def build_ring_pool(ring_records: list[dict]) -> list[dict]:
             continue
         pool.append({
             "name":          name,
+            "tier":          select_name(f.get("fldwHCQkDc4pDMa4l")),
             "suits_roles":   multiselect_names(f.get("fldNpjqtn6OGX8wGS")),
             "suits_troops":  multiselect_names(f.get("fldQem8XyrW9pgenW")),
             "priority_rank": f.get("fldsEISuRO7CDGwkv", "") or "",
@@ -318,7 +320,8 @@ def ring_pool_entry_to_js(r: dict) -> str:
     troops_js = ",".join(f'"{js_str(s)}"' for s in r["suits_troops"])
     meta_override_js = "true" if r["meta_override"] else "false"
     return (
-        f'  {{name:"{js_str(r["name"])}",suits_roles:[{roles_js}],'
+        f'  {{name:"{js_str(r["name"])}",tier:"{js_str(r["tier"])}",'
+        f'suits_roles:[{roles_js}],'
         f'suits_troops:[{troops_js}],priority_rank:"{js_str(r["priority_rank"])}",'
         f'wrong_for:"{js_str(r["wrong_for"])}",ftp_rating:"{js_str(r["ftp_rating"])}",'
         f'meta_override:{meta_override_js}}}'
