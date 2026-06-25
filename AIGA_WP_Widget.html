@@ -137,100 +137,82 @@
 }
 #aiga-widget option,#aiga-widget optgroup{background:var(--aw-card);color:var(--aw-text);}
 
-/* March accordion */
-#aiga-widget .aw-march-list{padding:12px 18px;display:flex;flex-direction:column;gap:8px;}
-#aiga-widget .aw-march{border:1px solid var(--aw-border);border-radius:6px;overflow:hidden;}
-#aiga-widget .aw-march-hdr{
-  display:flex;align-items:center;justify-content:space-between;
+/* Step accordion */
+#aiga-widget .aw-steps{padding:12px 18px 18px;display:flex;flex-direction:column;gap:8px;}
+#aiga-widget .aw-step{border:1px solid var(--aw-border);border-radius:6px;overflow:hidden;}
+#aiga-widget .aw-step-hdr{
+  display:flex;align-items:center;gap:8px;
   padding:10px 14px;background:var(--aw-card);cursor:pointer;user-select:none;
 }
-#aiga-widget .aw-march-hdr:hover{background:#2e2e2e;}
-#aiga-widget .aw-march-hdr.open{border-bottom:1px solid var(--aw-border);}
-#aiga-widget .aw-march-id{
-  font-family:'Cinzel',serif;font-size:17px;font-weight:700;
-  color:var(--aw-gold);letter-spacing:1.5px;margin-right:10px;
+#aiga-widget .aw-step-locked .aw-step-hdr{cursor:default;}
+#aiga-widget .aw-step-hdr:hover{background:#2e2e2e;}
+#aiga-widget .aw-step-hdr.open{border-bottom:1px solid var(--aw-border);}
+#aiga-widget .aw-step-num{
+  font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--aw-gold);
+  width:20px;height:20px;border:1px solid var(--aw-gold-dim);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-#aiga-widget .aw-march-summary{font-size:12px;color:var(--aw-muted);flex:1;}
-#aiga-widget .aw-chevron{color:var(--aw-faint);font-size:11px;transition:transform .2s;}
-#aiga-widget .aw-march-hdr.open .aw-chevron{transform:rotate(180deg);}
-#aiga-widget .aw-march-body{display:none;padding:14px;}
-#aiga-widget .aw-march-body.open{display:block;}
+#aiga-widget .aw-step-title{font-size:13px;color:var(--aw-text);font-weight:600;flex:1;}
+#aiga-widget .aw-step-badge{
+  background:rgba(92,184,92,.15);color:#7dd87d;border:1px solid #4a8a4a;
+  font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;flex-shrink:0;
+}
+#aiga-widget .aw-step-lock{font-size:10px;color:var(--aw-faint);letter-spacing:.5px;flex-shrink:0;}
+#aiga-widget .aw-step-hdr.open .aw-chevron{transform:rotate(180deg);}
+#aiga-widget .aw-step-body{display:none;padding:14px;}
+#aiga-widget .aw-step-body.open{display:block;}
+#aiga-widget .aw-step-empty{font-size:12px;color:var(--aw-faint);padding:4px 0;}
+#aiga-widget .aw-locked-msg{font-size:13px;color:var(--aw-muted);line-height:1.5;}
 
 /* Troop type selector */
-#aiga-widget .aw-troop-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+#aiga-widget .aw-troop-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 #aiga-widget .aw-troop-row label{font-size:11px;color:var(--aw-muted);}
 #aiga-widget .aw-troop-row select{min-width:140px;}
 
-/* Hero slots */
-#aiga-widget .aw-hero-slots{display:flex;flex-direction:column;gap:12px;}
-#aiga-widget .aw-hero-slot{
+/* Step march grouping */
+#aiga-widget .aw-step-march{margin-bottom:14px;}
+#aiga-widget .aw-step-march:last-child{margin-bottom:0;}
+#aiga-widget .aw-step-march-id{
+  font-family:'Cinzel',serif;font-size:13px;font-weight:700;
+  color:var(--aw-gold);letter-spacing:1.5px;margin-bottom:8px;
+}
+#aiga-widget .aw-hero-rows{display:flex;flex-direction:column;gap:8px;}
+
+/* Hero rows (shared by steps 1-3) */
+#aiga-widget .aw-hero-row{
   background:var(--aw-header);border:1px solid var(--aw-border-lt);
-  border-radius:6px;padding:11px;
+  border-radius:6px;padding:9px 10px;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;
 }
-#aiga-widget .aw-slot-label{
-  font-size:9px;color:var(--aw-gold-dim);letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:8px;
+#aiga-widget .aw-row-label{
+  font-size:11px;color:var(--aw-muted);flex-shrink:0;
+  min-width:64px;align-self:center;
 }
-#aiga-widget .aw-hero-top{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;}
-#aiga-widget .aw-hero-top select.aw-hero-sel{flex:1;min-width:160px;font-size:15px;font-weight:600;color:var(--aw-text);padding:8px 28px 8px 10px;}
-#aiga-widget .aw-hero-top .aw-lv-inp{width:74px;padding:8px 8px;font-size:13px;}
-#aiga-widget .aw-hero-top .aw-rank-sel{width:74px;padding:8px 8px;font-size:13px;}
+#aiga-widget .aw-hero-row-wide .aw-row-label{
+  font-size:13px;font-weight:600;color:var(--aw-text);width:100%;margin-bottom:2px;
+}
+#aiga-widget .aw-hero-row select.aw-hero-sel{flex:1;min-width:160px;font-size:14px;font-weight:600;color:var(--aw-text);padding:7px 26px 7px 9px;}
+#aiga-widget .aw-hero-row .aw-lv-inp{width:60px;flex-shrink:0;}
+#aiga-widget .aw-hero-row .aw-rank-sel{width:60px;flex-shrink:0;}
+#aiga-widget .aw-hero-row .aw-field{min-width:90px;}
+#aiga-widget .aw-hero-row .aw-field select,#aiga-widget .aw-hero-row .aw-field input{width:100%;}
+#aiga-widget .aw-skill-ro{
+  font-size:12px;color:var(--aw-muted);background:var(--aw-input);
+  border:1px solid var(--aw-border);border-radius:4px;padding:5px 8px;
+  min-height:25px;display:flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 
-/* Section labels inside hero */
-#aiga-widget .aw-sec{
-  font-size:9px;color:var(--aw-faint);letter-spacing:1px;
-  text-transform:uppercase;margin:9px 0 6px;
-  border-top:1px solid var(--aw-border-lt);padding-top:7px;
+/* Step footer + inline response */
+#aiga-widget .aw-step-foot{margin-top:12px;display:flex;justify-content:flex-end;}
+#aiga-widget .aw-step-response{
+  margin-top:12px;padding:10px 13px;background:var(--aw-card);
+  border:1px solid var(--aw-border);border-radius:6px;font-size:13px;line-height:1.6;color:var(--aw-text);
 }
-#aiga-widget .aw-skill-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;}
-#aiga-widget .aw-skill-row input[type=text]{flex:1;min-width:0;font-size:12px;}
-#aiga-widget .aw-skill-row .aw-sk-lv{width:62px;flex-shrink:0;padding:7px 8px;}
-#aiga-widget .aw-skill-row .aw-sk-star{width:56px;flex-shrink:0;padding:7px 8px;}
-#aiga-widget .aw-skill-row select{flex:1;min-width:0;font-size:12px;}
-#aiga-widget .aw-skill-num{font-size:9px;color:var(--aw-faint);width:14px;flex-shrink:0;}
-
-/* Gear */
-#aiga-widget .aw-gear-row{display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap;}
-#aiga-widget .aw-gear-row .aw-slot-tag{font-size:9px;color:var(--aw-faint);width:34px;flex-shrink:0;}
-#aiga-widget .aw-gear-row input[type=text]{flex:1;min-width:0;font-size:12px;}
-#aiga-widget .aw-gear-row .aw-glv{width:58px;flex-shrink:0;padding:7px 8px;}
-#aiga-widget .aw-gear-row .aw-gstar{width:52px;flex-shrink:0;padding:7px 8px;}
-#aiga-widget .aw-gems{display:flex;gap:3px;align-items:center;flex-shrink:0;}
-#aiga-widget .aw-gem-sel{
-  width:28px;height:22px;padding:0 2px;font-size:0;border-radius:3px;
-  border:1px solid var(--aw-border);cursor:pointer;background-color:var(--aw-input);
-  background-image:none;
-}
-#aiga-widget .aw-gem-sel option{font-size:12px;color:#fff;}
-
-/* Ring + Mount */
-#aiga-widget .aw-ring-row{display:flex;gap:6px;align-items:center;margin-bottom:9px;}
-#aiga-widget .aw-ring-row input[type=text]{flex:1;min-width:0;font-size:12px;}
-#aiga-widget .aw-ring-row .aw-rlv{width:62px;flex-shrink:0;padding:7px 8px;}
-#aiga-widget .aw-mount-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-#aiga-widget .aw-mount-grid select,#aiga-widget .aw-mount-grid input{width:100%;}
-#aiga-widget .aw-mount-adorn{display:flex;gap:6px;margin-top:6px;}
-#aiga-widget .aw-mount-adorn input[type=text]{flex:1;min-width:0;font-size:12px;}
-#aiga-widget .aw-mount-adorn .aw-adlv{width:62px;flex-shrink:0;padding:7px 8px;}
-
-/* Hero pool */
-#aiga-widget .aw-pool-section{padding:0 18px 14px;}
-#aiga-widget .aw-pool-title{
-  font-family:'Cinzel',serif;font-size:11px;color:var(--aw-gold);
-  letter-spacing:1px;margin:14px 0 8px;
-}
-#aiga-widget .aw-pool-list{display:flex;flex-direction:column;gap:6px;}
-#aiga-widget .aw-pool-row{display:flex;gap:6px;align-items:center;}
-#aiga-widget .aw-pool-row select{flex:1;min-width:140px;font-size:12px;}
-#aiga-widget .aw-pool-row input{width:56px;flex-shrink:0;}
-#aiga-widget .aw-pool-row .aw-rank-sel{width:56px;}
-#aiga-widget .aw-pool-type{font-size:10px;color:var(--aw-faint);width:50px;flex-shrink:0;}
-#aiga-widget .aw-pool-add{
-  margin-top:8px;background:transparent;border:1px dashed var(--aw-border);
-  color:var(--aw-muted);font-size:12px;padding:6px;border-radius:4px;
-  cursor:pointer;width:100%;transition:border-color .15s;
-}
-#aiga-widget .aw-pool-add:hover{border-color:var(--aw-gold-dim);color:var(--aw-gold);}
+#aiga-widget .aw-step-response h2,#aiga-widget .aw-step-response h3{font-family:'Cinzel',serif;color:var(--aw-gold);margin:8px 0 4px;font-size:12px;}
+#aiga-widget .aw-step-response h2:first-child,#aiga-widget .aw-step-response h3:first-child{margin-top:0;}
+#aiga-widget .aw-step-response p{margin:0 0 6px;}
+#aiga-widget .aw-step-response ul,#aiga-widget .aw-step-response ol{margin:3px 0 6px 16px;}
+#aiga-widget .aw-step-loading{color:var(--aw-faint);font-style:italic;}
+#aiga-widget .aw-step-error{color:#ff8888;}
 
 /* Profile footer */
 #aiga-widget .aw-prof-foot{
@@ -390,18 +372,12 @@
           </div>
         </div>
       </div>
-      <div class="aw-march-list" id="aw-march-list"></div>
-      <div class="aw-pool-section">
-        <div class="aw-pool-title">Hero Pool</div>
-        <div class="aw-pool-list" id="aw-pool-list"></div>
-        <button class="aw-pool-add" id="aw-pool-add">+ Add hero</button>
-      </div>
+      <div class="aw-steps" id="aw-steps"></div>
     </div>
     <div class="aw-prof-foot">
       <span class="aw-save-status" id="aw-save-status">Not saved</span>
       <div class="aw-prof-actions">
         <button class="aw-btn" id="aw-reset-btn">Reset</button>
-        <button class="aw-btn aw-btn-primary" id="aw-submit-btn">Submit Profile</button>
       </div>
     </div>
   </div>
@@ -410,7 +386,7 @@
 <script>
 (function(){
 const API = 'https://aiga-web-production.up.railway.app/chat';
-const STORE_KEY = 'aiga_profile_v1';
+const STORE_KEY = 'aiga_profile_v2';
 const sessionId = typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2);
 marked.setOptions({breaks:true,gfm:true});
 function md(t){return DOMPurify.sanitize(marked.parse(t));}
@@ -564,121 +540,50 @@ function heroVisibleForSeason(hero, selectedSeason){
   return heroIdx <= selIdx;
 }
 
-// ── GEAR META ──────────────────────────────────────────────────────────────
-const GEAR_META = {
-  Sword:{
-    Head:[{n:"Blazing Heart",r:"L"},{n:"Laurel Crown",r:"E"},{n:"Linen Kerchief",r:"R"}],
-    Hands:[{n:"Flowing Force",r:"L"},{n:"Star Handguards",r:"E"},{n:"Sennit Bracer",r:"R"}],
-    Body:[{n:"Infinite Land",r:"L"},{n:"Silver Chest Armor",r:"E"},{n:"Wornout Armor",r:"R"}],
-    Legs:[{n:"Shadowless Wind",r:"L"},{n:"Shadow Light Boots",r:"E"},{n:"Wanderer's Boots",r:"R"}]
-  },
-  Pike:{
-    Head:[{n:"Power of Abyss",r:"L"},{n:"Plume Hat",r:"E"},{n:"Simple Straw Hat",r:"R"}],
-    Hands:[{n:"Ring of Chaos",r:"L"},{n:"Legacy Arm Armor",r:"E"},{n:"Linen Gloves",r:"R"}],
-    Body:[{n:"Master of Death",r:"L"},{n:"Silk Shirt",r:"E"},{n:"Cotton Top",r:"R"}],
-    Legs:[{n:"Nightmare Boots",r:"L"},{n:"Leather Boots",r:"E"},{n:"Handmade Boots",r:"R"}]
-  },
-  Cavalry:{
-    Head:[{n:"Divine Crown",r:"L"},{n:"Lion Helmet",r:"E"},{n:"Woollen Hood",r:"R"}],
-    Hands:[{n:"Contract of Light",r:"L"},{n:"White Wolf Bracers",r:"E"},{n:"Northland Gauntlets",r:"R"}],
-    Body:[{n:"Omniscience",r:"L"},{n:"Bear Chest Armor",r:"E"},{n:"Chamois Shirt",r:"R"}],
-    Legs:[{n:"Dust-Free Boots",r:"L"},{n:"Feathered Iron Boots",r:"E"},{n:"Furry Boots",r:"R"}]
-  },
-  Archer:{
-    Head:[{n:"Fiery Sun",r:"L"},{n:"Eagle Eye",r:"E"},{n:"Buckskin Hat",r:"R"}],
-    Hands:[{n:"Embrace of Effulgence",r:"L"},{n:"Skyshatter Gauntlets",r:"E"},{n:"Hunter Gauntlets",r:"R"}],
-    Body:[{n:"Eternal Flare",r:"L"},{n:"Falcon Armor",r:"E"},{n:"Grizzly Chest Armor",r:"R"}],
-    Legs:[{n:"Dawnbreak Boots",r:"L"},{n:"Night Owl Boots",r:"E"},{n:"Hare Boots",r:"R"}]
-  },
-  Gathering:{
-    Head:[{n:"Fiery Sun",r:"L"},{n:"Eagle Eye",r:"E"},{n:"Buckskin Hat",r:"R"}],
-    Hands:[{n:"Embrace of Effulgence",r:"L"},{n:"Skyshatter Gauntlets",r:"E"},{n:"Hunter Gauntlets",r:"R"}],
-    Body:[{n:"Eternal Flare",r:"L"},{n:"Falcon Armor",r:"E"},{n:"Grizzly Chest Armor",r:"R"}],
-    Legs:[{n:"Dawnbreak Boots",r:"L"},{n:"Night Owl Boots",r:"E"},{n:"Hare Boots",r:"R"}]
-  }
-};
-
-// ── REFERENCE DATA ──────────────────────────────────────────────────────────
-const RINGS = [
-  "Ring of Clover","Ring of Tulip","Ring of Violet","Ring of Daisy","Ring of Iris",
-  "Ring of Rose","Ring of Hyacinth","Ring of Lily","Ring of Laurel","Ring of Sunflower",
-  "Ring of Bear","Ring of Rhino","Ring of Steed","Ring of Crow","Ring of Seahorse",
-  "Ring of Shark","Ring of Badger","Ring of Elephant","Ring of Lion","Ring of Serpent",
-  "Ring of Deer","Ring of Falcon","Ring of Night Wolf","Ring of Boar",
-  "Tranquil Water","Lofty Mountain","Scorching Flame","Effulgent Sun","Azure Moon",
-  "Everflame Wings","Radiant Guardian","Lord of Eastern Heavens","Skyward Knight",
-  "Messenger of Destruction"
-];
-
-const ALL_TRAITS = [
-  "Abundance","Army Sunder","Bastion","Battlemaster","Bedrock","Blade Sever",
-  "Cunning","Dustbane","Entrenchment","Fearless","Fierce","Full Stores",
-  "Gallant","Healing Armor","Iron Ridge","Lifesaver","Overpower","Peacemaker",
-  "Perseverance","Phalanx Breaker","Renewal","Siege","Spiritbond","Stalwart",
-  "Stratagem","Swift","Tactician","Thunderbolt","Tidebreaker","Valor"
-];
-
-const TRAIT_HOME_TEMP = {
-  "Overpower":"Warbred","Gallant":"Warbred","Valor":"Warbred","Phalanx Breaker":"Warbred","Fierce":"Warbred",
-  "Spiritbond":"Alert","Stratagem":"Alert","Cunning":"Alert","Battlemaster":"Alert",
-  "Thunderbolt":"Fearless","Army Sunder":"Fearless","Dustbane":"Fearless","Tidebreaker":"Fearless",
-  "Fearless":"Fearless","Bastion":"Fearless","Iron Ridge":"Fearless","Tactician":"Fearless",
-  "Bedrock":"Fearless","Peacemaker":"Fearless","Blade Sever":"Fearless","Entrenchment":"Fearless",
-  "Stalwart":"Fearless","Perseverance":"Fearless","Siege":"Fearless",
-  "Lifesaver":"Protective","Renewal":"Protective","Healing Armor":"Protective",
-  "Swift":"Gathering","Abundance":"Gathering","Full Stores":"Gathering"
-};
-
-// ── ADORNMENTS — corrected 3-field data model ──────────────────────────────
-const ADORNMENT_FORMS = {
-  Sword:   { attack: "Swift Blade",     defense: "Mystic Mirror" },
-  Pike:    { attack: "Guiding Star",    defense: "Stalwart Shield" },
-  Cavalry: { attack: "Unyielding Iron", defense: "Sacred Lily" },
-  Archer:  { attack: "Piercing Arrow",  defense: "Eagle's Blessing" }
-};
-
-const ADORNMENT_EFFECTS = {
-  Universal: ["Resistance", "Natural Selection"],
-  Sword: ["Wavebreaker", "Calculation", "Blazing Edge", "Starlink", "Radiance", "Mutual Aid", "Charge"],
-  Pike: ["Resourcefulness", "Secondary Strike", "Insight", "Stacked Armor", "Gambit", "Blood Debt", "Guard Formation"],
-  Cavalry: ["Boiling Blood", "Rally", "Chain Slayer", "Lone Valor", "Cloud Piercer", "Shadow Chaser", "Intimidation"],
-  Archer: ["Lightning Strike", "Power Accumulation", "Eye of the Storm", "Slaughter", "Strike Soul", "Strike Weakness", "Deceptive Words", "Blood Rage", "Risk Aversion"]
-};
-
 // ── STATE ────────────────────────────────────────────────────────────────────
 const MARCH_IDS   = ["M1","M2","M3","M4","M5"];
 const TROOP_TYPES = ["Sword","Pike","Cavalry","Archer","Gathering"];
 const MOUNT_TEMPS = ["Warbred","Alert","Fearless","Protective","Docile","Spirited","Mischievous"];
-const MOUNT_RARITIES = [
-  {name:"Courser", tier:"Common", color:"Blue"},
-  {name:"Destrier", tier:"Epic", color:"Purple"},
-  {name:"Skywing", tier:"Legendary", color:"Gold"},
-  {name:"Celestial Charger", tier:"Mythical", color:"White"}
-];
 
-function emptyHero(){
+// Ring-pool roles (RING_POOL.suits_roles vocabulary) are derived from march
+// slot position, mirroring the same Lead/Sup1/Sup2 -> role convention used
+// by resolve_ring_recommendations in app.py. Gathering heroes always map to
+// the "Gathering" role regardless of slot.
+function roleForSlot(slotIdx, isGathering){
+  if(isGathering) return "Gathering";
+  return slotIdx===0 ? "DPS Lead" : (slotIdx===1 ? "Damage Support" : "Tank Support");
+}
+
+function emptyHeroSlot(){
   return {
     name:"",level:"",rank:"",
-    skill1:{name:"",level:""},skill2:{name:"",level:""},
-    skill3:{name:"",level:"",stars:""},skill4:{name:"",level:"",stars:""},
-    gear:{Head:{name:"",level:"",stars:"",gems:["","",""]},Hands:{name:"",level:"",stars:"",gems:["","",""]},Body:{name:"",level:"",stars:"",gems:["","",""]},Legs:{name:"",level:"",stars:"",gems:["","",""]}},
     ring:{name:"",level:""},
-    mount:{temperament:"",trait1:"",trait2:"",rarity:"",adornment_form:"",adornment_effect:"",adornment_level:""}
+    mount:{temperament:"",trait:""},
+    adornment:{name:"",level:""},
+    skill1:{level:"",stars:""},
+    skill2:{level:"",stars:""},
+    skill3:{name:"",level:"",stars:""},
+    skill4:{name:"",level:"",stars:""}
   };
 }
 function emptyMarch(){
-  return {troopType:"",heroes:[emptyHero(),emptyHero(),emptyHero()]};
+  return {troopType:"",heroes:[emptyHeroSlot(),emptyHeroSlot(),emptyHeroSlot()]};
 }
 function defaultState(){
-  const s={account:{tc:"",vip:"",herocap:"",civ:"",serverSeason:""},marches:{},pool:[]};
+  const s={
+    account:{tc:"",vip:"",herocap:"",civ:"",serverSeason:""},
+    marches:{},
+    steps:{1:{completed:false,collapsed:false,response:""},
+           2:{completed:false,collapsed:false,response:""},
+           3:{completed:false,collapsed:false,response:""}}
+  };
   MARCH_IDS.forEach(id=>s.marches[id]=emptyMarch());
   return s;
 }
 
-let STATE     = defaultState();
+let STATE      = defaultState();
 let SAVE_TIMER = null;
 let nudgeSent  = false;
-let openMarch  = null;
 
 function loadState(){
   try{const raw=localStorage.getItem(STORE_KEY);if(raw){STATE=JSON.parse(raw);setSaveStatus("Loaded");}}catch(e){}
@@ -932,7 +837,7 @@ function openProfile(){
   profPanel.classList.remove("hidden");
   profToggle.classList.add("active");
   profToggle.textContent="× Close";
-  renderProfile();
+  renderBuilder();
 }
 function closeProfile(){
   chatPanel.classList.remove("hidden");
@@ -1009,53 +914,8 @@ function skillOptions(heroName,selected){
   return html;
 }
 
-function fixedSkillOptions(skillName,selected){
-  if(!skillName)return'<option value="">KNOWLEDGE GAP - not sourced</option>';
-  const sel=selected||skillName;
-  return `<option value="${skillName}"${sel===skillName?" selected":""}>${skillName}</option>`;
-}
+function offMetaClass(val,meta){return meta&&val&&val!==meta?" aw-off-meta":"";}
 
-const GEM_COLORS = [
-  {name:"Gold",   hex:"#d8b85a"},
-  {name:"Purple", hex:"#9b59d0"},
-  {name:"Blue",   hex:"#4a90d9"},
-  {name:"Green",  hex:"#5cb85c"},
-  {name:"Grey",   hex:"#9a9a9a"}
-];
-
-function gemSlotOptions(curVal){
-  let html=`<option value="" style="background:#2a2a2a;color:#999;">—</option>`;
-  GEM_COLORS.forEach(c=>{
-    html+=`<option value="${c.name}" style="background:${c.hex};color:${c.hex};"${curVal===c.name?" selected":""}>${c.name}</option>`;
-  });
-  return html;
-}
-
-function gemSlotsRow(marchId,slotIdx,slot,gems){
-  const g = gems||["","",""];
-  let html='';
-  for(let i=0;i<3;i++){
-    html+=`<select class="aw-gem-sel" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-gemslot="${i}"
-      style="background-color:${g[i]?GEM_COLORS.find(c=>c.name===g[i])?.hex:'var(--aw-input)'};">${gemSlotOptions(g[i]||"")}</select>`;
-  }
-  return html;
-}
-
-function gearOptions(troopType,slot,curVal){
-  const tt=troopType||"Sword";
-  const items=(GEAR_META[tt]&&GEAR_META[tt][slot])||GEAR_META.Sword[slot];
-  let html='<option value="">Select...</option>';
-  items.forEach(g=>{
-    const label=`${g.n} (${g.r})`;
-    html+=`<option value="${label}"${curVal===label?" selected":""}>${label}</option>`;
-  });
-  return html;
-}
-function gearDefault(troopType,slot){
-  const tt=troopType||"Sword";
-  const items=(GEAR_META[tt]&&GEAR_META[tt][slot])||GEAR_META.Sword[slot];
-  return items[0]?`${items[0].n} (${items[0].r})`:"";
-}
 function ringsAssignedElsewhere(excludeMarchId,excludeSlotIdx){
   const assigned=new Set();
   MARCH_IDS.forEach(mId=>{
@@ -1067,183 +927,137 @@ function ringsAssignedElsewhere(excludeMarchId,excludeSlotIdx){
   return assigned;
 }
 
-function ringOptions(curVal,metaRing,marchId,slotIdx){
-  const taken=marchId!==undefined?ringsAssignedElsewhere(marchId,slotIdx):new Set();
+// Ring dropdown sourced from RING_POOL, filtered by troop type + role.
+// Non-matching/assigned-elsewhere rings are disabled with a note rather
+// than removed, consistent with heroOptions' convention elsewhere.
+function ringPoolOptions(curVal,hero,marchId,slotIdx,role){
+  const meta=HERO_BY_NAME[hero.name]||{};
+  const troopCodes=meta.type?meta.type.split("/"):[];
+  const taken=ringsAssignedElsewhere(marchId,slotIdx);
   let html='<option value="">Select ring...</option>';
-  RINGS.slice().sort((a,b)=>a.localeCompare(b)).forEach(r=>{
-    const sel=curVal===r?" selected":((!curVal&&r===metaRing)?" selected":"");
-    const isTaken=taken.has(r)&&r!==curVal;
-    const disabled=isTaken?" disabled":"";
-    const label=isTaken?`${r} (assigned elsewhere)`:r;
-    html+=`<option value="${r}"${sel}${disabled}>${label}</option>`;
+  RING_POOL.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(r=>{
+    const matchesTroop=r.suits_troops.includes("Universal")||troopCodes.some(c=>r.suits_troops.includes(c));
+    const matchesRole=r.suits_roles.includes(role);
+    const matches=matchesTroop&&matchesRole;
+    const isTaken=taken.has(r.name)&&r.name!==curVal;
+    const disabled=(!matches||isTaken)?" disabled":"";
+    let label=r.name;
+    if(isTaken)label+=" (assigned elsewhere)";
+    else if(!matches)label+=` (not ${role})`;
+    html+=`<option value="${r.name}"${curVal===r.name?" selected":""}${disabled}>${label}</option>`;
   });
   return html;
 }
 
-function traitOptions(temp,curVal){
-  let html='<option value="">Select trait...</option>';
-  ALL_TRAITS.forEach(t=>{
-    html+=`<option value="${t}"${curVal===t?" selected":""}>${t}</option>`;
-  });
-  return html;
-}
-
-function traitMismatchClass(trait,temperament){
-  if(!trait||!temperament)return "";
-  const home=TRAIT_HOME_TEMP[trait];
-  if(!home)return "";
-  return home!==temperament?" aw-off-meta":"";
-}
-
-function adornFormOptions(troopType, curVal) {
-  const tt = troopType || "Sword";
-  const forms = ADORNMENT_FORMS[tt] || ADORNMENT_FORMS.Sword;
-  let html = '<option value="">Select form...</option>';
-  html += `<option value="${forms.attack}"${curVal===forms.attack?" selected":""}>${forms.attack} (Attack)</option>`;
-  html += `<option value="${forms.defense}"${curVal===forms.defense?" selected":""}>${forms.defense} (Defense)</option>`;
-  return html;
-}
-function adornEffectOptions(troopType, curVal) {
-  const tt = troopType || "Sword";
-  const pool = [...ADORNMENT_EFFECTS.Universal, ...(ADORNMENT_EFFECTS[tt] || [])];
-  let html = '<option value="">Select special effect...</option>';
-  pool.slice().sort((a,b)=>a.localeCompare(b)).forEach(e=>{
-    html += `<option value="${e}"${curVal===e?" selected":""}>${e}</option>`;
-  });
-  return html;
-}
-function offMetaClass(val,meta){return meta&&val&&val!==meta?" aw-off-meta":"";}
-
-function renderHeroSlot(marchId,slotIdx,h,troopType){
-  const label=["Lead","Support 1","Support 2"][slotIdx];
-  const meta=HERO_BY_NAME[h.name]||{};
-  const s3def=meta.skill3_rec||"";
-  const s4def=meta.skill4_rec||"";
-  const ringDef=meta.ring||"";
-  const tempDef=meta.mount_temp||"";
-  const traitDef=meta.mount_trait||"";
-  const s3val=h.skill3.name||(s3def);
-  const s4val=h.skill4.name||(s4def);
-  const ringVal=h.ring.name||(ringDef);
-  const tempVal=h.mount.temperament||(tempDef);
-  const tr1Val=h.mount.trait1||(traitDef);
-  const tr2Val=h.mount.trait2||"";
-  const s1val=h.skill1.name||meta.skill1||"";
-  const s2val=h.skill2.name||meta.skill2||"";
-
-  return `<div class="aw-hero-slot" id="slot-${marchId}-${slotIdx}">
-    <div class="aw-slot-label">${label}</div>
-    <div class="aw-hero-top">
-      <select class="aw-hero-sel" data-march="${marchId}" data-slot="${slotIdx}">${heroOptions(h.name, troopType)}</select>
-      <input type="number" class="aw-lv-inp" placeholder="Lv" min="1" max="140"
-        value="${h.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="level">
-      <select class="aw-rank-sel" data-march="${marchId}" data-slot="${slotIdx}" data-field="rank">
-        <option value="">R</option>${[1,2,3,4,5,6].map(r=>`<option value="${r}"${h.rank==r?" selected":""}>${r}</option>`).join("")}
-      </select>
-    </div>
-    <div class="aw-sec">Gear</div>
-    ${["Head","Hands","Body","Legs"].map(slot=>`
-    <div class="aw-gear-row">
-      <span class="aw-slot-tag">${slot}</span>
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearname"
-        data-meta="${gearDefault(troopType,slot)}"
-        class="${offMetaClass(h.gear[slot].name,gearDefault(troopType,slot))}">${gearOptions(troopType,slot,h.gear[slot].name)}</select>
-      <input type="number" class="aw-glv" placeholder="Lv" min="1" max="80"
-        value="${h.gear[slot].level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearlevel">
-      <input type="number" class="aw-gstar" placeholder="★" min="0" max="5"
-        value="${h.gear[slot].stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-gslot="${slot}" data-field="gearstars"
-        style="width:40px;flex-shrink:0;">
-      <div class="aw-gems">${gemSlotsRow(marchId,slotIdx,slot,h.gear[slot].gems)}</div>
-    </div>`).join("")}
-    <div class="aw-sec">Ring</div>
-    <div class="aw-ring-row">
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="ringname"
-        class="${offMetaClass(h.ring.name,ringDef)}" data-meta="${ringDef}">${ringOptions(ringVal,ringDef,marchId,slotIdx)}</select>
-      <input type="number" class="aw-rlv" placeholder="Lv" min="1" max="50"
-        value="${h.ring.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="ringlevel">
-    </div>
-    <div class="aw-sec">Mount</div>
-    <div class="aw-mount-grid">
-      <div class="aw-field">
-        <label class="${offMetaClass(h.mount.temperament,tempDef)?'aw-off-meta-label':''}">Temperament</label>
-        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttemp"
-          class="${offMetaClass(h.mount.temperament,tempDef)}" data-meta="${tempDef}">
+// ── STEP 1: MARCH LINEUP ────────────────────────────────────────────────────
+function renderStep1(){
+  let html="";
+  MARCH_IDS.forEach(mId=>{
+    const m=STATE.marches[mId];
+    html+=`<div class="aw-step-march"><div class="aw-step-march-id">${mId}</div>
+      <div class="aw-troop-row"><label>Troop type</label>
+        <select class="aw-troop-sel" data-march="${mId}">
           <option value="">Select...</option>
-          ${MOUNT_TEMPS.slice().sort((a,b)=>a.localeCompare(b)).map(t=>`<option value="${t}"${tempVal===t?" selected":""}>${t}</option>`).join("")}
+          ${TROOP_TYPES.map(t=>`<option value="${t}"${m.troopType===t?" selected":""}>${t}</option>`).join("")}
         </select>
       </div>
-      <div class="aw-field">
-        <label>Trait 1</label>
-        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttrait1"
-          class="${traitMismatchClass(h.mount.trait1,tempVal)}"
-          id="trait1-${marchId}-${slotIdx}">${traitOptions(tempVal,tr1Val)}</select>
-      </div>
-      <div class="aw-field">
-        <label>Trait 2 (optional)</label>
-        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mounttrait2"
-          class="${traitMismatchClass(h.mount.trait2,tempVal)}"
-          id="trait2-${marchId}-${slotIdx}">${traitOptions(tempVal,tr2Val)}</select>
-      </div>
-      <div class="aw-field">
-        <label>Rarity</label>
-        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountrarity">
-          <option value="">Select...</option>
-          ${MOUNT_RARITIES.map(r=>`<option value="${r.name}"${h.mount.rarity===r.name?" selected":""}>${r.name} (${r.tier}, ${r.color})</option>`).join("")}
+      <div class="aw-hero-rows">`;
+    m.heroes.forEach((h,idx)=>{
+      const label=["Lead","Support 1","Support 2"][idx];
+      html+=`<div class="aw-hero-row">
+        <span class="aw-row-label">${label}</span>
+        <select class="aw-hero-sel" data-march="${mId}" data-slot="${idx}">${heroOptions(h.name,m.troopType)}</select>
+        <input type="text" class="aw-lv-inp" placeholder="Lv" value="${h.level||""}" data-march="${mId}" data-slot="${idx}" data-field="level">
+        <select class="aw-rank-sel" data-march="${mId}" data-slot="${idx}" data-field="rank">
+          <option value="">R</option>${[1,2,3,4,5,6].map(r=>`<option value="${r}"${h.rank==r?" selected":""}>${r}</option>`).join("")}
         </select>
-      </div>
-    </div>
-    <div style="margin-top:6px;display:flex;gap:6px;align-items:flex-end;">
-      <div class="aw-field" style="flex:1;">
-        <label>Adornment Form</label>
-        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadornform">${adornFormOptions(troopType,h.mount.adornment_form||"")}</select>
-      </div>
-      <div class="aw-field" style="flex:1;">
-        <label>Special Effect</label>
-        <select data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadorneffect">${adornEffectOptions(troopType,h.mount.adornment_effect||"")}</select>
-      </div>
-      <div class="aw-field">
-        <label>Level</label>
-        <input type="number" class="aw-adlv" placeholder="Lv" min="1" max="60"
-          value="${h.mount.adornment_level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="mountadornlv"
-          style="width:68px;padding:7px 8px;">
-      </div>
-    </div>
-    <div class="aw-sec">Skills</div>
-    <div class="aw-skill-row">
-      <span class="aw-skill-num">1</span>
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1name">${fixedSkillOptions(meta.skill1,s1val)}</select>
-      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill1.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill1level">
-    </div>
-    <div class="aw-skill-row">
-      <span class="aw-skill-num">2</span>
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2name">${fixedSkillOptions(meta.skill2,s2val)}</select>
-      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill2.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill2level">
-    </div>
-    <div class="aw-skill-row">
-      <span class="aw-skill-num">3</span>
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3name"
-        class="${offMetaClass(h.skill3.name,s3def)}" data-meta="${s3def}">${skillOptions(h.name,s3val)}</select>
-      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill3.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3level">
-      <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
-        value="${h.skill3.stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill3stars">
-    </div>
-    <div class="aw-skill-row">
-      <span class="aw-skill-num">4</span>
-      <select data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4name"
-        class="${offMetaClass(h.skill4.name,s4def)}" data-meta="${s4def}">${skillOptions(h.name,s4val)}</select>
-      <input type="number" class="aw-sk-lv" placeholder="Lv" min="1" max="40"
-        value="${h.skill4.level||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4level">
-      <input type="number" class="aw-sk-star" placeholder="★" min="0" max="5"
-        value="${h.skill4.stars||""}" data-march="${marchId}" data-slot="${slotIdx}" data-field="skill4stars">
-    </div>
-  </div>`;
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+  return html;
 }
 
-// ── RENDER PROFILE ─────────────────────────────────────────────────────────────
-function renderProfile(){
+// ── STEP 2: RINGS, MOUNTS & ADORNMENTS ──────────────────────────────────────
+function renderStep2(){
+  let any=false;
+  let html="";
+  MARCH_IDS.forEach(mId=>{
+    const m=STATE.marches[mId];
+    const isGathering=m.troopType==="Gathering";
+    const rows=m.heroes.map((h,idx)=>{
+      if(!h.name)return "";
+      any=true;
+      const meta=HERO_BY_NAME[h.name]||{};
+      const role=roleForSlot(idx,isGathering);
+      const ringDef=meta.ring||"";
+      const tempDef=meta.mount_temp||"";
+      const traitDef=meta.mount_trait||"";
+      const adornDef=meta.adornment||"";
+      return `<div class="aw-hero-row aw-hero-row-wide">
+        <span class="aw-row-label">${h.name}</span>
+        <div class="aw-field"><label>Ring</label>
+          <select data-march="${mId}" data-slot="${idx}" data-field="ringname" class="${offMetaClass(h.ring.name,ringDef)}">${ringPoolOptions(h.ring.name,h,mId,idx,role)}</select>
+        </div>
+        <div class="aw-field"><label>Ring Lv</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="ringlevel" value="${h.ring.level||""}"></div>
+        <div class="aw-field"><label>Temperament</label>
+          <select data-march="${mId}" data-slot="${idx}" data-field="mounttemp" class="${offMetaClass(h.mount.temperament,tempDef)}">
+            <option value="">Select...</option>
+            ${MOUNT_TEMPS.map(t=>`<option value="${t}"${h.mount.temperament===t?" selected":""}>${t}</option>`).join("")}
+          </select>
+        </div>
+        <div class="aw-field"><label>Trait</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="mounttrait" class="${offMetaClass(h.mount.trait,traitDef)}" value="${h.mount.trait||""}"></div>
+        <div class="aw-field"><label>Adornment</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="adornname" class="${offMetaClass(h.adornment.name,adornDef)}" value="${h.adornment.name||""}"></div>
+        <div class="aw-field"><label>Adorn Lv</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="adornlevel" value="${h.adornment.level||""}"></div>
+      </div>`;
+    }).join("");
+    if(rows)html+=`<div class="aw-step-march"><div class="aw-step-march-id">${mId}</div><div class="aw-hero-rows">${rows}</div></div>`;
+  });
+  return any?html:'<p class="aw-step-empty">Select heroes in Step 1 first.</p>';
+}
+
+// ── STEP 3: SKILLS ───────────────────────────────────────────────────────────
+function renderStep3(){
+  let any=false;
+  let html="";
+  const starOpts=(val)=>`<option value="">-</option>${[0,1,2,3,4,5].map(s=>`<option value="${s}"${val==s?" selected":""}>${s}</option>`).join("")}`;
+  MARCH_IDS.forEach(mId=>{
+    const m=STATE.marches[mId];
+    const rows=m.heroes.map((h,idx)=>{
+      if(!h.name)return "";
+      any=true;
+      const meta=HERO_BY_NAME[h.name]||{};
+      const s3def=meta.skill3_rec||"";
+      const s4def=meta.skill4_rec||"";
+      return `<div class="aw-hero-row aw-hero-row-wide">
+        <span class="aw-row-label">${h.name}</span>
+        <div class="aw-field"><label>Skill 1</label><div class="aw-skill-ro">${meta.skill1||"—"}</div></div>
+        <div class="aw-field"><label>Lv</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="skill1level" value="${h.skill1.level||""}"></div>
+        <div class="aw-field"><label>★</label><select data-march="${mId}" data-slot="${idx}" data-field="skill1stars">${starOpts(h.skill1.stars)}</select></div>
+        <div class="aw-field"><label>Skill 2</label><div class="aw-skill-ro">${meta.skill2||"—"}</div></div>
+        <div class="aw-field"><label>Lv</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="skill2level" value="${h.skill2.level||""}"></div>
+        <div class="aw-field"><label>★</label><select data-march="${mId}" data-slot="${idx}" data-field="skill2stars">${starOpts(h.skill2.stars)}</select></div>
+        <div class="aw-field"><label>Skill 3</label>
+          <select data-march="${mId}" data-slot="${idx}" data-field="skill3name" class="${offMetaClass(h.skill3.name,s3def)}">${skillOptions(h.name,h.skill3.name||s3def)}</select>
+        </div>
+        <div class="aw-field"><label>Lv</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="skill3level" value="${h.skill3.level||""}"></div>
+        <div class="aw-field"><label>★</label><select data-march="${mId}" data-slot="${idx}" data-field="skill3stars">${starOpts(h.skill3.stars)}</select></div>
+        <div class="aw-field"><label>Skill 4</label>
+          <select data-march="${mId}" data-slot="${idx}" data-field="skill4name" class="${offMetaClass(h.skill4.name,s4def)}">${skillOptions(h.name,h.skill4.name||s4def)}</select>
+        </div>
+        <div class="aw-field"><label>Lv</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="skill4level" value="${h.skill4.level||""}"></div>
+        <div class="aw-field"><label>★</label><select data-march="${mId}" data-slot="${idx}" data-field="skill4stars">${starOpts(h.skill4.stars)}</select></div>
+      </div>`;
+    }).join("");
+    if(rows)html+=`<div class="aw-step-march"><div class="aw-step-march-id">${mId}</div><div class="aw-hero-rows">${rows}</div></div>`;
+  });
+  return any?html:'<p class="aw-step-empty">Select heroes in Step 1 first.</p>';
+}
+
+const STEP_TITLES={1:"March Lineup",2:"Rings, Mounts & Adornments",3:"Skills"};
+
+// ── RENDER BUILDER ───────────────────────────────────────────────────────────
+function renderBuilder(){
   const a=STATE.account;
   const tcEl=document.getElementById("p-tc");
   const vipEl=document.getElementById("p-vip");
@@ -1256,333 +1070,242 @@ function renderProfile(){
   if(civEl)civEl.value=a.civ||"";
   if(seasonEl)seasonEl.value=a.serverSeason||"";
 
-  const marchList=document.getElementById("aw-march-list");
-  if(!marchList)return;
+  const stepsEl=document.getElementById("aw-steps");
+  if(!stepsEl)return;
 
-  let html="";
-  MARCH_IDS.forEach(id=>{
-    const m=STATE.marches[id];
-    const isOpen=openMarch===id;
-    const leadName=m.heroes[0]&&m.heroes[0].name?m.heroes[0].name:"Empty";
-    const summary=m.troopType?`${m.troopType} · ${leadName}`:leadName;
-    html+=`
-      <div class="aw-march" id="march-${id}">
-        <div class="aw-march-hdr${isOpen?" open":""}" data-march="${id}">
-          <span class="aw-march-id">${id}</span>
-          <span class="aw-march-summary">${summary}</span>
-          <span class="aw-chevron">&#9660;</span>
+  const bodies={1:renderStep1(),2:renderStep2(),3:renderStep3()};
+  let html=[1,2,3].map(n=>{
+    const st=STATE.steps[n];
+    const open=!st.collapsed;
+    return `<div class="aw-step" data-step="${n}">
+      <div class="aw-step-hdr${open?" open":""}" data-step="${n}">
+        <span class="aw-step-num">${n}</span>
+        <span class="aw-step-title">${STEP_TITLES[n]}</span>
+        ${st.completed?'<span class="aw-step-badge">&#10003;</span>':''}
+        <span class="aw-chevron">&#9660;</span>
+      </div>
+      <div class="aw-step-body${open?" open":""}">
+        ${bodies[n]}
+        <div class="aw-step-foot">
+          <button class="aw-btn aw-btn-primary aw-step-submit" data-step="${n}">Submit ${STEP_TITLES[n]}</button>
         </div>
-        <div class="aw-march-body${isOpen?" open":""}">
-          <div class="aw-troop-row">
-            <label>Troop type</label>
-            <select class="aw-troop-sel" data-march="${id}">
-              <option value="">Select...</option>
-              ${TROOP_TYPES.map(t=>`<option value="${t}"${m.troopType===t?" selected":""}>${t}</option>`).join("")}
-            </select>
-          </div>
-          <div class="aw-hero-slots">
-            ${m.heroes.map((h,idx)=>renderHeroSlot(id,idx,h,m.troopType)).join("")}
-          </div>
-        </div>
-      </div>`;
-  });
-  marchList.innerHTML=html;
-  renderPool();
-  bindProfileEvents();
+        <div class="aw-step-response" style="${st.response?"":"display:none"}">${st.response?md(st.response):""}</div>
+      </div>
+    </div>`;
+  }).join("");
+
+  html+=`<div class="aw-step aw-step-locked" data-step="4">
+    <div class="aw-step-hdr open">
+      <span class="aw-step-num">4</span>
+      <span class="aw-step-title">Gear</span>
+      <span class="aw-step-lock">&#128274; Commander</span>
+    </div>
+    <div class="aw-step-body open">
+      <p class="aw-locked-msg">Complete gear analysis available in Commander tier. Upgrade to unlock.</p>
+    </div>
+  </div>`;
+
+  stepsEl.innerHTML=html;
+  bindBuilderEvents();
 }
 
-function renderPool(){
-  const pl=document.getElementById("aw-pool-list");
-  pl.innerHTML="";
-  (STATE.pool||[]).forEach((p,i)=>{
-    const div=document.createElement("div");div.className="aw-pool-row";
-    const type=p.name&&HERO_BY_NAME[p.name]?HERO_BY_NAME[p.name].type:"";
-    div.innerHTML=`
-      <select class="aw-pool-hero-sel" data-pool="${i}">${heroOptions(p.name)}</select>
-      <input type="number" placeholder="Lv" min="1" max="140" value="${p.level||''}" data-pool="${i}" data-field="level" class="aw-pool-lv">
-      <select class="aw-rank-sel" data-pool="${i}" data-field="rank">
-        <option value="">R</option>${[1,2,3,4,5,6].map(r=>`<option value="${r}"${p.rank==r?" selected":""}>${r}</option>`).join("")}
-      </select>
-      <span class="aw-pool-type">${type}</span>
-      <button class="aw-pool-del" data-pool="${i}" style="background:none;border:none;color:var(--aw-faint);cursor:pointer;font-size:14px;">&#215;</button>`;
-    pl.appendChild(div);
-  });
+function setHeroField(h,field,val){
+  const map={
+    level:()=>h.level=val,
+    rank:()=>h.rank=val,
+    ringlevel:()=>h.ring.level=val,
+    adornlevel:()=>h.adornment.level=val,
+    skill1level:()=>h.skill1.level=val,
+    skill2level:()=>h.skill2.level=val,
+    skill3level:()=>h.skill3.level=val,
+    skill4level:()=>h.skill4.level=val,
+    skill1stars:()=>h.skill1.stars=val,
+    skill2stars:()=>h.skill2.stars=val,
+    skill3stars:()=>h.skill3.stars=val,
+    skill4stars:()=>h.skill4.stars=val
+  };
+  if(map[field])map[field]();
 }
 
-function bindProfileEvents(){
+function bindBuilderEvents(){
   ["p-tc","p-vip","p-herocap","p-civ","p-season"].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     el.oninput=el.onchange=()=>{
       const key=id==="p-tc"?"tc":id==="p-vip"?"vip":id==="p-herocap"?"herocap":id==="p-civ"?"civ":"serverSeason";
       STATE.account[key]=el.value;
       queueSave();
-      if(id==="p-season"){renderProfile();}
     };
   });
 
-  document.querySelectorAll("#aiga-widget .aw-march-hdr").forEach(hdr=>{
+  const stepsEl=document.getElementById("aw-steps");
+  if(!stepsEl)return;
+
+  stepsEl.querySelectorAll(".aw-step-hdr[data-step]").forEach(hdr=>{
     hdr.onclick=()=>{
-      const id=hdr.dataset.march;
-      const wasOpen=openMarch===id;
-      openMarch=wasOpen?null:id;
-      renderProfile();
-      if(!wasOpen){
-        requestAnimationFrame(()=>{
-          const newHdr=document.querySelector(`.aw-march-hdr[data-march="${id}"]`);
-          if(newHdr) newHdr.scrollIntoView({behavior:"smooth", block:"start"});
-        });
-      }
+      const n=hdr.dataset.step;
+      STATE.steps[n].collapsed=!STATE.steps[n].collapsed;
+      renderBuilder();
     };
   });
 
-  document.querySelectorAll("#aiga-widget .aw-troop-sel").forEach(sel=>{
+  stepsEl.querySelectorAll(".aw-troop-sel").forEach(sel=>{
     sel.onchange=()=>{
       STATE.marches[sel.dataset.march].troopType=sel.value;
-      queueSave();renderProfile();
+      queueSave();renderBuilder();
     };
   });
 
-  document.querySelectorAll("#aiga-widget .aw-hero-sel").forEach(sel=>{
+  stepsEl.querySelectorAll(".aw-hero-sel").forEach(sel=>{
     sel.onchange=()=>{
       const {march:mId,slot:si}=sel.dataset;
-      const idx=parseInt(si);
-      const h=STATE.marches[mId].heroes[idx];
+      const h=STATE.marches[mId].heroes[parseInt(si)];
       h.name=sel.value;
       const meta=HERO_BY_NAME[sel.value];
       if(meta){
-        if(!h.skill1.name)h.skill1.name=meta.skill1||"";
-        if(!h.skill2.name)h.skill2.name=meta.skill2||"";
         if(!h.ring.name)h.ring.name=meta.ring||"";
         if(!h.mount.temperament)h.mount.temperament=meta.mount_temp||"";
-        if(!h.mount.trait1)h.mount.trait1=meta.mount_trait||"";
+        if(!h.mount.trait)h.mount.trait=meta.mount_trait||"";
+        if(!h.adornment.name)h.adornment.name=meta.adornment||"";
       }
-      queueSave();openMarch=mId;renderProfile();
+      queueSave();renderBuilder();
     };
   });
 
-  document.querySelectorAll("[data-field='skill1name'],[data-field='skill2name']").forEach(sel=>{
-    sel.onchange=()=>{
-      const {march:mId,slot:si,field}=sel.dataset;
-      STATE.marches[mId].heroes[parseInt(si)][field==="skill1name"?"skill1":"skill2"].name=sel.value;queueSave();
-    };
-  });
-  document.querySelectorAll("[data-field='skill1level'],[data-field='skill2level']").forEach(inp=>{
+  stepsEl.querySelectorAll("[data-field='level'],[data-field='ringlevel'],[data-field='adornlevel'],[data-field='skill1level'],[data-field='skill2level'],[data-field='skill3level'],[data-field='skill4level']").forEach(inp=>{
     inp.oninput=()=>{
       const {march:mId,slot:si,field}=inp.dataset;
-      STATE.marches[mId].heroes[parseInt(si)][field==="skill1level"?"skill1":"skill2"].level=inp.value;queueSave();
-    };
-  });
-  document.querySelectorAll("[data-field='skill3name'],[data-field='skill4name']").forEach(sel=>{
-    sel.onchange=()=>{
-      const {march:mId,slot:si,field}=sel.dataset;
-      STATE.marches[mId].heroes[parseInt(si)][field==="skill3name"?"skill3":"skill4"].name=sel.value;queueSave();
-    };
-  });
-  document.querySelectorAll("[data-field='skill3level'],[data-field='skill4level'],[data-field='skill3stars'],[data-field='skill4stars']").forEach(inp=>{
-    inp.oninput=()=>{
-      const {march:mId,slot:si,field}=inp.dataset;
-      const sk=field.startsWith("skill3")?"skill3":"skill4";
-      const attr=field.endsWith("level")?"level":"stars";
-      STATE.marches[mId].heroes[parseInt(si)][sk][attr]=inp.value;queueSave();
-    };
-  });
-  document.querySelectorAll("[data-field='level']").forEach(inp=>{
-    if(!inp.dataset.march)return;
-    inp.oninput=()=>{STATE.marches[inp.dataset.march].heroes[parseInt(inp.dataset.slot)].level=inp.value;queueSave();};
-  });
-  document.querySelectorAll("[data-field='rank']").forEach(sel=>{
-    if(!sel.dataset.march)return;
-    sel.onchange=()=>{STATE.marches[sel.dataset.march].heroes[parseInt(sel.dataset.slot)].rank=sel.value;queueSave();};
-  });
-  document.querySelectorAll("[data-field='gearname']").forEach(sel=>{
-    sel.onchange=()=>{
-      const {march:mId,slot:si,gslot}=sel.dataset;
-      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].name=sel.value;
-      const meta=sel.getAttribute("data-meta");
-      if(meta)sel.classList.toggle("aw-off-meta",!!sel.value&&sel.value!==meta);
+      setHeroField(STATE.marches[mId].heroes[parseInt(si)],field,inp.value);
       queueSave();
     };
   });
-  document.querySelectorAll("[data-field='gearlevel']").forEach(inp=>{
-    inp.oninput=()=>{
-      const {march:mId,slot:si,gslot}=inp.dataset;
-      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].level=inp.value;queueSave();
-    };
-  });
-  document.querySelectorAll("[data-field='gearstars']").forEach(inp=>{
-    inp.oninput=()=>{
-      const {march:mId,slot:si,gslot}=inp.dataset;
-      STATE.marches[mId].heroes[parseInt(si)].gear[gslot].stars=inp.value;queueSave();
-    };
-  });
-  document.querySelectorAll("#aiga-widget .aw-gem-sel").forEach(sel=>{
+
+  stepsEl.querySelectorAll("[data-field='rank'],[data-field='skill1stars'],[data-field='skill2stars'],[data-field='skill3stars'],[data-field='skill4stars']").forEach(sel=>{
     sel.onchange=()=>{
-      const {march:mId,slot:si,gslot,gemslot}=sel.dataset;
-      const idx=parseInt(si);const gi=parseInt(gemslot);
-      const h=STATE.marches[mId].heroes[idx];
-      if(!h.gear[gslot].gems)h.gear[gslot].gems=["","",""];
-      h.gear[gslot].gems[gi]=sel.value;
-      const chosen=GEM_COLORS.find(c=>c.name===sel.value);
-      sel.style.backgroundColor=chosen?chosen.hex:"var(--aw-input)";
+      const {march:mId,slot:si,field}=sel.dataset;
+      setHeroField(STATE.marches[mId].heroes[parseInt(si)],field,sel.value);
       queueSave();
     };
   });
-  document.querySelectorAll("[data-field='ringname']").forEach(sel=>{
+
+  stepsEl.querySelectorAll("[data-field='ringname']").forEach(sel=>{
     sel.onchange=()=>{
       const {march:mId,slot:si}=sel.dataset;
       STATE.marches[mId].heroes[parseInt(si)].ring.name=sel.value;
-      queueSave();
-      renderProfile();
+      queueSave();renderBuilder();
     };
   });
-  document.querySelectorAll("[data-field='ringlevel']").forEach(inp=>{
-    inp.oninput=()=>{STATE.marches[inp.dataset.march].heroes[parseInt(inp.dataset.slot)].ring.level=inp.value;queueSave();};
-  });
 
-  const mountFields={mounttemp:"temperament",mounttrait1:"trait1",mounttrait2:"trait2",mountrarity:"rarity",mountadornform:"adornment_form",mountadorneffect:"adornment_effect",mountadornlv:"adornment_level"};
-  Object.keys(mountFields).forEach(field=>{
-    document.querySelectorAll(`[data-field='${field}']`).forEach(el=>{
-      const ev=el.tagName==="SELECT"?"change":"input";
-      el.addEventListener(ev,()=>{
-        const {march:mId,slot:si}=el.dataset;
-        const idx=parseInt(si);
-        const h=STATE.marches[mId].heroes[idx];
-        h.mount[mountFields[field]]=el.value;
-
-        if(field==="mounttemp"){
-          const t1=document.getElementById(`trait1-${mId}-${idx}`);
-          const t2=document.getElementById(`trait2-${mId}-${idx}`);
-          if(t1){
-            t1.innerHTML=traitOptions(el.value,h.mount.trait1||"");
-            t1.classList.toggle("aw-off-meta", !!traitMismatchClass(h.mount.trait1, el.value));
-          }
-          if(t2){
-            t2.innerHTML=traitOptions(el.value,h.mount.trait2||"");
-            t2.classList.toggle("aw-off-meta", !!traitMismatchClass(h.mount.trait2, el.value));
-          }
-        } else if(field==="mounttrait1" || field==="mounttrait2"){
-          const currentTemp = h.mount.temperament;
-          el.classList.toggle("aw-off-meta", !!traitMismatchClass(el.value, currentTemp));
-        } else {
-          const meta=el.getAttribute("data-meta");
-          if(meta)el.classList.toggle("aw-off-meta",!!el.value&&el.value!==meta);
-        }
-        queueSave();
-      });
-    });
-  });
-
-  bindPoolEvents();
-}
-
-function bindPoolEvents(){
-  document.querySelectorAll("#aiga-widget .aw-pool-hero-sel").forEach(sel=>{
+  stepsEl.querySelectorAll("[data-field='mounttemp']").forEach(sel=>{
     sel.onchange=()=>{
-      const i=parseInt(sel.dataset.pool);
-      STATE.pool[i].name=sel.value;
-      const type=sel.value&&HERO_BY_NAME[sel.value]?HERO_BY_NAME[sel.value].type:"";
-      sel.parentElement.querySelector(".aw-pool-type").textContent=type;queueSave();
+      const {march:mId,slot:si}=sel.dataset;
+      STATE.marches[mId].heroes[parseInt(si)].mount.temperament=sel.value;
+      queueSave();renderBuilder();
     };
   });
-  document.querySelectorAll("#aiga-widget .aw-pool-lv").forEach(inp=>{
-    inp.oninput=()=>{STATE.pool[parseInt(inp.dataset.pool)].level=inp.value;queueSave();};
+
+  stepsEl.querySelectorAll("[data-field='mounttrait']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si}=inp.dataset;
+      const h=STATE.marches[mId].heroes[parseInt(si)];
+      h.mount.trait=inp.value;
+      const meta=HERO_BY_NAME[h.name]||{};
+      inp.classList.toggle("aw-off-meta",!!offMetaClass(inp.value,meta.mount_trait));
+      queueSave();
+    };
   });
-  document.querySelectorAll(".aw-pool-del").forEach(btn=>{
-    btn.onclick=()=>{STATE.pool.splice(parseInt(btn.dataset.pool),1);queueSave();renderPool();bindPoolEvents();};
+
+  stepsEl.querySelectorAll("[data-field='adornname']").forEach(inp=>{
+    inp.oninput=()=>{
+      const {march:mId,slot:si}=inp.dataset;
+      const h=STATE.marches[mId].heroes[parseInt(si)];
+      h.adornment.name=inp.value;
+      const meta=HERO_BY_NAME[h.name]||{};
+      inp.classList.toggle("aw-off-meta",!!offMetaClass(inp.value,meta.adornment));
+      queueSave();
+    };
   });
-  document.querySelectorAll("#aw-pool-list .aw-rank-sel").forEach(sel=>{
-    sel.onchange=()=>{STATE.pool[parseInt(sel.dataset.pool)].rank=sel.value;queueSave();};
+
+  stepsEl.querySelectorAll("[data-field='skill3name'],[data-field='skill4name']").forEach(sel=>{
+    sel.onchange=()=>{
+      const {march:mId,slot:si,field}=sel.dataset;
+      STATE.marches[mId].heroes[parseInt(si)][field==="skill3name"?"skill3":"skill4"].name=sel.value;
+      queueSave();renderBuilder();
+    };
+  });
+
+  stepsEl.querySelectorAll(".aw-step-submit").forEach(btn=>{
+    btn.onclick=()=>submitStep(parseInt(btn.dataset.step));
   });
 }
 
-document.getElementById("aw-pool-add").onclick=()=>{
-  if(!STATE.pool)STATE.pool=[];
-  STATE.pool.push({name:"",level:"",rank:""});
-  queueSave();renderPool();bindPoolEvents();
-};
-
-// ── PROFILE MARKDOWN ───────────────────────────────────────────────────────────
-function buildMarkdown(){
+// ── STEP MARKDOWN ────────────────────────────────────────────────────────────
+function buildStepMarkdown(stepNum){
   const a=STATE.account;
-  const lines=["# AIGA Player Profile",`*Submitted ${new Date().toLocaleString()}*`,""];
+  const lines=[`# AIGA Profile — Step ${stepNum}: ${STEP_TITLES[stepNum]}`];
   lines.push(`**Account:** TC ${a.tc||"?"} · VIP ${a.vip||"?"} · Hero cap ${a.herocap||"?"} · Season ${a.serverSeason||"?"} · ${a.civ||"?"}`,"");
+  const labels=["Lead","Support 1","Support 2"];
   MARCH_IDS.forEach(id=>{
     const m=STATE.marches[id];
     if(!m.heroes.some(h=>h.name))return;
     lines.push(`## ${id} — ${m.troopType||"?"}`);
-    const labels=["Lead","Support 1","Support 2"];
-    m.heroes.forEach((h,i)=>{
-      if(!h.name){lines.push(`- ${labels[i]}: empty`);return;}
-      lines.push(`- **${labels[i]}: ${h.name}** (Lv ${h.level||"?"} · R${h.rank||"?"})`);
-      const s1=h.skill1.name?`${h.skill1.name} lv${h.skill1.level||"?"}`:"—";
-      const s2=h.skill2.name?`${h.skill2.name} lv${h.skill2.level||"?"}`:"—";
-      const s3=h.skill3.name?`${h.skill3.name} lv${h.skill3.level||"?"}${h.skill3.stars?" ★"+h.skill3.stars:""}`:"—";
-      const s4=h.skill4.name?`${h.skill4.name} lv${h.skill4.level||"?"}${h.skill4.stars?" ★"+h.skill4.stars:""}`:"—";
-      lines.push(`  - Skills: ${s1} | ${s2} | ${s3} | ${s4}`);
-      const gear=["Head","Hands","Body","Legs"].map(sl=>{
-        const g=h.gear[sl];
-        if(!g.name)return `${sl}: —`;
-        const gems=(g.gems||["","",""]).filter(Boolean).join("/");
-        return `${sl}: ${g.name} lv${g.level||"?"}${g.stars?" ★"+g.stars:""}${gems?" gems:"+gems:""}`;
-      }).join(" | ");
-      lines.push(`  - Gear: ${gear}`);
-      lines.push(`  - Ring: ${h.ring.name||"—"}${h.ring.level?" lv"+h.ring.level:""}`);
-      const mt=h.mount;
-      const traits=[mt.trait1,mt.trait2].filter(Boolean).join(" + ")||"—";
-      const adornParts = [];
-      if(mt.adornment_form) adornParts.push(mt.adornment_form);
-      if(mt.adornment_effect) adornParts.push(mt.adornment_effect);
-      const adornStr = adornParts.length ? " | Adorn: "+adornParts.join(" + ")+(mt.adornment_level?" lv"+mt.adornment_level:"") : "";
-      lines.push(`  - Mount: ${mt.temperament||"—"} / ${traits} / ${mt.rarity||"—"}${adornStr}`);
+    m.heroes.forEach((h,idx)=>{
+      if(!h.name){lines.push(`- ${labels[idx]}: empty`);return;}
+      if(stepNum===1){
+        lines.push(`- **${labels[idx]}: ${h.name}** (Lv ${h.level||"?"} · R${h.rank||"?"})`);
+      } else if(stepNum===2){
+        lines.push(`- **${h.name}**: Ring ${h.ring.name||"—"}${h.ring.level?" lv"+h.ring.level:""} | Mount ${h.mount.temperament||"—"} / ${h.mount.trait||"—"} | Adornment ${h.adornment.name||"—"}${h.adornment.level?" lv"+h.adornment.level:""}`);
+      } else if(stepNum===3){
+        const meta=HERO_BY_NAME[h.name]||{};
+        const s1=`${meta.skill1||"?"} lv${h.skill1.level||"?"}${h.skill1.stars?" ★"+h.skill1.stars:""}`;
+        const s2=`${meta.skill2||"?"} lv${h.skill2.level||"?"}${h.skill2.stars?" ★"+h.skill2.stars:""}`;
+        const s3=h.skill3.name?`${h.skill3.name} lv${h.skill3.level||"?"}${h.skill3.stars?" ★"+h.skill3.stars:""}`:"—";
+        const s4=h.skill4.name?`${h.skill4.name} lv${h.skill4.level||"?"}${h.skill4.stars?" ★"+h.skill4.stars:""}`:"—";
+        lines.push(`- **${h.name}**: Skill1 ${s1} | Skill2 ${s2} | Skill3 ${s3} | Skill4 ${s4}`);
+      }
     });
     lines.push("");
   });
-  if(STATE.pool&&STATE.pool.length){
-    lines.push("## Hero Pool");
-    STATE.pool.forEach(p=>{
-      if(!p.name)return;
-      const type=HERO_BY_NAME[p.name]?HERO_BY_NAME[p.name].type:"";
-      lines.push(`- **${p.name}** (Lv ${p.level||"?"} · R${p.rank||"?"} · ${type})`);
-    });
-  }
   return lines.join("\n");
 }
 
-// ── SUBMIT PROFILE ─────────────────────────────────────────────────────────────
-document.getElementById("aw-submit-btn").onclick=async()=>{
-  saveState();
-  const summary=buildMarkdown();
-  closeProfile();
-  nudgeSent=true;
-  addMsg("user","Profile submitted — please analyse my account.");
-  const prompt="Please analyse the following player profile using the PROFILE ANALYSIS RESPONSE TEMPLATE. Do not repeat the profile back to me.\n\n"+summary;
-  await sendProfileToAPI(prompt);
-};
+const STEP_SCOPE_LABEL={1:"hero selection (lineup) only",2:"rings, mounts and adornments only",3:"skills only"};
 
-async function sendProfileToAPI(text){
-  setDisabled(true);showTyping();
+// ── SUBMIT STEP ──────────────────────────────────────────────────────────────
+async function submitStep(stepNum){
+  saveState();
+  nudgeSent=true;
+  const summary=buildStepMarkdown(stepNum);
+  const prompt=`Please analyse the following player profile, scoped to ${STEP_SCOPE_LABEL[stepNum]}. Use the ✓/✗/! three-state format from the PROFILE ANALYSIS RESPONSE TEMPLATE. Do not repeat the profile back to me.\n\n${summary}`;
+
+  const respEl=document.querySelector(`.aw-step[data-step="${stepNum}"] .aw-step-response`);
+  const btn=document.querySelector(`.aw-step-submit[data-step="${stepNum}"]`);
+  if(btn){btn.disabled=true;btn.textContent="Analysing...";}
+  if(respEl){respEl.style.display="block";respEl.innerHTML='<span class="aw-step-loading">AIGA is analysing...</span>';}
+
   try{
     const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({message:text,session_id:sessionId})});
-    hideTyping();
+      body:JSON.stringify({message:prompt,session_id:sessionId})});
     const rawText=await res.text();
     if(!res.ok){
       let errMsg="Server error "+res.status;
       try{const err=JSON.parse(rawText);errMsg=err.error||errMsg;}catch(e){}
-      addMsg("error",errMsg);setDisabled(false);return;
+      if(respEl)respEl.innerHTML=`<span class="aw-step-error">${errMsg}</span>`;
+      return;
     }
     let data;
     try{data=JSON.parse(rawText);}
-    catch(e){addMsg("error","Response parse error (status "+res.status+").");setDisabled(false);return;}
-    addMsg("aiga",data.response);
+    catch(e){if(respEl)respEl.innerHTML='<span class="aw-step-error">Response parse error.</span>';return;}
+
+    STATE.steps[stepNum].response=data.response;
+    STATE.steps[stepNum].completed=true;
+    STATE.steps[stepNum].collapsed=true;
+    saveState();
+    renderBuilder();
     if(typeof data.remaining==="number")updateRemaining(data.remaining);
   }catch(e){
-    hideTyping();addMsg("error","Fetch failed: "+e.message);
+    if(respEl)respEl.innerHTML=`<span class="aw-step-error">Fetch failed: ${e.message}</span>`;
   }finally{
-    setDisabled(false);
-    sendBtn.disabled=!inputEl.value.trim()&&!stagedImage;
-    try{inputEl.focus();}catch(_){}
-    scroll();
+    if(btn){btn.disabled=false;btn.textContent="Submit "+STEP_TITLES[stepNum];}
   }
 }
 
@@ -1590,7 +1313,7 @@ document.getElementById("aw-reset-btn").onclick=()=>{
   if(!confirm("Reset all profile data?"))return;
   localStorage.removeItem(STORE_KEY);
   STATE=defaultState();
-  renderProfile();setSaveStatus("Reset");
+  renderBuilder();setSaveStatus("Reset");
 };
 
 // ── INIT ───────────────────────────────────────────────────────────────────────
