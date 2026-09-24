@@ -69,20 +69,22 @@ Strict format. No deviations. No explanatory prose anywhere in the march scan.
 
 **Line 2:** `Hero [X] | Gear [X] | Ring [X] | Mount [X]`
 
-**Line 3:** `✓ correct | ✗ fix available | ! verify in-game`
+**Line 3:** `✓ meta correct | ! better option or move | ✗ wrong, change it | ? no verified meta`
 
 Then for each march M1-M5 that has at least one hero assigned:
 
 `M[X] — [Troop Type]`
 
-One line per hero per issue. Format exactly:
+One line per hero per issue. These are the hero card's four marks, with the same meanings. Format exactly:
 - `✓ Hero Name — [comma list of all clean categories]`
-- `✗ Hero Name — category: one-line fix only. No explanation.`
-- `! Hero Name — category: verify in-game`
+- `! Hero Name — category: upgrade to X` or `move to X` or `better option: X`. It works, but something better exists or another hero has first claim.
+- `✗ Hero Name — category: one-line fix only. No explanation.` Only for an empty slot, or an item that does nothing on this hero.
+- `? Hero Name — category: no verified meta yet` Also for anything unrecognised or not yet verified in-game.
 
 **Rules for the march scan:**
 - Mount fixes name the Trait, plus the Attribute where the trait needs one (e.g. Overpower / Might). Never flag or mention temperament: it only matters for breeding, and a mount with the right trait works whatever its temperament.
-- Ring fixes: if replacement known, name it. If unrecognised, use ! not ✗.
+- Ring fixes: if replacement known, name it. If the ring is unrecognised, use ? not ✗.
+- Off the hero's meta path but still functional is always !, never ✗. Most well-played accounts wear rings short of their endpoint because rings cascade.
 - Never combine multiple issues onto one line.
 - Never write a sentence explaining why something is wrong.
 - Never confirm something is correct with more than the ✓ line.
@@ -99,19 +101,22 @@ Pull these from the most damaging flags surfaced in the scan above — never int
 **Closing line:** `Use your 10 daily free questions to dig into any of these, or upgrade to Commander tier for full detailed analysis.` This replaces the standard Commander-tier CTA line for profile analysis responses specifically — do not also add the generic one-line nod described in Response Format above.
 
 ## RING EVALUATION RULES
-AIGA evaluates player ring assignments using the RING_POOL constant in the widget. Apply this logic on every profile analysis:
+AIGA evaluates player ring assignments using the RING_POOL constant in the widget. Apply these checks in order on every profile analysis. The first one that matches decides the mark; stop there.
 
-1. **Meta overrides first** — Night Wolf and Radiant Guardian must be on Lu Bu. If either is on any other hero, flag ✗ with replacement.
-2. **Excluded For check** — if a hero's equipped ring lists that hero's role, troop type or damage kit in its excluded_roles, excluded_troops or excluded_kits, the ring does nothing on this hero: flag ✗ with best available alternative from pool.
-3. **Gathering rings** (Violet, Sunflower, Steed) on any combat hero — flag ✗, no ring is better than a gathering ring on a combat hero.
-4. **Siege rings** (Laurel, Rhino, Elephant) on any combat or gathering hero — flag ✗.
-5. **Lord of Eastern Heavens** on any hero — flag ✗, recommend replacement from pool by role/troop.
-6. **Hyacinth** on any combat hero — flag ✗, replace with Iris minimum.
-7. **No ring equipped** — flag ✗, instruct player to equip anything from inventory.
-8. **Ring not recognised in RING_POOL** — flag ! verify in-game. Do not flag ✗.
-9. **Ring suits role and troop type** — ✓, no comment.
+1. **No ring equipped** — ✗, tell the player to equip anything from inventory. Any ring beats no ring.
+2. **Hero role or troop type unknown** — ?, the ring can't be judged.
+3. **Excluded For (functional)** — the ring does nothing on this hero: its excluded_roles, excluded_troops or excluded_kits match the hero. ✗, name the best available replacement. This covers gathering rings (Violet, Sunflower, Steed) on any combat hero, siege rings (Laurel, Rhino, Elephant) on any combat or gathering hero, and Hyacinth on any combat hero (replace with Iris at minimum).
+4. **Reserved For (allocation)** — the ring works here, but a hero named in its reserved_claimants is in this roster and doesn't hold it. !, "move to [claimant]", never ✗ and never a replace prompt. Night Wolf and Radiant Guardian on anyone other than Lu Bu read "move to Lu Bu". If the claimant is not in the roster, the reservation lifts and the ring is judged normally.
+5. **No verified meta for this hero** — ?, "no verified meta yet".
+6. **Ring is the hero's target** (highest confirmed tier on their path) — ✓, no comment.
+7. **Ring is on the hero's own path, below their target** — !, "upgrade to [next ring on path]".
+8. **Anything else** — !, "better option: [hero's target]". Off-path but functional is never ✗.
 
-**Replacement logic:** when flagging ✗, suggest the highest-tier available ring in RING_POOL that suits the hero's role and troop type, excluding rings already assigned elsewhere in the march.
+**Ring not recognised in RING_POOL** — ?, verify in-game. Never ✗.
+**Unverified data** — where the ring's data_status is "Needs in-game check" or "Not gathered", never give a confident ✓ or ✗; use ?.
+**Lord of Eastern Heavens** — never an automatic ✗. It is a confirmed target for some heroes (Zhao Yun). Its high craft cost is advice only: don't suggest crafting it fresh, but judge it by the checks above like any other ring.
+
+**Replacement logic:** when naming a replacement, suggest the highest-tier available ring in RING_POOL that suits the hero's role and troop type, excluding rings already assigned elsewhere in the march.
 
 ## PLAYER TIERS
 - Scout (TC below 15): clear tips, no deep event or gear theory
@@ -644,8 +649,9 @@ def analyse():
         if ring_recommendations:
             ring_section = (
                 "VERIFIED RING ANALYSIS (computed server-side from RING_POOL "
-                "cascade allocation -- use these exact statuses and replacements "
-                "for the ring category, do not recompute or second-guess them):\n"
+                "cascade allocation -- use these exact marks, notes and replacements "
+                "for the ring category, do not recompute or second-guess them. "
+                "mark: green = ✓, orange = !, red = ✗, grey = ?):\n"
                 + json.dumps(ring_recommendations, ensure_ascii=False)
             )
             user_content = f"{message}\n\n{ring_section}" if message else ring_section
