@@ -81,7 +81,7 @@ One line per hero per issue. Format exactly:
 - `! Hero Name — category: verify in-game`
 
 **Rules for the march scan:**
-- Mount fixes must always include full combo: Temperament / Trait. Never temperament only.
+- Mount fixes name the Trait, plus the Attribute where the trait needs one (e.g. Overpower / Might). Never flag or mention temperament: it only matters for breeding, and a mount with the right trait works whatever its temperament.
 - Ring fixes: if replacement known, name it. If unrecognised, use ! not ✗.
 - Never combine multiple issues onto one line.
 - Never write a sentence explaining why something is wrong.
@@ -102,7 +102,7 @@ Pull these from the most damaging flags surfaced in the scan above — never int
 AIGA evaluates player ring assignments using the RING_POOL constant in the widget. Apply this logic on every profile analysis:
 
 1. **Meta overrides first** — Night Wolf and Radiant Guardian must be on Lu Bu. If either is on any other hero, flag ✗ with replacement.
-2. **Wrong For check** — if a hero's equipped ring lists that hero's role or troop type in its wrong_for field, flag ✗ with best available alternative from pool.
+2. **Excluded For check** — if a hero's equipped ring lists that hero's role, troop type or damage kit in its excluded_roles, excluded_troops or excluded_kits, the ring does nothing on this hero: flag ✗ with best available alternative from pool.
 3. **Gathering rings** (Violet, Sunflower, Steed) on any combat hero — flag ✗, no ring is better than a gathering ring on a combat hero.
 4. **Siege rings** (Laurel, Rhino, Elephant) on any combat or gathering hero — flag ✗.
 5. **Lord of Eastern Heavens** on any hero — flag ✗, recommend replacement from pool by role/troop.
@@ -336,58 +336,31 @@ General: report exactly what you see — do not guess blurred/off-screen values.
 - Give speculative answers dressed as confident advice"""
 
 # ─── Ring Pool & Cascade Allocation ────────────────────────────────────────────
-# RING_POOL is a Python transcription of the RING_POOL constant baked into
-# AIGA_WP_Widget.html by generate_hero_meta.py. Keep these two in sync --
-# re-run generate_hero_meta.py against Airtable and re-transcribe here if the
-# Rings table changes. This duplication exists because the cascade logic
-# below runs server-side in Python; the widget's copy is for client-side
-# display only.
-RING_POOL = [
-    {"name": "Ring of Shark", "tier": "T1", "suits_roles": ["Damage Support"], "suits_troops": ["Universal"], "priority_rank": "4", "wrong_for": "DPS Lead, Healer Support, Gathering", "ftp_rating": "Avoid", "meta_override": False},
-    {"name": "Lofty Mountain", "tier": "T2", "suits_roles": ["DPS Lead"], "suits_troops": ["SW", "CAV"], "priority_rank": "1", "wrong_for": "Gathering, Siege", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Effulgent Sun", "tier": "T2", "suits_roles": ["DPS Lead"], "suits_troops": ["SW", "CAV"], "priority_rank": "3", "wrong_for": "Tactical, Gathering, Siege", "ftp_rating": "Okay", "meta_override": False},
-    {"name": "Messenger of Destruction", "tier": "T2", "suits_roles": ["DPS Lead"], "suits_troops": ["PIK"], "priority_rank": "1", "wrong_for": "Non-PIK, Gathering", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Ring of Falcon", "tier": "T1", "suits_roles": ["Healer Support", "Tank Support"], "suits_troops": ["Universal"], "priority_rank": "1", "wrong_for": "DPS Lead", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Scorching Flame", "tier": "T2", "suits_roles": ["Damage Support", "DPS Lead"], "suits_troops": ["CAV", "SW"], "priority_rank": "2", "wrong_for": "Gathering, Siege", "ftp_rating": "Okay", "meta_override": False},
-    {"name": "Ring of Tulip", "tier": "T0", "suits_roles": ["DPS Lead", "Damage Support"], "suits_troops": ["SW", "PIK"], "priority_rank": "2", "wrong_for": "Gathering, Healer Support", "ftp_rating": "Great", "meta_override": False},
-    {"name": "Ring of Rhino", "tier": "T1", "suits_roles": ["Siege"], "suits_troops": ["Universal"], "priority_rank": "1", "wrong_for": "All combat, Gathering", "ftp_rating": "Avoid", "meta_override": False},
-    {"name": "Radiant Guardian", "tier": "T2", "suits_roles": ["DPS Lead"], "suits_troops": ["Universal"], "priority_rank": "1 — Lu Bu only", "wrong_for": "All non-Lu Bu heroes", "ftp_rating": "Meta Override", "meta_override": True},
-    {"name": "Ring of Violet", "tier": "T0", "suits_roles": ["Gathering"], "suits_troops": ["GATH"], "priority_rank": "1", "wrong_for": "All combat", "ftp_rating": "Avoid", "meta_override": False},
-    {"name": "Skyward Knight", "tier": "T2", "suits_roles": ["Damage Support", "Tank Support"], "suits_troops": ["SW", "ARC"], "priority_rank": "1", "wrong_for": "DPS Lead, Gathering", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Ring of Iris", "tier": "T0", "suits_roles": ["Universal"], "suits_troops": ["Universal"], "priority_rank": "4", "wrong_for": "Gathering, Siege", "ftp_rating": "Okay", "meta_override": False},
-    {"name": "Lord of Eastern Heavens", "tier": "T2", "suits_roles": ["Universal"], "suits_troops": ["Universal"], "priority_rank": "—", "wrong_for": "All roles and troop types", "ftp_rating": "Ignore", "meta_override": False},
-    {"name": "Ring of Sunflower", "tier": "T0", "suits_roles": ["Gathering"], "suits_troops": ["GATH"], "priority_rank": "2", "wrong_for": "All combat", "ftp_rating": "Avoid", "meta_override": False},
-    {"name": "Ring of Boar", "tier": "T1", "suits_roles": ["Damage Support", "Tank Support"], "suits_troops": ["PIK"], "priority_rank": "1", "wrong_for": "DPS Lead, Gathering", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Ring of Seahorse", "tier": "T1", "suits_roles": ["Tank Support"], "suits_troops": ["Universal"], "priority_rank": "3", "wrong_for": "DPS Lead, Gathering", "ftp_rating": "Okay", "meta_override": False},
-    {"name": "Ring of Steed", "tier": "T1", "suits_roles": ["Gathering"], "suits_troops": ["GATH"], "priority_rank": "1", "wrong_for": "All combat", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Ring of Bear", "tier": "T1", "suits_roles": ["DPS Lead", "Damage Support"], "suits_troops": ["CAV", "SW"], "priority_rank": "1", "wrong_for": "Healer Support, Gathering", "ftp_rating": "Great", "meta_override": False},
-    {"name": "Ring of Rose", "tier": "T0", "suits_roles": ["Damage Support"], "suits_troops": ["SW", "ARC"], "priority_rank": "3", "wrong_for": "Warrior SW, Gathering", "ftp_rating": "Okay", "meta_override": False},
-    {"name": "Ring of Serpent", "tier": "T1", "suits_roles": ["Damage Support"], "suits_troops": ["SW", "ARC"], "priority_rank": "1", "wrong_for": "Warrior SW, PIK, Gathering", "ftp_rating": "Great", "meta_override": False},
-    {"name": "Ring of Badger", "tier": "T1", "suits_roles": ["Tank Support"], "suits_troops": ["PIK", "SW"], "priority_rank": "2", "wrong_for": "DPS Lead, Gathering", "ftp_rating": "Flexible", "meta_override": False},
-    {"name": "Everflame Wings", "tier": "T2", "suits_roles": ["Damage Support"], "suits_troops": ["SW", "ARC"], "priority_rank": "1", "wrong_for": "Warrior SW, PIK, Gathering", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Ring of Deer", "tier": "T1", "suits_roles": ["Damage Support", "Tank Support"], "suits_troops": ["Universal"], "priority_rank": "2", "wrong_for": "Gathering, Siege", "ftp_rating": "Great", "meta_override": False},
-    {"name": "Azure Moon", "tier": "T2", "suits_roles": ["Damage Support"], "suits_troops": ["SW", "ARC"], "priority_rank": "2", "wrong_for": "Warrior SW, PIK, CAV, Gathering", "ftp_rating": "Okay", "meta_override": False},
-    {"name": "Ring of Clover", "tier": "T0", "suits_roles": ["Tank Support", "DPS Lead"], "suits_troops": ["Universal"], "priority_rank": "1", "wrong_for": "Gathering", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Sacred Sage", "tier": "T2", "suits_roles": ["Healer Support", "Tank Support"], "suits_troops": ["PIK"], "priority_rank": "1", "wrong_for": "Warrior formations, Gathering", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Tranquil Water", "tier": "T2", "suits_roles": ["Tank Support", "DPS Lead"], "suits_troops": ["Universal"], "priority_rank": "1", "wrong_for": "Gathering, Siege", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Ring of Lily", "tier": "T0", "suits_roles": ["Healer Support"], "suits_troops": ["Universal"], "priority_rank": "1", "wrong_for": "DPS Lead", "ftp_rating": "Okay", "meta_override": False},
-    {"name": "Ring of Daisy", "tier": "T0", "suits_roles": ["DPS Lead"], "suits_troops": ["Universal"], "priority_rank": "1", "wrong_for": "Healer Support, Gathering", "ftp_rating": "Must-have", "meta_override": False},
-    {"name": "Ring of Lion", "tier": "T1", "suits_roles": ["Universal"], "suits_troops": ["Universal"], "priority_rank": "3", "wrong_for": "Gathering, Siege", "ftp_rating": "Flexible", "meta_override": False},
-    {"name": "Ring of Night Wolf", "tier": "T1", "suits_roles": ["DPS Lead"], "suits_troops": ["Universal"], "priority_rank": "1 — Lu Bu only", "wrong_for": "All non-Lu Bu heroes", "ftp_rating": "Meta Override", "meta_override": True},
-    {"name": "Ring of Laurel", "tier": "T0", "suits_roles": ["Siege"], "suits_troops": ["Universal"], "priority_rank": "1", "wrong_for": "All combat, Gathering", "ftp_rating": "Avoid", "meta_override": False},
-    {"name": "Ring of Crow", "tier": "T1", "suits_roles": ["Damage Support"], "suits_troops": ["SW"], "priority_rank": "2", "wrong_for": "Warrior SW, PIK, CAV, Gathering", "ftp_rating": "Flexible", "meta_override": False},
-    {"name": "Ring of Elephant", "tier": "T1", "suits_roles": ["Siege"], "suits_troops": ["Universal"], "priority_rank": "2", "wrong_for": "All combat, Gathering", "ftp_rating": "Avoid", "meta_override": False},
-    {"name": "Ring of Hyacinth", "tier": "T0", "suits_roles": ["Universal"], "suits_troops": ["Universal"], "priority_rank": "—", "wrong_for": "All combat roles", "ftp_rating": "Avoid", "meta_override": False},
-]
+# RING_POOL is read at startup from the generated block in AIGA_WP_Widget.html
+# (written by generate_hero_meta.py from Airtable), so the widget and the
+# server always share one copy of the pool.
+WIDGET_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "AIGA_WP_Widget.html")
 
+
+def load_ring_pool(path: str = WIDGET_PATH) -> list[dict]:
+    """Parses the generated `const RING_POOL = [...]` block. The generator
+    emits a fixed, JSON-like format (bare keys, double-quoted strings), so
+    quoting the keys is enough to read it as JSON."""
+    with open(path, encoding="utf-8") as f:
+        match = re.search(r"^const RING_POOL = (\[.*?^\]);", f.read(), re.DOTALL | re.MULTILINE)
+    if not match:
+        raise RuntimeError(f"No RING_POOL block found in {path}; regenerate it with generate_hero_meta.py")
+    return json.loads(re.sub(r"([{,])(\w+):", r'\1"\2":', match.group(1)))
+
+
+RING_POOL = load_ring_pool()
 RING_POOL_BY_NAME = {r["name"]: r for r in RING_POOL}
 GATHERING_RING_NAMES = ["Ring of Steed", "Ring of Violet", "Ring of Sunflower"]
 SIEGE_RING_NAMES = ["Ring of Rhino", "Ring of Elephant", "Ring of Laurel"]
-META_OVERRIDE_HERO = "Lu Bu"
-META_OVERRIDE_RING_NAMES = {"Ring of Night Wolf", "Radiant Guardian"}
 COMBAT_PLACEHOLDER_RINGS = ["Ring of Iris", "Ring of Tulip", "Ring of Rose", "Ring of Lion"]
 RING_TIER_ORDER = {"T2": 2, "T1": 1, "T0": 0}
 MARCH_SLOT_LABELS = ["Lead", "Sup1", "Sup2"]
+UNVERIFIED_STATUSES = {"Needs in-game check", "Not gathered"}
 
 
 def _priority_rank_key(priority_rank: str) -> int:
@@ -399,7 +372,7 @@ def _priority_rank_key(priority_rank: str) -> int:
 def _is_gathering_hero(hero: dict) -> bool:
     role = (hero.get("role") or "").strip().lower()
     troop = (hero.get("troop_type") or "").strip().upper()
-    return role == "gathering" or troop == "gath"
+    return role == "gathering" or troop == "GATH"
 
 
 def _is_siege_hero(hero: dict) -> bool:
@@ -423,9 +396,28 @@ def _best_pool_match(hero: dict, pool: list[dict]) -> Optional[dict]:
     return candidates[0]
 
 
-def _build_recommendation(hero: dict, chosen_ring: Optional[dict]) -> dict:
+def _exclusion_reason(hero: dict, ring: dict) -> Optional[str]:
+    """Excluded For (functional): the ring does nothing on this hero."""
+    role = hero.get("role", "")
+    troop = (hero.get("troop_type") or "").upper()
+    kit = hero.get("damage_kit", "")
+    if "Universal" in ring["excluded_roles"] or role in ring["excluded_roles"]:
+        return f"does not work on a {role}"
+    if "Universal" in ring["excluded_troops"] or troop in ring["excluded_troops"]:
+        return f"does not work on {troop} troops"
+    if kit and kit in ring["excluded_kits"]:
+        return f"does not work with a {kit.lower()} kit"
+    return None
+
+
+def _build_recommendation(hero: dict, chosen_ring: Optional[dict], equipped_by_hero: dict[str, str]) -> dict:
+    """Marks the hero's equipped ring per the Diff Rules Spec: red only when
+    the slot is empty or the ring functionally fails on this hero, orange with
+    a move prompt when another roster hero has first claim, orange when it
+    works but a better ring exists, grey when it can't be judged."""
     equipped = (hero.get("ring") or "").strip()
     recommended = chosen_ring["name"] if chosen_ring else ""
+    ring = RING_POOL_BY_NAME.get(equipped)
     entry = {
         "march":       hero.get("march", ""),
         "slot":        hero.get("slot", ""),
@@ -435,19 +427,35 @@ def _build_recommendation(hero: dict, chosen_ring: Optional[dict]) -> dict:
         "equipped":    equipped,
         "recommended": recommended,
     }
+
+    def mark(mark_value: str, status: str, note: str) -> dict:
+        return {**entry, "mark": mark_value, "status": status, "note": note}
+
     if not equipped:
-        entry["status"] = "missing"
-        entry["note"] = "No ring equipped — equip anything from inventory now."
-    elif equipped not in RING_POOL_BY_NAME:
-        entry["status"] = "unrecognised"
-        entry["note"] = "Ring not recognised in RING_POOL — verify in-game."
-    elif equipped == recommended:
-        entry["status"] = "match"
-        entry["note"] = ""
-    else:
-        entry["status"] = "mismatch"
-        entry["note"] = f"Replace with {recommended}." if recommended else "No suitable replacement found in pool."
-    return entry
+        return mark("red", "missing", "No ring equipped — equip anything from inventory now.")
+    if not ring:
+        return mark("grey", "unrecognised", "Ring not recognised — verify in-game.")
+    if not hero.get("role") or not hero.get("troop_type"):
+        return mark("grey", "unknown", "Hero role or troop type not known — can't judge this ring.")
+
+    unverified = ring.get("data_status") in UNVERIFIED_STATUSES
+    excluded = _exclusion_reason(hero, ring)
+    if excluded:
+        if unverified:
+            return mark("grey", "unverified", f"{equipped} may not suit this hero — not yet verified in-game.")
+        return mark("red", "excluded", f"{equipped} {excluded}. Replace with {recommended or 'any suitable ring'}.")
+
+    for claimant in ring["reserved_claimants"]:
+        if claimant != hero.get("name") and claimant in equipped_by_hero and equipped_by_hero[claimant] != equipped:
+            return mark("orange", "move", f"Move {equipped} to {claimant}, who has first claim.")
+
+    if equipped == recommended:
+        if unverified:
+            return mark("grey", "unverified", "Matches the recommendation — not yet verified in-game.")
+        return mark("green", "match", "")
+    if not recommended:
+        return mark("grey", "no_target", "No suitable recommendation in the pool.")
+    return mark("orange", "better_option", f"Works, but {recommended} is the better option here.")
 
 
 def resolve_ring_recommendations(marches: list[dict]) -> list[dict]:
@@ -457,29 +465,33 @@ def resolve_ring_recommendations(marches: list[dict]) -> list[dict]:
     Input: list of march dicts, each {"id": "M1", "heroes": [hero, ...]}
     with up to 3 heroes per march in Lead/Sup1/Sup2 order. Each hero dict
     has "name", "role", "troop_type", "ring" (currently equipped ring name
-    or empty/None).
+    or empty/None), and optionally "damage_kit".
 
     Output: list of per-hero recommendation dicts (see _build_recommendation),
     in the same march/slot order they were submitted.
     """
-    # 1. Full pool, 2/3. remove gathering and siege sub-pools from general circulation
+    roster_heroes = [h for m in marches for h in m.get("heroes", [])[:3] if h.get("name")]
+    roster_names = {h["name"] for h in roster_heroes}
+    equipped_by_hero = {h["name"]: (h.get("ring") or "").strip() for h in roster_heroes}
+
+    # Gathering and siege sub-pools never enter the combat cascade.
     general_pool = [
         r for r in RING_POOL
         if r["name"] not in GATHERING_RING_NAMES and r["name"] not in SIEGE_RING_NAMES
     ]
 
-    # 4. Meta overrides: reserve Night Wolf + Radiant Guardian for Lu Bu only
-    has_meta_override_hero = any(
-        h.get("name") == META_OVERRIDE_HERO
-        for m in marches for h in m.get("heroes", [])
-    )
-    reserved_for_meta_hero = []
-    if has_meta_override_hero:
-        reserved_for_meta_hero = [r for r in general_pool if r["name"] in META_OVERRIDE_RING_NAMES]
-    general_pool = [r for r in general_pool if r["name"] not in META_OVERRIDE_RING_NAMES]
+    # Reserved For (allocation): a ring whose claimant is in this roster is
+    # held for that claimant. With no claimant present the reservation lifts
+    # and the ring returns to the general pool.
+    reserved_for = {}
+    for r in general_pool:
+        claimant = next((c for c in r["reserved_claimants"] if c in roster_names), None)
+        if claimant:
+            reserved_for[r["name"]] = claimant
+    general_pool = [r for r in general_pool if r["name"] not in reserved_for]
 
     # Flatten into priority order: M1 Lead/Sup1/Sup2, M2 ..., M5 (combat only).
-    # Gathering and siege heroes are routed to their own sub-pools (steps 7+).
+    # Gathering and siege heroes are routed to their own sub-pools.
     ordered_combat_heroes = []
     gathering_heroes = []
     siege_heroes = []
@@ -498,12 +510,13 @@ def resolve_ring_recommendations(marches: list[dict]) -> list[dict]:
     allocated = set()
     recommendations = []
 
-    # 5/6. Main priority loop over combat heroes
+    # Main priority loop over combat heroes. A claimant takes its reserved
+    # rings first, highest tier first.
     for hero in ordered_combat_heroes:
-        if hero.get("name") == META_OVERRIDE_HERO and reserved_for_meta_hero:
-            available_meta = [r for r in reserved_for_meta_hero if r["name"] not in allocated]
-            available_meta.sort(key=lambda r: -RING_TIER_ORDER.get(r.get("tier", ""), -1))
-            chosen = available_meta[0] if available_meta else None
+        held = [RING_POOL_BY_NAME[n] for n, c in reserved_for.items() if c == hero.get("name") and n not in allocated]
+        if held:
+            held.sort(key=lambda r: -RING_TIER_ORDER.get(r.get("tier", ""), -1))
+            chosen = held[0]
         else:
             available = [r for r in general_pool if r["name"] not in allocated]
             chosen = _best_pool_match(hero, available)
@@ -514,29 +527,20 @@ def resolve_ring_recommendations(marches: list[dict]) -> list[dict]:
                         break
         if chosen:
             allocated.add(chosen["name"])
-        recommendations.append(_build_recommendation(hero, chosen))
+        recommendations.append(_build_recommendation(hero, chosen, equipped_by_hero))
 
-    # 7. Siege heroes: siege sub-pool only, by fixed priority Rhino > Elephant > Laurel
-    for hero in siege_heroes:
-        chosen = None
-        for ring_name in SIEGE_RING_NAMES:
-            if ring_name not in allocated and ring_name in RING_POOL_BY_NAME:
-                chosen = RING_POOL_BY_NAME[ring_name]
-                break
-        if chosen:
-            allocated.add(chosen["name"])
-        recommendations.append(_build_recommendation(hero, chosen))
-
-    # 7. GATH heroes: gathering sub-pool only, by fixed priority Steed > Violet > Sunflower
-    for hero in gathering_heroes:
-        chosen = None
-        for ring_name in GATHERING_RING_NAMES:
-            if ring_name not in allocated and ring_name in RING_POOL_BY_NAME:
-                chosen = RING_POOL_BY_NAME[ring_name]
-                break
-        if chosen:
-            allocated.add(chosen["name"])
-        recommendations.append(_build_recommendation(hero, chosen))
+    # Siege heroes: siege sub-pool only, by fixed priority Rhino > Elephant > Laurel.
+    # Gathering heroes: gathering sub-pool only, Steed > Violet > Sunflower.
+    for heroes, sub_pool in ((siege_heroes, SIEGE_RING_NAMES), (gathering_heroes, GATHERING_RING_NAMES)):
+        for hero in heroes:
+            chosen = None
+            for ring_name in sub_pool:
+                if ring_name not in allocated and ring_name in RING_POOL_BY_NAME:
+                    chosen = RING_POOL_BY_NAME[ring_name]
+                    break
+            if chosen:
+                allocated.add(chosen["name"])
+            recommendations.append(_build_recommendation(hero, chosen, equipped_by_hero))
 
     return recommendations
 

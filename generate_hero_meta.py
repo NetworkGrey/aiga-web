@@ -52,9 +52,27 @@ Rings table fields (from list_tables_for_base output):
   Suits Role(s)    fldNpjqtn6OGX8wGS  multipleSelects
   Suits Troop(s)   fldQem8XyrW9pgenW  multipleSelects
   Priority Rank    fldsEISuRO7CDGwkv  singleLineText
-  Wrong For        flduLS40DhZ7cLft3  multilineText
   FTP Rating       fldk2wY18WiRRsFAn  singleSelect
   Meta Override    fldbXiKwsrqyqCDp1  checkbox
+  Meta Status      fldKKhAmGwm5yRG6u  singleSelect
+  Data Status      fldYff3M7BIPSe7nQ  singleSelect
+  Excluded Roles   fldOfSZBqQ1vNJa0c  multipleSelects  } Excluded For (functional):
+  Excluded Troops  fldAkUVuRKg0U0TI8  multipleSelects  } drives RED
+  Excluded Kits    fldjzHpeHCrJ4FFgH  multipleSelects  }
+  Reserved Claimants fld4BaayZ2QXLV8P4 links -> Heroes   Reserved For (allocation): ORANGE + move
+
+  Excluded and Reserved are two different fields with two different marks
+  (Diff Rules Spec v1.0). Export both; never collapse them into one. The
+  prose Excluded For / Reserved For fields are notes and are not exported.
+
+Adornment Effects table (tblHemWBNGb45t6E6):
+  Special Effect   fldiXIOnbWVJIxOIy  singleLineText
+  Troop Type       fldNK8dMlbHxH6wHG  singleSelect
+  Data Status      fldt6RcdtkRS1V8KW  singleSelect
+  Excluded Roles   fldGGJYIGzlIWnm2O  multipleSelects
+  Excluded Troops  fldpV6vE3u4lguSU0  multipleSelects
+  Excluded Kits    fldMkkNTZOrhl5lSz  multipleSelects
+  Reserved Claimants fldTiH0zDRfkIVxio links -> Heroes
 
   DEPRECATED -- not read by this script. The pool-based model above is
   now authoritative for ring suitability:
@@ -73,6 +91,7 @@ from typing import Optional
 BASE_ID       = os.environ.get("AIRTABLE_BASE_ID", "appD9c9ONZGNcgnq1")
 HEROES_TABLE  = "tblBTohOcVLUKKhJ8"
 RINGS_TABLE   = "tbllDKaFx8wh4TpM7"
+ADORNMENT_EFFECTS_TABLE = "tblHemWBNGb45t6E6"
 API_KEY       = os.environ.get("AIRTABLE_API_KEY", "")
 API_BASE      = "https://api.airtable.com/v0"
 
@@ -162,12 +181,32 @@ def select_name(raw) -> str:
         return ""
     return raw if isinstance(raw, str) else raw.get("name", "")
 
+def linked_names(raw, id_to_name: dict[str, str]) -> list[str]:
+    """Normalizes a multipleRecordLinks value (record IDs, or {id, name}
+    objects) to linked record names, preserving link order."""
+    names = []
+    for link in raw or []:
+        if isinstance(link, dict):
+            name = link.get("name") or id_to_name.get(link.get("id", ""), "")
+        else:
+            name = id_to_name.get(link, "")
+        if name:
+            names.append(name)
+    return names
+
+def hero_name_lookup(hero_records: list[dict]) -> dict[str, str]:
+    """Returns {record_id: hero_name} for resolving Reserved Claimants links."""
+    return {
+        rec["id"]: rec.get("fields", {}).get("fldjwHFmQKzKu1s4v", "")
+        for rec in hero_records
+        if rec.get("fields", {}).get("fldjwHFmQKzKu1s4v")
+    }
+
 # ── Build ring pool: suitability data for the pool-based allocation model ─────
-def build_ring_pool(ring_records: list[dict]) -> list[dict]:
-    """Returns a list of {name, tier, suits_roles, suits_troops, priority_rank,
-    wrong_for, ftp_rating, meta_override} for every ring -- the cascade
-    allocation logic itself runs at query time in app.py, this just
-    exports the pool's raw suitability data."""
+def build_ring_pool(ring_records: list[dict], hero_names: dict[str, str]) -> list[dict]:
+    """Returns every ring's suitability and diff-rule data. The cascade
+    allocation and the card marks are both derived elsewhere at query time;
+    this only exports the pool's raw reference data."""
     pool = []
     for rec in ring_records:
         f = rec.get("fields", {})
@@ -175,17 +214,45 @@ def build_ring_pool(ring_records: list[dict]) -> list[dict]:
         if not name.strip():
             continue
         pool.append({
-            "name":          name,
-            "tier":          select_name(f.get("fldwHCQkDc4pDMa4l")),
-            "suits_roles":   multiselect_names(f.get("fldNpjqtn6OGX8wGS")),
-            "suits_troops":  multiselect_names(f.get("fldQem8XyrW9pgenW")),
-            "priority_rank": f.get("fldsEISuRO7CDGwkv", "") or "",
-            "wrong_for":     f.get("flduLS40DhZ7cLft3", "") or "",
-            "ftp_rating":    select_name(f.get("fldk2wY18WiRRsFAn")),
-            "meta_override": bool(f.get("fldbXiKwsrqyqCDp1", False)),
+            "name":               name,
+            "tier":               select_name(f.get("fldwHCQkDc4pDMa4l")),
+            "suits_roles":        multiselect_names(f.get("fldNpjqtn6OGX8wGS")),
+            "suits_troops":       multiselect_names(f.get("fldQem8XyrW9pgenW")),
+            "priority_rank":      f.get("fldsEISuRO7CDGwkv", "") or "",
+            "ftp_rating":         select_name(f.get("fldk2wY18WiRRsFAn")),
+            "meta_override":      bool(f.get("fldbXiKwsrqyqCDp1", False)),
+            "meta_status":        select_name(f.get("fldKKhAmGwm5yRG6u")),
+            "data_status":        select_name(f.get("fldYff3M7BIPSe7nQ")),
+            "excluded_roles":     multiselect_names(f.get("fldOfSZBqQ1vNJa0c")),
+            "excluded_troops":    multiselect_names(f.get("fldAkUVuRKg0U0TI8")),
+            "excluded_kits":      multiselect_names(f.get("fldjzHpeHCrJ4FFgH")),
+            "reserved_claimants": linked_names(f.get("fld4BaayZ2QXLV8P4"), hero_names),
         })
     print(f"  {len(pool)} rings in pool.", file=sys.stderr)
     return pool
+
+# ── Build adornment effect pool ────────────────────────────────────────────────
+def build_adornment_effects(effect_records: list[dict], hero_names: dict[str, str]) -> list[dict]:
+    """Returns every adornment special effect with its troop pool and
+    diff-rule data. Universal effects appear in every troop type's pool."""
+    effects = []
+    for rec in effect_records:
+        f = rec.get("fields", {})
+        name = f.get("fldiXIOnbWVJIxOIy", "") or ""
+        if not name.strip():
+            continue
+        effects.append({
+            "name":               name,
+            "troop_type":         select_name(f.get("fldNK8dMlbHxH6wHG")),
+            "data_status":        select_name(f.get("fldt6RcdtkRS1V8KW")),
+            "excluded_roles":     multiselect_names(f.get("fldGGJYIGzlIWnm2O")),
+            "excluded_troops":    multiselect_names(f.get("fldpV6vE3u4lguSU0")),
+            "excluded_kits":      multiselect_names(f.get("fldMkkNTZOrhl5lSz")),
+            "reserved_claimants": linked_names(f.get("fldTiH0zDRfkIVxio"), hero_names),
+        })
+    effects.sort(key=lambda e: (e["troop_type"] != "Universal", e["troop_type"], e["name"]))
+    print(f"  {len(effects)} adornment effects.", file=sys.stderr)
+    return effects
 
 def resolve_ring(linked_ids: list, ring_lookup: dict) -> str:
     """Resolve a list of linked record IDs to the first ring name."""
@@ -194,10 +261,13 @@ def resolve_ring(linked_ids: list, ring_lookup: dict) -> str:
     return ring_lookup.get(linked_ids[0], "")
 
 # ── Fetch heroes ──────────────────────────────────────────────────────────────
-def fetch_heroes(ring_lookup: dict) -> list[dict]:
+def fetch_hero_records() -> list[dict]:
     print("Fetching Heroes table...", file=sys.stderr)
     records = fetch_all(HEROES_TABLE)
     print(f"  {len(records)} hero records fetched.", file=sys.stderr)
+    return records
+
+def build_heroes(records: list[dict], ring_lookup: dict) -> list[dict]:
 
     heroes = []
     for rec in records:
@@ -315,41 +385,58 @@ def build_hero_meta_js(heroes: list[dict]) -> str:
     lines.append("];")
     return "\n".join(lines)
 
+def js_list(values: list[str]) -> str:
+    return "[" + ",".join(f'"{js_str(v)}"' for v in values) + "]"
+
 def ring_pool_entry_to_js(r: dict) -> str:
-    roles_js = ",".join(f'"{js_str(s)}"' for s in r["suits_roles"])
-    troops_js = ",".join(f'"{js_str(s)}"' for s in r["suits_troops"])
     meta_override_js = "true" if r["meta_override"] else "false"
     return (
         f'  {{name:"{js_str(r["name"])}",tier:"{js_str(r["tier"])}",'
-        f'suits_roles:[{roles_js}],'
-        f'suits_troops:[{troops_js}],priority_rank:"{js_str(r["priority_rank"])}",'
-        f'wrong_for:"{js_str(r["wrong_for"])}",ftp_rating:"{js_str(r["ftp_rating"])}",'
-        f'meta_override:{meta_override_js}}}'
+        f'suits_roles:{js_list(r["suits_roles"])},suits_troops:{js_list(r["suits_troops"])},'
+        f'priority_rank:"{js_str(r["priority_rank"])}",ftp_rating:"{js_str(r["ftp_rating"])}",'
+        f'meta_override:{meta_override_js},meta_status:"{js_str(r["meta_status"])}",'
+        f'data_status:"{js_str(r["data_status"])}",'
+        f'excluded_roles:{js_list(r["excluded_roles"])},excluded_troops:{js_list(r["excluded_troops"])},'
+        f'excluded_kits:{js_list(r["excluded_kits"])},reserved_claimants:{js_list(r["reserved_claimants"])}}}'
     )
 
-def build_ring_pool_js(pool: list[dict]) -> str:
-    lines = [f"// ── RING POOL — generated from Airtable {BASE_ID} | {len(pool)} rings ─────"]
+def adornment_effect_to_js(e: dict) -> str:
+    return (
+        f'  {{name:"{js_str(e["name"])}",troop_type:"{js_str(e["troop_type"])}",'
+        f'data_status:"{js_str(e["data_status"])}",'
+        f'excluded_roles:{js_list(e["excluded_roles"])},excluded_troops:{js_list(e["excluded_troops"])},'
+        f'excluded_kits:{js_list(e["excluded_kits"])},reserved_claimants:{js_list(e["reserved_claimants"])}}}'
+    )
+
+def build_block_js(label: str, const: str, entries: list[str], notes: list[str]) -> str:
+    lines = [f"// ── {label} — generated from Airtable {BASE_ID} | {len(entries)} entries ─────"]
     lines.append("// DO NOT EDIT THIS BLOCK MANUALLY.")
     lines.append("// Run generate_hero_meta.py to regenerate from Airtable.")
-    lines.append("// Suitability data only -- cascade allocation logic runs at query")
-    lines.append("// time in app.py, not baked into hero records here.")
-    lines.append("const RING_POOL = [")
-    lines.append(",\n".join(ring_pool_entry_to_js(r) for r in pool))
+    lines.extend(f"// {n}" for n in notes)
+    lines.append(f"const {const} = [")
+    lines.append(",\n".join(entries))
     lines.append("];")
     return "\n".join(lines)
 
-# ── Widget patcher ────────────────────────────────────────────────────────────
-# Matches the existing HERO_META block including the comment header lines
-HERO_META_RE = re.compile(
-    r"// ── HERO META.*?^const HERO_META = \[.*?^\];",
-    re.DOTALL | re.MULTILINE,
-)
+def build_ring_pool_js(pool: list[dict]) -> str:
+    return build_block_js("RING POOL", "RING_POOL", [ring_pool_entry_to_js(r) for r in pool], [
+        "Reference data only -- cascade allocation and card marks are derived",
+        "at query time, never baked into hero records here.",
+    ])
 
-# Matches an existing RING_POOL block including its comment header lines
-RING_POOL_RE = re.compile(
-    r"// ── RING POOL.*?^const RING_POOL = \[.*?^\];",
-    re.DOTALL | re.MULTILINE,
-)
+def build_adornment_effects_js(effects: list[dict]) -> str:
+    return build_block_js("ADORNMENT EFFECTS", "ADORNMENT_EFFECTS", [adornment_effect_to_js(e) for e in effects], [
+        "Special effects per troop pool; Universal effects apply to every troop type.",
+    ])
+
+# ── Widget patcher ────────────────────────────────────────────────────────────
+def block_re(label: str, const: str) -> re.Pattern:
+    """Matches a generated block including its comment header lines."""
+    return re.compile(rf"// ── {label}.*?^const {const} = \[.*?^\];", re.DOTALL | re.MULTILINE)
+
+HERO_META_RE         = block_re("HERO META", "HERO_META")
+RING_POOL_RE         = block_re("RING POOL", "RING_POOL")
+ADORNMENT_EFFECTS_RE = block_re("ADORNMENT EFFECTS", "ADORNMENT_EFFECTS")
 
 # Anchor used to insert RING_POOL on the first run, when no block exists yet.
 # Placed right after HERO_BY_NAME is built, before the season-filter section.
@@ -357,44 +444,52 @@ HERO_BY_NAME_ANCHOR = re.compile(
     r"(const HERO_BY_NAME = \{\};\nHERO_META\.forEach\(h => \{ HERO_BY_NAME\[h\.name\] = h; \}\);\n)",
 )
 
-def patch_widget(html: str, hero_js: str, ring_js: str) -> str:
+def replace_or_insert(html: str, pattern: re.Pattern, js: str, anchor: re.Pattern, name: str) -> str:
+    """Replaces an existing generated block in place, or inserts it after
+    the anchor on the first run."""
+    if pattern.search(html):
+        return pattern.sub(lambda _: js, html, count=1)
+    if anchor.search(html):
+        return anchor.sub(lambda m: m.group(0) + "\n" + js + "\n", html, count=1)
+    raise ValueError(f"Could not find a {name} block or its insertion anchor. Inspect the widget structure manually.")
+
+def patch_widget(html: str, hero_js: str, ring_js: str, adornment_js: str) -> str:
     if not HERO_META_RE.search(html):
         raise ValueError(
             "Could not find HERO_META block in widget HTML. "
             "Expected pattern: '// ── HERO META' comment followed by 'const HERO_META = ['."
         )
-    html = HERO_META_RE.sub(hero_js, html, count=1)
-
-    if RING_POOL_RE.search(html):
-        html = RING_POOL_RE.sub(ring_js, html, count=1)
-    elif HERO_BY_NAME_ANCHOR.search(html):
-        html = HERO_BY_NAME_ANCHOR.sub(lambda m: m.group(1) + "\n" + ring_js + "\n", html, count=1)
-    else:
-        raise ValueError(
-            "Could not find a RING_POOL block or the HERO_BY_NAME anchor to "
-            "insert one. Inspect the widget structure manually."
-        )
+    html = HERO_META_RE.sub(lambda _: hero_js, html, count=1)
+    html = replace_or_insert(html, RING_POOL_RE, ring_js, HERO_BY_NAME_ANCHOR, "RING_POOL")
+    html = replace_or_insert(html, ADORNMENT_EFFECTS_RE, adornment_js, RING_POOL_RE, "ADORNMENT_EFFECTS")
     return html
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
-    ring_records = fetch_rings()
-    ring_lookup  = build_ring_lookup(ring_records)
-    ring_pool    = build_ring_pool(ring_records)
-    heroes       = fetch_heroes(ring_lookup)
-    hero_js      = build_hero_meta_js(heroes)
-    ring_js      = build_ring_pool_js(ring_pool)
+    hero_records   = fetch_hero_records()
+    hero_names     = hero_name_lookup(hero_records)
+    ring_records   = fetch_rings()
+    ring_lookup    = build_ring_lookup(ring_records)
+    ring_pool      = build_ring_pool(ring_records, hero_names)
+    print("Fetching Adornment Effects table...", file=sys.stderr)
+    adornments     = build_adornment_effects(fetch_all(ADORNMENT_EFFECTS_TABLE), hero_names)
+    heroes         = build_heroes(hero_records, ring_lookup)
+    hero_js        = build_hero_meta_js(heroes)
+    ring_js        = build_ring_pool_js(ring_pool)
+    adornment_js   = build_adornment_effects_js(adornments)
 
     print(f"\nGenerated HERO_META: {len(heroes)} heroes", file=sys.stderr)
     print(f"Generated RING_POOL: {len(ring_pool)} rings", file=sys.stderr)
+    print(f"Generated ADORNMENT_EFFECTS: {len(adornments)} effects", file=sys.stderr)
 
     if DRY_RUN:
         print(hero_js)
         print(ring_js)
+        print(adornment_js)
         return
 
     html = output_path.read_text(encoding="utf-8")
-    patched = patch_widget(html, hero_js, ring_js)
+    patched = patch_widget(html, hero_js, ring_js, adornment_js)
     output_path.write_text(patched, encoding="utf-8")
     print(f"Written to {output_path}", file=sys.stderr)
     print("Done. Commit and push via Claude Code.", file=sys.stderr)

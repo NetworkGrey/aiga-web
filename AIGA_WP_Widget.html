@@ -476,48 +476,95 @@ const HERO_META = [
 const HERO_BY_NAME = {};
 HERO_META.forEach(h => { HERO_BY_NAME[h.name] = h; });
 
-// ── RING POOL — generated from Airtable appD9c9ONZGNcgnq1 | 35 rings ─────
+// ── RING POOL — generated from Airtable appD9c9ONZGNcgnq1 | 43 entries ─────
 // DO NOT EDIT THIS BLOCK MANUALLY.
 // Run generate_hero_meta.py to regenerate from Airtable.
-// Suitability data only -- cascade allocation logic runs at query
-// time in app.py, not baked into hero records here.
+// Reference data only -- cascade allocation and card marks are derived
+// at query time, never baked into hero records here.
 const RING_POOL = [
-  {name:"Ring of Shark",tier:"T1",suits_roles:["Damage Support"],suits_troops:["Universal"],priority_rank:"4",wrong_for:"DPS Lead, Healer Support, Gathering",ftp_rating:"Avoid",meta_override:false},
-  {name:"Lofty Mountain",tier:"T2",suits_roles:["DPS Lead"],suits_troops:["SW","CAV"],priority_rank:"1",wrong_for:"Gathering, Siege",ftp_rating:"Must-have",meta_override:false},
-  {name:"Effulgent Sun",tier:"T2",suits_roles:["DPS Lead"],suits_troops:["SW","CAV"],priority_rank:"3",wrong_for:"Tactical, Gathering, Siege",ftp_rating:"Okay",meta_override:false},
-  {name:"Messenger of Destruction",tier:"T2",suits_roles:["DPS Lead"],suits_troops:["PIK"],priority_rank:"1",wrong_for:"Non-PIK, Gathering",ftp_rating:"Must-have",meta_override:false},
-  {name:"Ring of Falcon",tier:"T1",suits_roles:["Healer Support","Tank Support"],suits_troops:["Universal"],priority_rank:"1",wrong_for:"DPS Lead",ftp_rating:"Must-have",meta_override:false},
-  {name:"Scorching Flame",tier:"T2",suits_roles:["Damage Support","DPS Lead"],suits_troops:["CAV","SW"],priority_rank:"2",wrong_for:"Gathering, Siege",ftp_rating:"Okay",meta_override:false},
-  {name:"Ring of Tulip",tier:"T0",suits_roles:["DPS Lead","Damage Support"],suits_troops:["SW","PIK"],priority_rank:"2",wrong_for:"Gathering, Healer Support",ftp_rating:"Great",meta_override:false},
-  {name:"Ring of Rhino",tier:"T1",suits_roles:["Siege"],suits_troops:["Universal"],priority_rank:"1",wrong_for:"All combat, Gathering",ftp_rating:"Avoid",meta_override:false},
-  {name:"Radiant Guardian",tier:"T2",suits_roles:["DPS Lead"],suits_troops:["Universal"],priority_rank:"1 — Lu Bu only",wrong_for:"All non-Lu Bu heroes",ftp_rating:"Meta Override",meta_override:true},
-  {name:"Ring of Violet",tier:"T0",suits_roles:["Gathering"],suits_troops:["GATH"],priority_rank:"1",wrong_for:"All combat",ftp_rating:"Avoid",meta_override:false},
-  {name:"Skyward Knight",tier:"T2",suits_roles:["Damage Support","Tank Support"],suits_troops:["SW","ARC"],priority_rank:"1",wrong_for:"DPS Lead, Gathering",ftp_rating:"Must-have",meta_override:false},
-  {name:"Ring of Iris",tier:"T0",suits_roles:["Universal"],suits_troops:["Universal"],priority_rank:"4",wrong_for:"Gathering, Siege",ftp_rating:"Okay",meta_override:false},
-  {name:"Lord of Eastern Heavens",tier:"T2",suits_roles:["Universal"],suits_troops:["Universal"],priority_rank:"—",wrong_for:"All roles and troop types",ftp_rating:"Ignore",meta_override:false},
-  {name:"Ring of Sunflower",tier:"T0",suits_roles:["Gathering"],suits_troops:["GATH"],priority_rank:"2",wrong_for:"All combat",ftp_rating:"Avoid",meta_override:false},
-  {name:"Ring of Boar",tier:"T1",suits_roles:["Damage Support","Tank Support"],suits_troops:["PIK"],priority_rank:"1",wrong_for:"DPS Lead, Gathering",ftp_rating:"Must-have",meta_override:false},
-  {name:"Ring of Seahorse",tier:"T1",suits_roles:["Tank Support"],suits_troops:["Universal"],priority_rank:"3",wrong_for:"DPS Lead, Gathering",ftp_rating:"Okay",meta_override:false},
-  {name:"Ring of Steed",tier:"T1",suits_roles:["Gathering"],suits_troops:["GATH"],priority_rank:"1",wrong_for:"All combat",ftp_rating:"Must-have",meta_override:false},
-  {name:"Ring of Bear",tier:"T1",suits_roles:["DPS Lead","Damage Support"],suits_troops:["CAV","SW"],priority_rank:"1",wrong_for:"Healer Support, Gathering",ftp_rating:"Great",meta_override:false},
-  {name:"Ring of Rose",tier:"T0",suits_roles:["Damage Support"],suits_troops:["SW","ARC"],priority_rank:"3",wrong_for:"Warrior SW, Gathering",ftp_rating:"Okay",meta_override:false},
-  {name:"Ring of Serpent",tier:"T1",suits_roles:["Damage Support"],suits_troops:["SW","ARC"],priority_rank:"1",wrong_for:"Warrior SW, PIK, Gathering",ftp_rating:"Great",meta_override:false},
-  {name:"Ring of Badger",tier:"T1",suits_roles:["Tank Support"],suits_troops:["PIK","SW"],priority_rank:"2",wrong_for:"DPS Lead, Gathering",ftp_rating:"Flexible",meta_override:false},
-  {name:"Everflame Wings",tier:"T2",suits_roles:["Damage Support"],suits_troops:["SW","ARC"],priority_rank:"1",wrong_for:"Warrior SW, PIK, Gathering",ftp_rating:"Must-have",meta_override:false},
-  {name:"Ring of Deer",tier:"T1",suits_roles:["Damage Support","Tank Support"],suits_troops:["Universal"],priority_rank:"2",wrong_for:"Gathering, Siege",ftp_rating:"Great",meta_override:false},
-  {name:"Azure Moon",tier:"T2",suits_roles:["Damage Support"],suits_troops:["SW","ARC"],priority_rank:"2",wrong_for:"Warrior SW, PIK, CAV, Gathering",ftp_rating:"Okay",meta_override:false},
-  {name:"Ring of Clover",tier:"T0",suits_roles:["Tank Support","DPS Lead"],suits_troops:["Universal"],priority_rank:"1",wrong_for:"Gathering",ftp_rating:"Must-have",meta_override:false},
-  {name:"Sacred Sage",tier:"T2",suits_roles:["Healer Support","Tank Support"],suits_troops:["PIK"],priority_rank:"1",wrong_for:"Warrior formations, Gathering",ftp_rating:"Must-have",meta_override:false},
-  {name:"Tranquil Water",tier:"T2",suits_roles:["Tank Support","DPS Lead"],suits_troops:["Universal"],priority_rank:"1",wrong_for:"Gathering, Siege",ftp_rating:"Must-have",meta_override:false},
-  {name:"Ring of Lily",tier:"T0",suits_roles:["Healer Support"],suits_troops:["Universal"],priority_rank:"1",wrong_for:"DPS Lead",ftp_rating:"Okay",meta_override:false},
-  {name:"Ring of Daisy",tier:"T0",suits_roles:["DPS Lead"],suits_troops:["Universal"],priority_rank:"1",wrong_for:"Healer Support, Gathering",ftp_rating:"Must-have",meta_override:false},
-  {name:"Ring of Lion",tier:"T1",suits_roles:["Universal"],suits_troops:["Universal"],priority_rank:"3",wrong_for:"Gathering, Siege",ftp_rating:"Flexible",meta_override:false},
-  {name:"Ring of Night Wolf",tier:"T1",suits_roles:["DPS Lead"],suits_troops:["Universal"],priority_rank:"1 — Lu Bu only",wrong_for:"All non-Lu Bu heroes",ftp_rating:"Meta Override",meta_override:true},
-  {name:"Ring of Laurel",tier:"T0",suits_roles:["Siege"],suits_troops:["Universal"],priority_rank:"1",wrong_for:"All combat, Gathering",ftp_rating:"Avoid",meta_override:false},
-  {name:"Ring of Crow",tier:"T1",suits_roles:["Damage Support"],suits_troops:["SW"],priority_rank:"2",wrong_for:"Warrior SW, PIK, CAV, Gathering",ftp_rating:"Flexible",meta_override:false},
-  {name:"Ring of Elephant",tier:"T1",suits_roles:["Siege"],suits_troops:["Universal"],priority_rank:"2",wrong_for:"All combat, Gathering",ftp_rating:"Avoid",meta_override:false},
-  {name:"Ring of Hyacinth",tier:"T0",suits_roles:["Universal"],suits_troops:["Universal"],priority_rank:"—",wrong_for:"All combat roles",ftp_rating:"Avoid",meta_override:false}
+  {name:"Ring of Shark",tier:"T1",suits_roles:["Damage Support"],suits_troops:["Universal"],priority_rank:"4 - lowest T1, use only when the alternative is ringless",ftp_rating:"Avoid",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Lofty Mountain",tier:"T2",suits_roles:["DPS Lead"],suits_troops:["SW","CAV"],priority_rank:"1 - best general DPS lead ring, open field and rally",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Effulgent Sun",tier:"T2",suits_roles:["DPS Lead"],suits_troops:["SW","CAV"],priority_rank:"3 - best currently available for Warrior SW, treated as a placeholder awaiting a better ring",ftp_rating:"Okay",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Mountain's Peak",tier:"T2",suits_roles:["Healer Support","Damage Support"],suits_troops:["PIK"],priority_rank:"1",ftp_rating:"",meta_override:false,meta_status:"Meta correct",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Radiant Thunder",tier:"T2",suits_roles:["Damage Support"],suits_troops:["PIK","SW","CAV"],priority_rank:"1",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Messenger of Destruction",tier:"T2",suits_roles:["DPS Lead"],suits_troops:["PIK"],priority_rank:"1 - PIK lead BIS, non-negotiable for Cyrus",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Sage of Judgment",tier:"T2",suits_roles:["Tank Support"],suits_troops:["Universal"],priority_rank:"2",ftp_rating:"",meta_override:false,meta_status:"Meta correct",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Falcon",tier:"T1",suits_roles:["Healer Support","Tank Support"],suits_troops:["Universal"],priority_rank:"1 - best T1 support, any march",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Scorching Flame",tier:"T2",suits_roles:["Damage Support","DPS Lead"],suits_troops:["CAV","SW"],priority_rank:"2 - best flexible DPS legendary, works on any might-based commander",ftp_rating:"Okay",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Tulip",tier:"T0",suits_roles:["DPS Lead","Damage Support"],suits_troops:["SW","PIK"],priority_rank:"2 - might marches",ftp_rating:"Great",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Swirling Tempest",tier:"T2",suits_roles:["Tank Support","Damage Support"],suits_troops:["SW","PIK","ARC"],priority_rank:"2",ftp_rating:"",meta_override:false,meta_status:"Meta correct",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Rhino",tier:"T1",suits_roles:["Siege"],suits_troops:["Universal"],priority_rank:"1 - best siege ring, endpoint of the siege pool",ftp_rating:"Avoid",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Radiant Guardian",tier:"T2",suits_roles:["DPS Lead"],suits_troops:["Universal"],priority_rank:"1 - Lu Bu only for a maxed build (Meta Override 2)",ftp_rating:"Meta Override",meta_override:true,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:["Lu Bu"]},
+  {name:"Ring of Violet",tier:"T0",suits_roles:["Gathering"],suits_troops:["GATH"],priority_rank:"1 - best T0 gathering",ftp_rating:"Avoid",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Skyward Knight",tier:"T2",suits_roles:["Damage Support","Tank Support"],suits_troops:["SW","ARC"],priority_rank:"2 - support slots only, good value at lv20 or lv30",ftp_rating:"Must-have",meta_override:false,meta_status:"Pathway",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Iris",tier:"T0",suits_roles:["Universal"],suits_troops:["Universal"],priority_rank:"4 - top of niche, best blank-slot filler",ftp_rating:"Okay",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Lord of Eastern Heavens",tier:"T2",suits_roles:["Universal"],suits_troops:["Universal"],priority_rank:"Never recommend as a new purchase. If already owned, lv20 or lv30 and stop",ftp_rating:"Ignore",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Sunflower",tier:"T0",suits_roles:["Gathering"],suits_troops:["GATH"],priority_rank:"2 - behind Violet in the gathering pool",ftp_rating:"Avoid",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Boar",tier:"T1",suits_roles:["Damage Support","Tank Support"],suits_troops:["PIK"],priority_rank:"1 - best T1 PIK support, permanent T1 for Cyrus",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Seahorse",tier:"T1",suits_roles:["Tank Support"],suits_troops:["Universal"],priority_rank:"3 - situational, counters a strategy meta only",ftp_rating:"Okay",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Steed",tier:"T1",suits_roles:["Gathering"],suits_troops:["GATH"],priority_rank:"1 - best gathering ring, endpoint of the gathering pool",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Celestial Spark",tier:"T2",suits_roles:["DPS Lead","Universal"],suits_troops:["Universal"],priority_rank:"1",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Bear",tier:"T1",suits_roles:["DPS Lead","Damage Support"],suits_troops:["CAV","SW"],priority_rank:"1 - best T1 DPS for any hero other than Lu Bu",ftp_rating:"Great",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Rose",tier:"T0",suits_roles:["Damage Support"],suits_troops:["SW","ARC"],priority_rank:"3 - tactical only",ftp_rating:"Okay",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Serpent",tier:"T1",suits_roles:["Damage Support"],suits_troops:["SW","ARC"],priority_rank:"1 - best T1 tactical",ftp_rating:"Great",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Badger",tier:"T1",suits_roles:["Tank Support"],suits_troops:["PIK","SW"],priority_rank:"1 - BIS Support in the current meta (was rank 2, upgraded v3.1)",ftp_rating:"Flexible",meta_override:false,meta_status:"Meta correct",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Everflame Wings",tier:"T2",suits_roles:["Damage Support"],suits_troops:["SW","ARC"],priority_rank:"1 - tactical SW and ARC support BIS",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Deer",tier:"T1",suits_roles:["Damage Support","Tank Support"],suits_troops:["Universal"],priority_rank:"2 - flexible support, works in any support slot",ftp_rating:"Great",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Divine Warrior",tier:"T2",suits_roles:["Damage Support"],suits_troops:["SW","ARC"],priority_rank:"2",ftp_rating:"",meta_override:false,meta_status:"Pathway",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Azure Moon",tier:"T2",suits_roles:["Damage Support"],suits_troops:["SW","ARC"],priority_rank:"2 - tactical strategy support, held back by tactician archers being weak in the current meta",ftp_rating:"Okay",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Disastrous Tyrant",tier:"T2",suits_roles:["DPS Lead"],suits_troops:["CAV","SW"],priority_rank:"3",ftp_rating:"",meta_override:false,meta_status:"Meta correct",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Clover",tier:"T0",suits_roles:["Tank Support","DPS Lead"],suits_troops:["Universal"],priority_rank:"1 - best T0 survivability",ftp_rating:"Must-have",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Sacred Sage",tier:"T2",suits_roles:["Healer Support","Tank Support"],suits_troops:["PIK"],priority_rank:"1 - Marshall PIK BIS, pairs with Mountain's Peak on the Oto march",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Tranquil Water",tier:"T2",suits_roles:["Tank Support","DPS Lead"],suits_troops:["Universal"],priority_rank:"1 - best survivability ring in the game, any march any slot",ftp_rating:"Must-have",meta_override:false,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Lily",tier:"T0",suits_roles:["Healer Support"],suits_troops:["Universal"],priority_rank:"1 - best T0 healer",ftp_rating:"Okay",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Daisy",tier:"T0",suits_roles:["DPS Lead"],suits_troops:["Universal"],priority_rank:"1 - best T0 DPS",ftp_rating:"Must-have",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Dawn's Grace",tier:"T2",suits_roles:["Damage Support","Tank Support"],suits_troops:["PIK"],priority_rank:"1",ftp_rating:"",meta_override:false,meta_status:"Meta correct",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Lion",tier:"T1",suits_roles:["Universal"],suits_troops:["Universal"],priority_rank:"3 - generic fallback, benefits every hero in every attribute",ftp_rating:"Flexible",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Night Wolf",tier:"T1",suits_roles:["DPS Lead"],suits_troops:["Universal"],priority_rank:"1 - Lu Bu only (Meta Override 1)",ftp_rating:"Meta Override",meta_override:true,meta_status:"Meta correct",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:["Lu Bu"]},
+  {name:"Ring of Laurel",tier:"T0",suits_roles:["Siege"],suits_troops:["Universal"],priority_rank:"1 - siege sub-pool only",ftp_rating:"Avoid",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Crow",tier:"T1",suits_roles:["Damage Support"],suits_troops:["SW"],priority_rank:"2 - tactical niche, Hannibal march specific",ftp_rating:"Flexible",meta_override:false,meta_status:"Pathway",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Elephant",tier:"T1",suits_roles:["Siege"],suits_troops:["Universal"],priority_rank:"2 - behind Rhino, siege pool only",ftp_rating:"Avoid",meta_override:false,meta_status:"Pathway",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Ring of Hyacinth",tier:"T0",suits_roles:["Universal"],suits_troops:["Universal"],priority_rank:"Utility only - never in a combat slot",ftp_rating:"Avoid",meta_override:false,meta_status:"Wrong placement",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]}
 ];
+// ── ADORNMENT EFFECTS — generated from Airtable appD9c9ONZGNcgnq1 | 32 entries ─────
+// DO NOT EDIT THIS BLOCK MANUALLY.
+// Run generate_hero_meta.py to regenerate from Airtable.
+// Special effects per troop pool; Universal effects apply to every troop type.
+const ADORNMENT_EFFECTS = [
+  {name:"Natural Selection",troop_type:"Universal",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Resistance",troop_type:"Universal",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Blood Rage",troop_type:"ARC",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Deceptive Words",troop_type:"ARC",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Eye of the Storm",troop_type:"ARC",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Lightning Strike",troop_type:"ARC",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Power Accumulation",troop_type:"ARC",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Risk Aversion",troop_type:"ARC",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Slaughter",troop_type:"ARC",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Strike Soul",troop_type:"ARC",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Strike Weakness",troop_type:"ARC",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Boiling Blood",troop_type:"CAV",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Chain Slayer",troop_type:"CAV",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Cloud Piercer",troop_type:"CAV",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Intimidation",troop_type:"CAV",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Lone Valor",troop_type:"CAV",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Rally",troop_type:"CAV",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Shadow Chaser",troop_type:"CAV",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Blood Debt",troop_type:"PIK",data_status:"Needs in-game check",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Gambit",troop_type:"PIK",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Guard Formation",troop_type:"PIK",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Insight",troop_type:"PIK",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Resourcefulness",troop_type:"PIK",data_status:"In-game verified",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Secondary Strike",troop_type:"PIK",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Stacked Armor",troop_type:"PIK",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Blazing Edge",troop_type:"SW",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Calculation",troop_type:"SW",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Charge",troop_type:"SW",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Mutual Aid",troop_type:"SW",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Radiance",troop_type:"SW",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Starlink",troop_type:"SW",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]},
+  {name:"Wavebreaker",troop_type:"SW",data_status:"Community sourced",excluded_roles:[],excluded_troops:[],excluded_kits:[],reserved_claimants:[]}
+];
+
 
 // ── SEASON FILTER ────────────────────────────────────────────────────────────
 const SEASON_ORDER = ["S1","S2","S3","S4","S5"];
@@ -544,6 +591,12 @@ function heroVisibleForSeason(hero, selectedSeason){
 const MARCH_IDS   = ["M1","M2","M3","M4","M5"];
 const TROOP_TYPES = ["Sword","Pike","Cavalry","Archer","Gathering"];
 const MOUNT_TEMPS = ["Warbred","Alert","Fearless","Protective","Docile","Spirited","Mischievous"];
+const ADORNMENT_FORMS = {
+  SW:  {Attack:"Swift Blade",     Defense:"Mystic Mirror"},
+  PIK: {Attack:"Guiding Star",    Defense:"Stalwart Shield"},
+  CAV: {Attack:"Unyielding Iron", Defense:"Sacred Lily"},
+  ARC: {Attack:"Piercing Arrow",  Defense:"Eagle's Blessing"}
+};
 
 // Ring-pool roles (RING_POOL.suits_roles vocabulary) are derived from march
 // slot position, mirroring the same Lead/Sup1/Sup2 -> role convention used
@@ -559,7 +612,7 @@ function emptyHeroSlot(){
     name:"",level:"",rank:"",
     ring:{name:"",level:""},
     mount:{temperament:"",trait:""},
-    adornment:{name:"",level:""},
+    adornment:{form:"",effect:"",level:""},
     skill1:{level:"",stars:""},
     skill2:{level:"",stars:""},
     skill3:{name:"",level:"",stars:""},
@@ -587,6 +640,12 @@ let nudgeSent  = false;
 
 function loadState(){
   try{const raw=localStorage.getItem(STORE_KEY);if(raw){STATE=JSON.parse(raw);setSaveStatus("Loaded");}}catch(e){}
+  // Profiles saved before the adornment split held a single free-text name.
+  MARCH_IDS.forEach(id=>(STATE.marches[id]?.heroes||[]).forEach(h=>{
+    if(h.adornment&&"name" in h.adornment){
+      h.adornment={form:h.adornment.name||"",effect:"",level:h.adornment.level||""};
+    }
+  }));
 }
 function saveState(){
   STATE.lastUpdated=new Date().toISOString();
@@ -930,6 +989,33 @@ function ringsAssignedElsewhere(excludeMarchId,excludeSlotIdx){
 // Ring dropdown sourced from RING_POOL, filtered by troop type + role.
 // Non-matching/assigned-elsewhere rings are disabled with a note rather
 // than removed, consistent with heroOptions' convention elsewhere.
+function adornmentTroop(hero,march){
+  const types=(HERO_BY_NAME[hero.name]?.type||"").split("/").filter(Boolean);
+  const marchCode=TROOP_TYPE_CODE[march.troopType];
+  if(marchCode&&types.includes(marchCode))return marchCode;
+  const combat=types.filter(t=>ADORNMENT_FORMS[t]);
+  return combat.length===1?combat[0]:"";
+}
+
+function adornFormOptions(troop,curVal){
+  const troops=troop?[troop]:Object.keys(ADORNMENT_FORMS);
+  let html='<option value="">Select form...</option>';
+  troops.forEach(t=>["Attack","Defense"].forEach(o=>{
+    const f=ADORNMENT_FORMS[t][o];
+    html+=`<option value="${f}"${curVal===f?" selected":""}>${f} (${o}${troop?"":", "+t})</option>`;
+  }));
+  return html;
+}
+
+function adornEffectOptions(troop,curVal){
+  let html='<option value="">Select effect...</option>';
+  ADORNMENT_EFFECTS.filter(e=>e.troop_type==="Universal"||!troop||e.troop_type===troop).forEach(e=>{
+    const label=e.troop_type==="Universal"?`${e.name} (all troops)`:(troop?e.name:`${e.name} (${e.troop_type})`);
+    html+=`<option value="${e.name}"${curVal===e.name?" selected":""}>${label}</option>`;
+  });
+  return html;
+}
+
 function ringPoolOptions(curVal,hero,marchId,slotIdx,role){
   const meta=HERO_BY_NAME[hero.name]||{};
   const troopCodes=meta.type?meta.type.split("/"):[];
@@ -991,9 +1077,9 @@ function renderStep2(){
       const meta=HERO_BY_NAME[h.name]||{};
       const role=roleForSlot(idx,isGathering);
       const ringDef=meta.ring||"";
-      const tempDef=meta.mount_temp||"";
       const traitDef=meta.mount_trait||"";
-      const adornDef=meta.adornment||"";
+      const formDef=meta.adornment||"";
+      const troop=adornmentTroop(h,m);
       return `<div class="aw-hero-row aw-hero-row-wide">
         <span class="aw-row-label">${h.name}</span>
         <div class="aw-field"><label>Ring</label>
@@ -1001,13 +1087,18 @@ function renderStep2(){
         </div>
         <div class="aw-field"><label>Ring Lv</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="ringlevel" value="${h.ring.level||""}"></div>
         <div class="aw-field"><label>Temperament</label>
-          <select data-march="${mId}" data-slot="${idx}" data-field="mounttemp" class="${offMetaClass(h.mount.temperament,tempDef)}">
+          <select data-march="${mId}" data-slot="${idx}" data-field="mounttemp">
             <option value="">Select...</option>
             ${MOUNT_TEMPS.map(t=>`<option value="${t}"${h.mount.temperament===t?" selected":""}>${t}</option>`).join("")}
           </select>
         </div>
         <div class="aw-field"><label>Trait</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="mounttrait" class="${offMetaClass(h.mount.trait,traitDef)}" value="${h.mount.trait||""}"></div>
-        <div class="aw-field"><label>Adornment</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="adornname" class="${offMetaClass(h.adornment.name,adornDef)}" value="${h.adornment.name||""}"></div>
+        <div class="aw-field"><label>Adornment Form</label>
+          <select data-march="${mId}" data-slot="${idx}" data-field="adornform" class="${offMetaClass(h.adornment.form,formDef)}">${adornFormOptions(troop,h.adornment.form)}</select>
+        </div>
+        <div class="aw-field"><label>Special Effect</label>
+          <select data-march="${mId}" data-slot="${idx}" data-field="adorneffect">${adornEffectOptions(troop,h.adornment.effect)}</select>
+        </div>
         <div class="aw-field"><label>Adorn Lv</label><input type="text" data-march="${mId}" data-slot="${idx}" data-field="adornlevel" value="${h.adornment.level||""}"></div>
       </div>`;
     }).join("");
@@ -1163,9 +1254,8 @@ function bindBuilderEvents(){
       const meta=HERO_BY_NAME[sel.value];
       if(meta){
         if(!h.ring.name)h.ring.name=meta.ring||"";
-        if(!h.mount.temperament)h.mount.temperament=meta.mount_temp||"";
         if(!h.mount.trait)h.mount.trait=meta.mount_trait||"";
-        if(!h.adornment.name)h.adornment.name=meta.adornment||"";
+        if(!h.adornment.form)h.adornment.form=meta.adornment||"";
       }
       queueSave();renderBuilder();
     };
@@ -1199,7 +1289,7 @@ function bindBuilderEvents(){
     sel.onchange=()=>{
       const {march:mId,slot:si}=sel.dataset;
       STATE.marches[mId].heroes[parseInt(si)].mount.temperament=sel.value;
-      queueSave();renderBuilder();
+      queueSave();
     };
   });
 
@@ -1214,13 +1304,15 @@ function bindBuilderEvents(){
     };
   });
 
-  stepsEl.querySelectorAll("[data-field='adornname']").forEach(inp=>{
-    inp.oninput=()=>{
-      const {march:mId,slot:si}=inp.dataset;
+  stepsEl.querySelectorAll("[data-field='adornform'],[data-field='adorneffect']").forEach(sel=>{
+    sel.onchange=()=>{
+      const {march:mId,slot:si,field}=sel.dataset;
       const h=STATE.marches[mId].heroes[parseInt(si)];
-      h.adornment.name=inp.value;
-      const meta=HERO_BY_NAME[h.name]||{};
-      inp.classList.toggle("aw-off-meta",!!offMetaClass(inp.value,meta.adornment));
+      h.adornment[field==="adornform"?"form":"effect"]=sel.value;
+      if(field==="adornform"){
+        const meta=HERO_BY_NAME[h.name]||{};
+        sel.classList.toggle("aw-off-meta",!!offMetaClass(sel.value,meta.adornment));
+      }
       queueSave();
     };
   });
@@ -1253,7 +1345,10 @@ function buildStepMarkdown(stepNum){
       if(stepNum===1){
         lines.push(`- **${labels[idx]}: ${h.name}** (Lv ${h.level||"?"} · R${h.rank||"?"})`);
       } else if(stepNum===2){
-        lines.push(`- **${h.name}**: Ring ${h.ring.name||"—"}${h.ring.level?" lv"+h.ring.level:""} | Mount ${h.mount.temperament||"—"} / ${h.mount.trait||"—"} | Adornment ${h.adornment.name||"—"}${h.adornment.level?" lv"+h.adornment.level:""}`);
+        // Temperament is left out on purpose: it only matters for breeding
+        // and must never drive a mark (Mount KB v7 Rule 2).
+        const adorn=[h.adornment.form,h.adornment.effect].filter(Boolean).join(" + ")||"—";
+        lines.push(`- **${h.name}**: Ring ${h.ring.name||"—"}${h.ring.level?" lv"+h.ring.level:""} | Mount trait ${h.mount.trait||"—"} | Adornment ${adorn}${h.adornment.level?" lv"+h.adornment.level:""}`);
       } else if(stepNum===3){
         const meta=HERO_BY_NAME[h.name]||{};
         const s1=`${meta.skill1||"?"} lv${h.skill1.level||"?"}${h.skill1.stars?" ★"+h.skill1.stars:""}`;
