@@ -1,5 +1,13 @@
-/* AIGA hero card. Colours and type follow the UX mock-up canvas. */
-:root {
+/* AIGA hero card. Colours and type follow the UX mock-up canvas.
+   Loaded inside the card's shadow root (see embed.js), so selectors here
+   never reach the host page. `all: initial` stops the host page's inherited
+   text styles (colour, line-height, letter-spacing…) from leaking in. */
+:host {
+  all: initial;
+  display: block;
+  color: var(--text);
+  font-family: 'Source Sans 3', system-ui, sans-serif;
+
   --bg: #121418;
   --panel: #1B1E24;
   --panel-deep: #16181D;
@@ -28,13 +36,13 @@
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Source Sans 3', system-ui, sans-serif; }
 button, input, select { font-family: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
-.app { position: relative; max-width: 480px; min-height: 100vh; margin: 0 auto; overflow-x: hidden; }
+.app { position: relative; max-width: 480px; min-height: 100vh; margin: 0 auto; overflow-x: hidden; background: var(--bg); }
+.app[hidden] { display: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .cinzel { font-family: Cinzel, serif; }
 

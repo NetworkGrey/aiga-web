@@ -14,6 +14,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
@@ -576,6 +577,8 @@ def prune_sessions():
 # ─── Flask App ────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
+# Railway terminates TLS; trust its X-Forwarded-Proto so redirects stay on https.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1)
 CORS(
     app,
     origins=ALLOWED_ORIGINS,
@@ -628,7 +631,8 @@ def commander():
 
 # Hero card (UX Decisions v1.7). The trailing slash matters: the page loads
 # its assets by relative path, and Flask redirects /card to /card/.
-HERO_CARD_FILES = {"card.css", "card.js", "card_data.js", "diff_rules.js"}
+# embed.js is also what the WordPress page at aiga.networkgrey.co.za/card/ loads.
+HERO_CARD_FILES = {"card.css", "card.js", "card_data.js", "diff_rules.js", "embed.js"}
 
 
 @app.route("/card/")

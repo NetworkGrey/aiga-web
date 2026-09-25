@@ -10,8 +10,9 @@
   "use strict";
 
   const R = window.AIGADiffRules;
+  const CARD = window.AIGA_CARD; // set by embed.js: this folder's URL and the mount element
   const STORE_KEY = "aiga_hero_card_v1";
-  const AVATAR = "/static/hero-art/viking-female.jpg";
+  const AVATAR = new URL("../static/hero-art/viking-female.jpg", CARD.base).href;
   const AVATAR_ALT = "Braided rider in scale armour on a white horse, original artwork";
 
   const TROOP_LABEL = { SW: "Sword", PIK: "Pike", CAV: "Cavalry", ARC: "Archer", GATH: "Gathering" };
@@ -206,7 +207,15 @@
   }
 
   // ── Views ───────────────────────────────────────────────────────────────────
-  const app = document.getElementById("app");
+  // A shadow root keeps the host page's CSS (WordPress theme, Additional CSS)
+  // out of the card and the card's CSS out of the page. Hidden until card.css
+  // has loaded so the unstyled markup never flashes.
+  const root = CARD.host.shadowRoot || CARD.host.attachShadow({ mode: "open" });
+  root.innerHTML = `<link rel="stylesheet" href="${CARD.base}card.css"><main id="app" class="app" aria-live="polite" hidden></main>`;
+  const app = root.getElementById("app");
+  const reveal = () => { app.hidden = false; };
+  root.querySelector("link").addEventListener("load", reveal);
+  root.querySelector("link").addEventListener("error", reveal);
 
   const DISCLAIMER = "AIGA™ is an independent fan advisory service created by Network Grey (Pty) Ltd. Not affiliated with, endorsed by, or associated with TiMi Studio Group, Level Infinite, Proxima Beta Pte. Limited, Microsoft Corporation, or Xbox Game Studios. Age of Empires and Age of Empires Mobile are trademarks of Microsoft Corporation. All game content and imagery are the intellectual property of their respective owners. All data sources and community contributors are acknowledged where applicable. AIGA may make mistakes. Always verify information before acting on it.";
 
@@ -521,6 +530,12 @@
     if (sheet && document.activeElement === document.body) sheet.querySelector("button, select, input").focus({ preventScroll: true });
   }
 
+  // Embedded under a site header the card doesn't start at the page top, so
+  // bring its top into view rather than scrolling to 0.
+  function scrollToCard() {
+    if (CARD.host.getBoundingClientRect().top < 0) CARD.host.scrollIntoView();
+  }
+
   function slotOfPath(path) {
     const [root, sub] = path.split(".");
     return root === "gear" ? sub : root.charAt(0).toUpperCase() + root.slice(1);
@@ -547,7 +562,7 @@
     const { action } = el.dataset;
     if (action === "continue") { state.view = "picker"; }
     else if (action === "filter") { state.filter = el.dataset.value; }
-    else if (action === "open-hero") { state.hero = el.dataset.hero; state.view = "card"; state.open = ""; equippedFor(state.hero); window.scrollTo(0, 0); }
+    else if (action === "open-hero") { state.hero = el.dataset.hero; state.view = "card"; state.open = ""; equippedFor(state.hero); scrollToCard(); }
     else if (action === "back") { state.view = "picker"; state.open = ""; }
     else if (action === "open-slot") {
       if (el.dataset.review && state.open) touch(equippedFor(state.hero), state.open);
