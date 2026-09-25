@@ -92,6 +92,26 @@ BASE_ID       = os.environ.get("AIRTABLE_BASE_ID", "appD9c9ONZGNcgnq1")
 HEROES_TABLE  = "tblBTohOcVLUKKhJ8"
 RINGS_TABLE   = "tbllDKaFx8wh4TpM7"
 ADORNMENT_EFFECTS_TABLE = "tblHemWBNGb45t6E6"
+MOUNT_TRAITS_TABLE      = "tblcgBlXf7Pu10N7G"
+GEM_TYPES_TABLE         = "tblVfHxuJj77b8nOi"
+GEAR_PIECES_TABLE       = "tblLuhHyJAQ2uCEQV"
+
+# Heroes-table link fields holding each gear slot's meta gem type. Legs takes
+# one gem of each category, so it has three fields.
+META_GEM_FIELDS = {
+    "head":          "fldKL0lPSX6Gye0Pc",
+    "arms":          "fld999y771ID6joTe",
+    "chest":         "fldIj9AEDHE2sbc1d",
+    "legs_strategy": "fldFEPo2hJMBRU1De",
+    "legs_hero":     "fldrEuF6qF2OCZ6Gf",
+    "legs_tactic":   "fld4Xhxg3KPK54jCv",
+}
+
+# Mount trait pool -> the mount attribute a damage-percentage trait scales off.
+POOL_ATTRIBUTE = {"Might Damage": "Might", "Strategy Damage": "Strategy"}
+
+# Placeholder option Airtable shows in an empty Skill Alternates select.
+SKILL_ALTERNATES_PLACEHOLDER = "(populate from Skill Pool as confirmed)"
 API_KEY       = os.environ.get("AIRTABLE_API_KEY", "")
 API_BASE      = "https://api.airtable.com/v0"
 
@@ -110,6 +130,9 @@ def find_widget(start: Path) -> Path:
         "Could not find AIGA_WP_Widget.html. "
         "Run from inside the aiga-web repo, or pass --output <path>."
     )
+
+# The hero card page reads the same generated blocks from its own data file.
+CARD_DATA_PATH = Path(__file__).resolve().parent / "hero_card" / "card_data.js"
 
 # Allow explicit --output override
 output_path = None
@@ -254,12 +277,6 @@ def build_adornment_effects(effect_records: list[dict], hero_names: dict[str, st
     print(f"  {len(effects)} adornment effects.", file=sys.stderr)
     return effects
 
-def resolve_ring(linked_ids: list, ring_lookup: dict) -> str:
-    """Resolve a list of linked record IDs to the first ring name."""
-    if not linked_ids:
-        return ""
-    return ring_lookup.get(linked_ids[0], "")
-
 # ── Fetch heroes ──────────────────────────────────────────────────────────────
 def fetch_hero_records() -> list[dict]:
     print("Fetching Heroes table...", file=sys.stderr)
@@ -267,8 +284,17 @@ def fetch_hero_records() -> list[dict]:
     print(f"  {len(records)} hero records fetched.", file=sys.stderr)
     return records
 
-def build_heroes(records: list[dict], ring_lookup: dict) -> list[dict]:
+def record_names(records: list[dict], name_field: str) -> dict[str, str]:
+    """Returns {record_id: name} for resolving links into a table."""
+    return {
+        rec["id"]: rec.get("fields", {}).get(name_field, "")
+        for rec in records
+        if rec.get("fields", {}).get(name_field)
+    }
 
+def build_heroes(records: list[dict], names: dict[str, dict[str, str]]) -> list[dict]:
+    """names holds {record_id: name} lookups for "rings", "traits",
+    "effects" and "gems", used to resolve the hero's linked meta records."""
     heroes = []
     for rec in records:
         f = rec.get("fields", {})
@@ -279,67 +305,62 @@ def build_heroes(records: list[dict], ring_lookup: dict) -> list[dict]:
         if not name_val.strip() or name_val.strip() == "Name":
             continue
 
-        # Type: multipleSelects -> slash-joined string e.g. "CAV/ARC"
-        type_vals = f.get("fld39hloCOq4Kw507", [])
-        hero_type = "/".join(type_vals) if type_vals else ""
+        # Type: multipleSelects of combined options, e.g. ["CAV/ARC"] -> "CAV/ARC"
+        hero_type = "/".join(multiselect_names(f.get("fld39hloCOq4Kw507")))
 
-        # Rarity: singleSelect -> {name: "Legendary"}
-        rarity_obj = f.get("fldAAEYZ023m1wApS", {})
-        rarity = rarity_obj if isinstance(rarity_obj, str) else rarity_obj.get("name", "") if rarity_obj else ""
+        # Skill Pool: use `or []`, not a .get() default. .get(key, []) only
+        # falls back when the key is missing, not when Airtable returns it
+        # present but falsy, which silently emptied skills[] before.
+        skills = multiselect_names(f.get("fldIINIVqQWWEAE1M") or [])
 
-        # Mount Temperament: singleSelect
-        temp_obj = f.get("fld5mpoP8CPc9rHmO", {})
-        mount_temp = temp_obj if isinstance(temp_obj, str) else temp_obj.get("name", "") if temp_obj else ""
-
-        # Adornment Form: singleSelect
-        adorn_obj = f.get("fldRRvKyctnaWK890", {})
-        adorn = adorn_obj if isinstance(adorn_obj, str) else adorn_obj.get("name", "") if adorn_obj else ""
-
-        # Data Status: singleSelect
-        status_obj = f.get("fldICAkHKI5NFroeh", {})
-        status = status_obj if isinstance(status_obj, str) else status_obj.get("name", "") if status_obj else ""
-
-        # Skill Pool: multipleSelects -> list of skill name strings
-        # Use `or []` instead of a .get() default: .get(key, []) only falls
-        # back when the key is missing, not when Airtable returns it present
-        # but falsy (null/"") -- which silently produced an empty skills[]
-        # for records edited shortly after this field was added.
-        skills_raw = f.get("fldIINIVqQWWEAE1M") or []
-        if isinstance(skills_raw, str):
-            skills_raw = [skills_raw]
-        # AT multipleSelects returns list of strings (option names)
-        skills = [s if isinstance(s, str) else s.get("name", "") for s in skills_raw]
-
-        # Ring linked records -> names via lookup
-        ring_t0 = resolve_ring(f.get("fldSUhJQEB1gOBpZS", []), ring_lookup)
-        ring_t1 = resolve_ring(f.get("fld2jAIh9BShadM13", []), ring_lookup)
-        ring_t2 = resolve_ring(f.get("fld7y1eBeHlAxo60i", []), ring_lookup)
+        # Ring linked records -> names
+        ring_t0 = (linked_names(f.get("fldSUhJQEB1gOBpZS"), names["rings"]) or [""])[0]
+        ring_t1 = (linked_names(f.get("fld2jAIh9BShadM13"), names["rings"]) or [""])[0]
+        ring_t2 = (linked_names(f.get("fld7y1eBeHlAxo60i"), names["rings"]) or [""])[0]
 
         # Ring cascade: current recommended ring = highest tier confirmed
         # T2 > T1 > T0 -- used as the single `ring` field in HERO_META
         ring_current = ring_t2 or ring_t1 or ring_t0
 
+        skill4_recs = multiselect_names(f.get("fldRkDxVWSX5iDZ0J"))
+        alternates = lambda field: [
+            s for s in multiselect_names(f.get(field)) if s != SKILL_ALTERNATES_PLACEHOLDER
+        ]
+
         hero = {
-            "name":        f.get("fldjwHFmQKzKu1s4v", ""),
+            "name":        name_val,
             "type":        hero_type,
-            "rarity":      rarity,
-            "season":      f.get("fld1lrjDbLkS09FZW", ""),
-            "role":        f.get("fld43lU9NUaf9sGXP", ""),
+            "rarity":      select_name(f.get("fldAAEYZ023m1wApS")),
+            "season":      f.get("fld1lrjDbLkS09FZW", "") or "",
+            "role":        f.get("fld43lU9NUaf9sGXP", "") or "",
             "skill1":      f.get("fldNXxq2FgIGJVIxT", "") or "",
             "skill2":      f.get("fldTGfvzcln4lowxl", "") or "",
-            "skill3_rec":  f.get("fldZxFZW6h7Efux6b", "") or "",
-            "skill4_rec":  f.get("fldRkDxVWSX5iDZ0J", "") or "",
+            "skill3_rec":  select_name(f.get("fldZxFZW6h7Efux6b")),
+            "skill4_rec":  ", ".join(skill4_recs),
             "skills":      skills,
             "ring":        ring_current,
             "ring_t0":     ring_t0,
             "ring_t1":     ring_t1,
             "ring_t2":     ring_t2,
-            "mount_temp":  mount_temp,
-            "mount_trait": f.get("fldNkvsqF3GwvwIVo", "") or "",
-            "mount_trait2":f.get("fldG6Jn32lZL0hofC", "") or "",
-            "adornment":   adorn,
+            "mount_temp":  select_name(f.get("fld5mpoP8CPc9rHmO")),
+            "mount_trait": select_name(f.get("fldNkvsqF3GwvwIVo")),
+            "mount_trait2":select_name(f.get("fldG6Jn32lZL0hofC")),
+            "adornment":   select_name(f.get("fldRRvKyctnaWK890")),
             "pairings":    f.get("fldwn0BheYYzLQgl2", "") or "",
-            "data_status": status,
+            "data_status": select_name(f.get("fldICAkHKI5NFroeh")),
+            # Hero card diff-rule inputs (Diff Rules Spec v1.0)
+            "card_role":         select_name(f.get("fldHxHxpxdSRkcHN3")),
+            "damage_kit":        select_name(f.get("fldJ9LyJlg5n7A9oM")),
+            "mount_traits":      linked_names(f.get("fldWob9aMkmGUN3aQ"), names["traits"]),
+            "mount_attributes":  multiselect_names(f.get("fldohoG1KkcE93Lar")),
+            "adornment_effects": linked_names(f.get("fldTQgOFsVORsvhz9"), names["effects"]),
+            "meta_gems": {
+                slot: (linked_names(f.get(field), names["gems"]) or [""])[0]
+                for slot, field in META_GEM_FIELDS.items()
+            },
+            "skill4_recs":       skill4_recs,
+            "skill3_alternates": alternates("fldstCJSDPkYWCy6V"),
+            "skill4_alternates": alternates("fld0b4RehvTVVYBeA"),
         }
         heroes.append(hero)
 
@@ -350,6 +371,71 @@ def build_heroes(records: list[dict], ring_lookup: dict) -> list[dict]:
 
     heroes.sort(key=sort_key)
     return heroes
+
+# ── Build card reference tables ────────────────────────────────────────────────
+def build_mount_traits(records: list[dict], hero_names: dict[str, str]) -> list[dict]:
+    traits = []
+    for rec in records:
+        f = rec.get("fields", {})
+        name = f.get("fldpO8Y8NOKBb7HHV", "") or ""
+        if not name.strip():
+            continue
+        pool = select_name(f.get("flduHHddFcUVT1cHy"))
+        traits.append({
+            "name":                     name,
+            "pool":                     pool,
+            "attribute":                POOL_ATTRIBUTE.get(pool, ""),
+            "requires_attribute_match": bool(f.get("fldU0MW7rWmPkaif7", False)),
+            "meta_status":              select_name(f.get("fldlrvFC7GQxEz7VO")),
+            "data_status":              select_name(f.get("fldxzx6Xbbf2tS0Jy")),
+            "excluded_roles":           multiselect_names(f.get("fldKmE7FioVcHEAul")),
+            "excluded_troops":          multiselect_names(f.get("fldDOiZy8c8mjhYTx")),
+            "excluded_kits":            multiselect_names(f.get("fldp4udI7pVzZJWgL")),
+            "reserved_claimants":       linked_names(f.get("fldo4wLRyCZifw5p7"), hero_names),
+        })
+    traits.sort(key=lambda t: t["name"])
+    print(f"  {len(traits)} mount traits.", file=sys.stderr)
+    return traits
+
+def build_gem_types(records: list[dict]) -> list[dict]:
+    gem_names = record_names(records, "fldoJJzLugm0dNNxn")
+    gems = []
+    for rec in records:
+        f = rec.get("fields", {})
+        name = f.get("fldoJJzLugm0dNNxn", "") or ""
+        if not name.strip():
+            continue
+        gems.append({
+            "name":            name,
+            "category":        select_name(f.get("fldVkM5GOHGQEEQcT")),
+            "is_placeholder":  bool(f.get("fldn4917mIUHZ6NKi", False)),
+            "placeholder_for": linked_names(f.get("fldt5HBzTgLQcOKJg"), gem_names),
+            "data_status":     select_name(f.get("fldmBi9nBn58oX2L7")),
+        })
+    gems.sort(key=lambda g: (g["category"], g["name"]))
+    print(f"  {len(gems)} gem types.", file=sys.stderr)
+    return gems
+
+def build_gear_pieces(records: list[dict]) -> list[dict]:
+    rarity_order = {"Legendary": 0, "Epic": 1, "Rare": 2}
+    slot_order = {"Head": 0, "Arms": 1, "Chest": 2, "Legs": 3}
+    pieces = []
+    for rec in records:
+        f = rec.get("fields", {})
+        name = f.get("fldJylmVAXXOWXJyS", "") or ""
+        if not name.strip():
+            continue
+        pieces.append({
+            "name":        name,
+            "troop_type":  select_name(f.get("fldODJy5jeE9B9dpd")),
+            "slot":        select_name(f.get("fldtnTdOGDwGSekMx")),
+            "rarity":      select_name(f.get("fldW2cD70FGBWAGmR")),
+            "max_level":   f.get("fldqW6JrsaOy7z2yr") or 0,
+            "data_status": select_name(f.get("fldoYsAOVAjyErZBM")),
+        })
+    pieces.sort(key=lambda p: (p["troop_type"], slot_order.get(p["slot"], 9), rarity_order.get(p["rarity"], 9)))
+    print(f"  {len(pieces)} gear pieces.", file=sys.stderr)
+    return pieces
 
 # ── JS serialiser ─────────────────────────────────────────────────────────────
 def js_str(v) -> str:
@@ -362,6 +448,7 @@ def js_str(v) -> str:
 
 def hero_to_js(h: dict) -> str:
     skills_js = ",".join(f'"{js_str(s)}"' for s in h["skills"])
+    meta_gems_js = "{" + ",".join(f'{slot}:"{js_str(gem)}"' for slot, gem in h["meta_gems"].items()) + "}"
     return (
         f'  {{name:"{js_str(h["name"])}",type:"{js_str(h["type"])}",'
         f'rarity:"{js_str(h["rarity"])}",season:"{js_str(h["season"])}",'
@@ -372,7 +459,13 @@ def hero_to_js(h: dict) -> str:
         f'mount_temp:"{js_str(h["mount_temp"])}",mount_trait:"{js_str(h["mount_trait"])}",'
         f'mount_trait2:"{js_str(h["mount_trait2"])}",'
         f'adornment:"{js_str(h["adornment"])}",'
-        f'skill3_rec:"{js_str(h["skill3_rec"])}",skill4_rec:"{js_str(h["skill4_rec"])}"'
+        f'skill3_rec:"{js_str(h["skill3_rec"])}",skill4_rec:"{js_str(h["skill4_rec"])}",'
+        f'card_role:"{js_str(h["card_role"])}",damage_kit:"{js_str(h["damage_kit"])}",'
+        f'mount_traits:{js_list(h["mount_traits"])},mount_attributes:{js_list(h["mount_attributes"])},'
+        f'adornment_effects:{js_list(h["adornment_effects"])},'
+        f'meta_gems:{meta_gems_js},'
+        f'skill4_recs:{js_list(h["skill4_recs"])},'
+        f'skill3_alternates:{js_list(h["skill3_alternates"])},skill4_alternates:{js_list(h["skill4_alternates"])}'
         f'}}'
     )
 
@@ -408,6 +501,29 @@ def adornment_effect_to_js(e: dict) -> str:
         f'excluded_kits:{js_list(e["excluded_kits"])},reserved_claimants:{js_list(e["reserved_claimants"])}}}'
     )
 
+def mount_trait_to_js(t: dict) -> str:
+    requires = "true" if t["requires_attribute_match"] else "false"
+    return (
+        f'  {{name:"{js_str(t["name"])}",pool:"{js_str(t["pool"])}",attribute:"{js_str(t["attribute"])}",'
+        f'requires_attribute_match:{requires},meta_status:"{js_str(t["meta_status"])}",'
+        f'data_status:"{js_str(t["data_status"])}",'
+        f'excluded_roles:{js_list(t["excluded_roles"])},excluded_troops:{js_list(t["excluded_troops"])},'
+        f'excluded_kits:{js_list(t["excluded_kits"])},reserved_claimants:{js_list(t["reserved_claimants"])}}}'
+    )
+
+def gem_type_to_js(g: dict) -> str:
+    placeholder = "true" if g["is_placeholder"] else "false"
+    return (
+        f'  {{name:"{js_str(g["name"])}",category:"{js_str(g["category"])}",is_placeholder:{placeholder},'
+        f'placeholder_for:{js_list(g["placeholder_for"])},data_status:"{js_str(g["data_status"])}"}}'
+    )
+
+def gear_piece_to_js(p: dict) -> str:
+    return (
+        f'  {{name:"{js_str(p["name"])}",troop_type:"{js_str(p["troop_type"])}",slot:"{js_str(p["slot"])}",'
+        f'rarity:"{js_str(p["rarity"])}",max_level:{int(p["max_level"])},data_status:"{js_str(p["data_status"])}"}}'
+    )
+
 def build_block_js(label: str, const: str, entries: list[str], notes: list[str]) -> str:
     lines = [f"// ── {label} — generated from Airtable {BASE_ID} | {len(entries)} entries ─────"]
     lines.append("// DO NOT EDIT THIS BLOCK MANUALLY.")
@@ -429,6 +545,31 @@ def build_adornment_effects_js(effects: list[dict]) -> str:
         "Special effects per troop pool; Universal effects apply to every troop type.",
     ])
 
+def build_mount_traits_js(traits: list[dict]) -> str:
+    return build_block_js("MOUNT TRAITS", "MOUNT_TRAITS", [mount_trait_to_js(t) for t in traits], [
+        "Temperament is deliberately absent: it never drives a mark (Mount KB v7 Rule 2).",
+    ])
+
+def build_gem_types_js(gems: list[dict]) -> str:
+    return build_block_js("GEM TYPES", "GEM_TYPES", [gem_type_to_js(g) for g in gems], [
+        "Head takes Strategy, Arms takes Hero, Chest takes Tactic, Legs one of each.",
+    ])
+
+def build_gear_pieces_js(pieces: list[dict]) -> str:
+    return build_block_js("GEAR PIECES", "GEAR_PIECES", [gear_piece_to_js(p) for p in pieces], [
+        "Meta rarity is Legendary; a lower rarity of the right troop's set is an upgrade path.",
+    ])
+
+def build_card_data_js(blocks: list[str]) -> str:
+    """The hero card page's data file: the same generated blocks as the
+    widget, so both always come from one Airtable pull."""
+    header = [
+        "// AIGA hero card data -- generated by generate_hero_meta.py.",
+        "// DO NOT EDIT MANUALLY. Run generate_hero_meta.py to regenerate from Airtable.",
+        "",
+    ]
+    return "\n".join(header) + "\n\n".join(blocks) + "\n"
+
 # ── Widget patcher ────────────────────────────────────────────────────────────
 def block_re(label: str, const: str) -> re.Pattern:
     """Matches a generated block including its comment header lines."""
@@ -437,6 +578,9 @@ def block_re(label: str, const: str) -> re.Pattern:
 HERO_META_RE         = block_re("HERO META", "HERO_META")
 RING_POOL_RE         = block_re("RING POOL", "RING_POOL")
 ADORNMENT_EFFECTS_RE = block_re("ADORNMENT EFFECTS", "ADORNMENT_EFFECTS")
+MOUNT_TRAITS_RE      = block_re("MOUNT TRAITS", "MOUNT_TRAITS")
+GEM_TYPES_RE         = block_re("GEM TYPES", "GEM_TYPES")
+GEAR_PIECES_RE       = block_re("GEAR PIECES", "GEAR_PIECES")
 
 # Anchor used to insert RING_POOL on the first run, when no block exists yet.
 # Placed right after HERO_BY_NAME is built, before the season-filter section.
@@ -453,7 +597,8 @@ def replace_or_insert(html: str, pattern: re.Pattern, js: str, anchor: re.Patter
         return anchor.sub(lambda m: m.group(0) + "\n" + js + "\n", html, count=1)
     raise ValueError(f"Could not find a {name} block or its insertion anchor. Inspect the widget structure manually.")
 
-def patch_widget(html: str, hero_js: str, ring_js: str, adornment_js: str) -> str:
+def patch_widget(html: str, hero_js: str, ring_js: str, adornment_js: str,
+                 trait_js: str, gem_js: str, gear_js: str) -> str:
     if not HERO_META_RE.search(html):
         raise ValueError(
             "Could not find HERO_META block in widget HTML. "
@@ -462,6 +607,9 @@ def patch_widget(html: str, hero_js: str, ring_js: str, adornment_js: str) -> st
     html = HERO_META_RE.sub(lambda _: hero_js, html, count=1)
     html = replace_or_insert(html, RING_POOL_RE, ring_js, HERO_BY_NAME_ANCHOR, "RING_POOL")
     html = replace_or_insert(html, ADORNMENT_EFFECTS_RE, adornment_js, RING_POOL_RE, "ADORNMENT_EFFECTS")
+    html = replace_or_insert(html, MOUNT_TRAITS_RE, trait_js, ADORNMENT_EFFECTS_RE, "MOUNT_TRAITS")
+    html = replace_or_insert(html, GEM_TYPES_RE, gem_js, MOUNT_TRAITS_RE, "GEM_TYPES")
+    html = replace_or_insert(html, GEAR_PIECES_RE, gear_js, GEM_TYPES_RE, "GEAR_PIECES")
     return html
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -469,29 +617,43 @@ def main():
     hero_records   = fetch_hero_records()
     hero_names     = hero_name_lookup(hero_records)
     ring_records   = fetch_rings()
-    ring_lookup    = build_ring_lookup(ring_records)
-    ring_pool      = build_ring_pool(ring_records, hero_names)
-    print("Fetching Adornment Effects table...", file=sys.stderr)
-    adornments     = build_adornment_effects(fetch_all(ADORNMENT_EFFECTS_TABLE), hero_names)
-    heroes         = build_heroes(hero_records, ring_lookup)
-    hero_js        = build_hero_meta_js(heroes)
-    ring_js        = build_ring_pool_js(ring_pool)
-    adornment_js   = build_adornment_effects_js(adornments)
+    print("Fetching Adornment Effects, Mount Traits, Gem Types, Gear Pieces...", file=sys.stderr)
+    effect_records = fetch_all(ADORNMENT_EFFECTS_TABLE)
+    trait_records  = fetch_all(MOUNT_TRAITS_TABLE)
+    gem_records    = fetch_all(GEM_TYPES_TABLE)
+    gear_records   = fetch_all(GEAR_PIECES_TABLE)
 
-    print(f"\nGenerated HERO_META: {len(heroes)} heroes", file=sys.stderr)
-    print(f"Generated RING_POOL: {len(ring_pool)} rings", file=sys.stderr)
-    print(f"Generated ADORNMENT_EFFECTS: {len(adornments)} effects", file=sys.stderr)
+    names = {
+        "rings":   build_ring_lookup(ring_records),
+        "traits":  record_names(trait_records, "fldpO8Y8NOKBb7HHV"),
+        "effects": record_names(effect_records, "fldiXIOnbWVJIxOIy"),
+        "gems":    record_names(gem_records, "fldoJJzLugm0dNNxn"),
+    }
+    heroes     = build_heroes(hero_records, names)
+    ring_pool  = build_ring_pool(ring_records, hero_names)
+    adornments = build_adornment_effects(effect_records, hero_names)
+    traits     = build_mount_traits(trait_records, hero_names)
+    gems       = build_gem_types(gem_records)
+    gear       = build_gear_pieces(gear_records)
+
+    blocks = [
+        build_hero_meta_js(heroes), build_ring_pool_js(ring_pool),
+        build_adornment_effects_js(adornments), build_mount_traits_js(traits),
+        build_gem_types_js(gems), build_gear_pieces_js(gear),
+    ]
+    print(f"\nGenerated HERO_META: {len(heroes)} heroes, RING_POOL: {len(ring_pool)}, "
+          f"ADORNMENT_EFFECTS: {len(adornments)}, MOUNT_TRAITS: {len(traits)}, "
+          f"GEM_TYPES: {len(gems)}, GEAR_PIECES: {len(gear)}", file=sys.stderr)
 
     if DRY_RUN:
-        print(hero_js)
-        print(ring_js)
-        print(adornment_js)
+        print("\n\n".join(blocks))
         return
 
     html = output_path.read_text(encoding="utf-8")
-    patched = patch_widget(html, hero_js, ring_js, adornment_js)
-    output_path.write_text(patched, encoding="utf-8")
+    output_path.write_text(patch_widget(html, *blocks), encoding="utf-8")
     print(f"Written to {output_path}", file=sys.stderr)
+    CARD_DATA_PATH.write_text(build_card_data_js(blocks), encoding="utf-8")
+    print(f"Written to {CARD_DATA_PATH}", file=sys.stderr)
     print("Done. Commit and push via Claude Code.", file=sys.stderr)
 
 if __name__ == "__main__":

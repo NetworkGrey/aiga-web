@@ -626,6 +626,23 @@ def commander():
     return send_from_directory(".", "AIGA_Commander.html")
 
 
+# Hero card (UX Decisions v1.7). The trailing slash matters: the page loads
+# its assets by relative path, and Flask redirects /card to /card/.
+HERO_CARD_FILES = {"card.css", "card.js", "card_data.js", "diff_rules.js"}
+
+
+@app.route("/card/")
+def hero_card():
+    return send_from_directory("hero_card", "index.html")
+
+
+@app.route("/card/<path:filename>")
+def hero_card_asset(filename):
+    if filename not in HERO_CARD_FILES:
+        return jsonify({"error": "Not found"}), 404
+    return send_from_directory("hero_card", filename)
+
+
 @app.route("/analyse", methods=["POST"])
 def analyse():
     try:
